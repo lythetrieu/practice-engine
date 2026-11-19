@@ -1,0 +1,9 @@
+/* Capped.tsx: the free plan's daily lesson limit, and the "Ask a parent" note under a limit (also on Full test). */
+.pa .cap-main { padding-top: 36px; display: grid; gap: 14px; max-width: 560px; }
+.pa .cap-main h1 { font: 700 26px/1.2 var(--serif); color: var(--primary); }
+.pa .cap-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.pa .cap-actions .pa-btn { flex: 1 1 160px; text-align: center; }
+.pa .cap-ask { display: grid; gap: 8px; }
+.pa .cap-parent { font-size: 14px; color: var(--muted, #5C625D); }
+.pa .ask-done { font-weight: 700; color: var(--primary); }
+.pa .ask-err { color: #B4472B; font-size: 14px; }

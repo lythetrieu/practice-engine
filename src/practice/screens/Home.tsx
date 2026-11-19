@@ -467,7 +467,10 @@ export default function Home() {
   const { p, me, sfx, go } = useApp();
   // A brand-new device starts with the goal questions once (Start.tsx); Skip or Close never brings them back here.
   useEffect(() => {
-    if (!p.tutor.goal && !p.days.length && !Object.keys(p.lessons).length && !startSeen()) go('#start');
+    // Only on Home itself: Home also stands in for other addresses (an unknown hash, #done after a reload, #thanks for
+    // a student), and a bookmark or an email link to those must not turn into the goal questions.
+    const h = location.hash.replace(/^#\/?/, '');
+    if ((h === '' || h === 'home') && !p.tutor.goal && !p.days.length && !Object.keys(p.lessons).length && !startSeen()) go('#start');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [ask, setAsk] = useState(false);

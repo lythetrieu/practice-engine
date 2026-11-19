@@ -52,7 +52,7 @@ export default function Start() {
   const { p, me, update, go, sfx } = useApp();
   const parent = me.role === 'parent';
   const grade = gradeOf(p, me.grade);
-  const needTest = TEST_DAYS.length > 0 && !p.testDate && !p.nextFall;
+  const needTest = TEST_DAYS.some((d) => d.day >= today()) && !p.testDate && !p.nextFall;
   const studentSteps: Step[] = [...(needTest ? ['test' as const] : []), 'how'];
   const [list] = useState<Step[]>(parent && !me.as ? ['parent'] : studentSteps);
   const [i, setI] = useState(0);
@@ -70,7 +70,8 @@ export default function Start() {
   const next = () => { sfx('tap'); setI((n) => Math.min(n + 1, list.length - 1)); };
   const back = () => { sfx('tap'); if (i === 0) { markStartSeen(); go('#home'); } else setI((n) => n - 1); };
 
-  const testDays = testDaysFor(grade);
+  // Never a day that has passed (Me would then say the test day was last week).
+  const testDays = testDaysFor(grade).filter((d) => d.day >= today());
   const testPicker = (
     <div className="st-choices" role="radiogroup" aria-label="Test day">
       {testDays.map((d) => <Choice key={d.day} on={p.testDate === d.day} title={d.label} sub={d.who} onClick={() => { sfx('tap'); update((q) => ({ ...q, testDate: d.day, nextFall: false })); }} />)}

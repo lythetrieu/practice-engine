@@ -10,6 +10,10 @@ import { config } from '../../pack';
 // computer, the "Confirm it's you" dialog asks the parent for a new code again (change() below).
 // The page also leaves a hint for the header (who is signed in) and the app (profiles.ts). Static, noindex.
 const grades = config.audience?.options ?? [];
+// The optional paid plan (pack.yaml `plan`, docs/payments.md): its card shows only when the server says payments are on,
+// or a child already has it. Prices come from Polar through /api/me/, never from here. Parents only.
+const plan = config.plan;
+const support = plan?.supportEmail || config.legal?.contactEmail || '';
 ---
 <Site title={`Account | ${config.name}`} description={`Parents: sign in, add your children and follow their practice. Students: sign in with the login your parent made.`} path="/account/" noindex>
 <div class="eyebrow" id="eyebrow">Account</div>
@@ -25,7 +29,7 @@ const grades = config.audience?.options ?? [];
     <button role="tab" id="t-student" aria-selected="false" aria-controls="p-student" type="button">Student</button>
   </div>
   <div id="p-parent" role="tabpanel" aria-labelledby="t-parent" class="card acct-box">
-    <p style="margin:0">Create your family account, give each child a login, and follow their practice. There is no password to remember: we email you a code.</p>
+    <p style="margin:0">Create your family account, give each child a login, and follow their practice. We email you a code to sign in. If you added a password, you can use it instead.</p>
     <form id="f-email" class="stack">
       <label for="email">Email address</label>
       <input id="email" type="email" autocomplete="email" maxlength="254" required>
@@ -37,7 +41,17 @@ const grades = config.audience?.options ?? [];
       <input id="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
       <div class="row"><button class="btn primary" type="submit">Sign in</button><button class="btn" type="button" id="other-email">Use another email</button></div>
     </form>
-    <p class="note" style="margin:0">New here? The same steps create your account.</p>
+    <!-- a parent who added a password (src/lib/server/parentPassword.ts); the emailed code always works too -->
+    <form id="f-pass" class="stack" hidden>
+      <label for="pw-email">Email address</label>
+      <input id="pw-email" type="email" autocomplete="username" maxlength="254" required>
+      <label for="pw-pass">Password</label>
+      <input id="pw-pass" type="password" autocomplete="current-password" maxlength="72" required>
+      <div class="row"><button class="btn primary" type="submit">Sign in</button><button class="btn" type="button" id="use-code">Email me a code instead</button></div>
+      <p class="note" style="margin:0">Forgot it? Sign in with a code, then make a new password on this page.</p>
+    </form>
+    <button class="quiet" type="button" id="use-pass">Have a password? Sign in with it</button>
+    <p class="note" style="margin:0" id="new-here">New here? The same steps create your account.</p>
   </div>
   <div id="p-student" role="tabpanel" aria-labelledby="t-student" class="card acct-box" hidden>
     <p style="margin:0">Sign in with the username and password your parent made for you.</p>
@@ -48,7 +62,7 @@ const grades = config.audience?.options ?? [];
       <input id="s-pass" type="password" autocomplete="current-password" maxlength="72" required>
       <button class="btn primary" type="submit">Sign in</button>
     </form>
-    <p class="note" style="margin:0">No login yet? Ask your parent to add you. Forgot your password? Your parent can make a new one.</p>
+    <p class="note" style="margin:0">No login yet? Ask your parent to add you. Forgot your password? Only a parent can reset it: on this page they press <b>New password</b> next to your name.</p>
   </div>
 </section>
 
@@ -84,6 +98,33 @@ const grades = config.audience?.options ?? [];
   </form>
   <div class="kids" id="kids"></div>
   <p class="note fam-how" id="kid-sc" style="margin-top:14px" hidden>Practicing on your child’s own phone or tablet? If a parental-controls app such as Screen Time or Family Link blocks this site, approve <b data-host></b> when your child asks.</p>
+
+  {plan && (
+    <section id="plan" class="card acct-box wide fam-sec" hidden aria-labelledby="plan-h">
+      <h2 id="plan-h">{plan.name}</h2>
+      <p class="note" id="plan-free" hidden></p>
+      <p style="margin:0">{plan.name} is bought for one child at a time: one payment for {plan.months} months, and it never renews. It removes the free limits for that child, on every device. Children never see a price.</p>
+      {plan.benefits.length > 0 && <ul class="plan-ben">{plan.benefits.map((b) => <li>{b}</li>)}</ul>}
+      <p class="note" style="margin:0">Checkout by Polar, our merchant of record, which also sends the receipt.{plan.refundDays > 0 ? ` Full refund within ${plan.refundDays} days, for any reason` : ''}{support ? <>{plan.refundDays > 0 ? ': ' : ' Questions? '}<a href={`mailto:${support}`}>{support}</a>.</> : '.'} <a href="/terms/">Terms</a></p>
+      <div class="row"><button class="btn" type="button" id="receipts" hidden>Receipts and invoices</button></div>
+    </section>
+  )}
+
+  <section id="password" class="card acct-box wide fam-sec" aria-labelledby="pw-h">
+    <h2 id="pw-h">Password</h2>
+    <p style="margin:0" id="pw-state"></p>
+    <button class="btn" type="button" id="pw-open"></button>
+    <form id="f-setpw" class="stack" hidden>
+      <input type="email" autocomplete="username" id="pw-user" readonly hidden>
+      <label for="pw-new">New password</label>
+      <input id="pw-new" type="password" autocomplete="new-password" maxlength="72" minlength="10" required>
+      <label for="pw-again">Type it again</label>
+      <input id="pw-again" type="password" autocomplete="new-password" maxlength="72" minlength="10" required>
+      <label class="check"><input type="checkbox" id="pw-show"><span>Show password</span></label>
+      <p class="note" style="margin:0">At least 10 characters; a short sentence is easy to remember. Saving signs out your other devices, and we email you.</p>
+      <div class="row"><button class="btn primary" type="submit">Save password</button><button class="btn" type="button" id="pw-cancel">Cancel</button></div>
+    </form>
+  </section>
 
   <div class="row fam-acct"><button class="btn" id="out" type="button">Sign out</button><button class="btn" id="del" type="button">Delete account</button></div>
   <div id="del-box" class="card acct-box wide" hidden style="margin-top:12px">
@@ -173,6 +214,13 @@ const grades = config.audience?.options ?? [];
   .kid label{display:grid;gap:4px}
   .add-kid{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin:0 0 16px;max-width:720px}
   .fam-acct{margin-top:20px}
+  .fam-sec{margin-top:20px;display:grid;gap:10px}
+  .fam-sec h2{margin:0}
+  .plan-ben{margin:0;padding-left:1.2rem}
+  .kid-plan{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;background:var(--surface);border-radius:14px;padding:10px 14px}
+  .kid-plan .on{font-weight:700;color:var(--green)}
+  .kid-plan .btn{min-height:44px}
+  .kid-ask{margin:0;padding:10px 14px;border-radius:14px;background:color-mix(in srgb,var(--accent) 12%,var(--bg))}
   @media (max-width:760px){.kid-kpis{grid-template-columns:1fr 1fr}.kid-skills{grid-template-columns:1fr}.kid{padding:18px}.kid-h h3{font-size:1.3rem}.kid-login{justify-content:flex-start}}
   #card,#reauth,#report{position:fixed;inset:0;margin:auto;height:fit-content;max-height:calc(100dvh - 32px);overflow:auto;border:0;border-radius:18px;padding:24px;width:min(460px,calc(100vw - 32px));box-shadow:0 20px 60px #0004;background:#fff;color:var(--ink)}
   #report{width:min(600px,calc(100vw - 32px))}
@@ -226,6 +274,13 @@ const grades = config.audience?.options ?? [];
     } catch { return { ok: false, error: 'Could not reach the site. Check your connection and try again.' }; }
   }
 
+  // The paid plan (docs/payments.md): prices come from the server's answer (read from Polar), never from the page.
+  const PLAN = config.plan;
+  const PENDING = `pe.${config.id}.checkout.pending.v1`;   // the app's thank-you screen reads it after Polar's back link
+  const longDate = (iso: string) => new Date(Date.parse(iso) - 60000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+  const askDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const money = (p: any) => p && typeof p.amount === 'number' ? new Intl.NumberFormat('en-US', { style: 'currency', currency: String(p.currency || 'usd').toUpperCase() }).format(p.amount / 100).replace(/\.00$/, '') : '';
+
   const ERR: Record<string, string> = { busy: 'Too many tries. Wait a minute and try again.', unavailable: 'Accounts are not available right now. Try again later.' };
   const q = new URLSearchParams(location.search);
   // Sent here by the practice app (accounts only; src/lib/server/appAccess.ts): once signed in, go back.
@@ -248,7 +303,7 @@ const grades = config.audience?.options ?? [];
       hint(null);
       if (d.pending) { head('Parent account', 'Almost there'); $('#c-email').textContent = d.pending; show('consent'); return; }
       head('Account', 'Sign in'); show('out');
-      if (toApp) say('The practice app is for families with an account. Parents: create an account (no password), then add your child. Students: sign in with the login your parent made.');
+      if (toApp) say('The practice app is for families with an account. Parents: create an account (we email you a code), then add your child. Students: sign in with the login your parent made.');
       return;
     }
     if (toApp && d.role === 'student') { location.replace('/app/'); return; }
@@ -318,8 +373,65 @@ const grades = config.audience?.options ?? [];
     hint({ role: 'parent', name: 'Parent' }); head('Parent account', 'Your family');
     $('#who').textContent = d.email;
     renderKids(d);
+    renderPlan(d);
+    renderPassword(d);
     show('parent');
+    // a link to a part of the page (#plan from an email or the app, #password, #kids): there once it is drawn
+    const h = location.hash.slice(1);
+    const target = h && /^[a-z]+$/.test(h) ? document.getElementById(h === 'kids' ? 'kids' : h) : null;
+    if (target && !target.hidden) setTimeout(() => target.scrollIntoView({ block: 'start' }), 50);
   }
+  // ---------------------------------------------------------------- the paid plan
+  // Shown when payments are on, or when a child already has the plan (receipts and refunds still matter).
+  function renderPlan(d: any) {
+    const box = $('#plan'); if (!box) return;
+    const anyOn = (d.children || []).some((k: any) => k.pro && k.pro.pro);
+    box.hidden = !(d.payments || d.receipts || anyOn);
+    const free = $('#plan-free');
+    free.hidden = !d.freeUntil || d.limits;
+    if (d.freeUntil) free.textContent = `No free limits for anyone until ${new Date(d.freeUntil + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}.`;
+    $('#receipts').hidden = !d.receipts;
+  }
+  async function buy(k: any, btn: any) {
+    btn.disabled = true; say('Opening checkout…');
+    const r = await api('/api/plan/checkout/', { child: k.id });
+    if (r.ok && r.url) {
+      // Polar's back link returns to /app/?back=1#thanks without the id: the app reads it from here.
+      try { if (typeof r.checkout === 'string') sessionStorage.setItem(PENDING, r.checkout); } catch { /* storage blocked */ }
+      location.href = r.url; return;
+    }
+    btn.disabled = false; say(r.error || 'Could not open checkout. Try again in a minute.', true);
+  }
+  if ($('#receipts')) $('#receipts').onclick = async () => {
+    const b = $('#receipts'); b.disabled = true;
+    const r = await change({}, '/api/plan/portal/'); b.disabled = false;
+    if (r.ok && r.url) { location.href = r.url; return; }
+    say(r.error || 'Receipts are not ready yet. Polar emails them to you as well.', true);
+  };
+  // ---------------------------------------------------------------- the parent's own password
+  function renderPassword(d: any) {
+    $('#pw-state').textContent = d.password
+      ? 'You can sign in with your email and password, or with a code we email you.'
+      : 'You sign in with a code we email you. You can also add a password.';
+    $('#pw-open').textContent = d.password ? 'Change password' : 'Add a password';
+    $('#pw-user').value = d.email || '';
+  }
+  $('#pw-open').onclick = () => { $('#f-setpw').hidden = false; $('#pw-open').hidden = true; $('#pw-new').focus(); };
+  const closePw = () => { const f = $('#f-setpw'); f.hidden = true; f.reset(); $('#pw-open').hidden = false; };
+  $('#pw-cancel').onclick = closePw;
+  $('#pw-show').onchange = () => { const t = $('#pw-show').checked ? 'text' : 'password'; $('#pw-new').type = t; $('#pw-again').type = t; };
+  $('#f-setpw').onsubmit = async (e: Event) => {
+    e.preventDefault();
+    const a = $('#pw-new').value, b2 = $('#pw-again').value;
+    if ([...a].length < 10) { say('Use at least 10 characters.', true); return; }
+    if (a !== b2) { say('The two passwords are not the same.', true); return; }
+    const btn = $('#f-setpw button[type=submit]'); btn.disabled = true;
+    const r = await change({ action: 'set_password', password: a }); btn.disabled = false;
+    if (!r.ok) { say(r.error, true); return; }
+    closePw();
+    say(r.changed ? 'Password changed. Your other devices were signed out, and we emailed you.' : 'Password saved. Next time, sign in with your email and this password, or with a code as before.');
+    ME.password = true; renderPassword(ME);
+  };
   const MAX_KIDS = 3; // same as MAX_CHILDREN on the server
   const gradeLabels: Record<string, string> = Object.fromEntries([...(document.querySelectorAll('#grade option') as any)].filter((o: any) => o.value).map((o: any) => [o.value, o.textContent]));
   function renderKids(d: any) {
@@ -331,6 +443,7 @@ const grades = config.audience?.options ?? [];
     box.innerHTML = kids.map((k: any) => `<article class="card kid" data-kid="${esc(k.id)}" data-learner="${esc(k.learner)}" data-name="${esc(k.nickname)}" data-grade="${esc(k.grade ?? '')}">
       <header class="kid-h"><div><h3>${esc(k.nickname)}</h3><span class="kid-meta">${k.grade != null && gradeLabels[k.grade] ? `<span class="g">${esc(gradeLabels[k.grade])}</span>` : ''}<span data-when></span></span></div><span data-status></span></header>
       <div data-sum></div>
+      ${planRow(k)}
       <footer class="kid-login">
         <span>${k.username ? `Student login <b class="mono">${esc(k.username)}</b>` : '<span class="note">No student login yet</span>'}</span>
         <div class="acts">
@@ -351,6 +464,8 @@ const grades = config.audience?.options ?? [];
       </footer>
     </article>`).join('');
     box.querySelectorAll('[data-kid]').forEach((card: any) => {
+      const buyBtn = card.querySelector('[data-buy]');
+      if (buyBtn) buyBtn.onclick = () => buy(kids.find((x: any) => x.id === card.dataset.kid), buyBtn);
       const k = kids.find((x: any) => x.id === card.dataset.kid), form = card.querySelector('[data-loginform]'), more = card.querySelector('[data-more]'), mb = card.querySelector('[data-more-btn]');
       card.querySelector('[data-qr]').onclick = () => qrFor(k);
       mb.onclick = () => { more.hidden = !more.hidden; mb.setAttribute('aria-expanded', String(!more.hidden)); };
@@ -375,6 +490,19 @@ const grades = config.audience?.options ?? [];
     });
     // Each card's numbers and status come from src/components/parent/cards.ts.
     document.dispatchEvent(new CustomEvent('family:render'));
+  }
+  // A child's plan on their card: until when, or the button with Polar's price; and the child's "Ask a parent for more"
+  // from the last 7 days. Nothing at all while the pack has no plan or payments are off (and no child has it).
+  function planRow(k: any): string {
+    if (!PLAN || !ME) return '';
+    const on = k.pro && k.pro.pro;
+    const asked = !on && k.askedAt && Date.now() - Date.parse(k.askedAt) < 7 * 864e5
+      ? `<p class="kid-ask">${esc(k.nickname)} asked for more ${k.askedKind === 'tests' ? 'full practice tests' : 'lessons'} on ${esc(askDate(k.askedAt))}.</p>` : '';
+    if (on) return `<div class="kid-plan"><span class="on">${esc(PLAN.name)} until ${esc(longDate(k.pro.until))}</span></div>${asked}`;
+    if (!ME.payments) return asked;
+    const price = money(ME.price);
+    return `<div class="kid-plan"><span>${esc(PLAN.name)} for ${esc(k.nickname)}: ${PLAN.months} months, one payment${price ? `, ${esc(price)}` : ''}. Never renews.</span>
+      <button class="btn primary" type="button" data-buy>Get ${esc(PLAN.name)} for ${esc(k.nickname)}</button></div>${asked}`;
   }
   function openAdd() { $('#f-kid').hidden = false; $('#nick').focus(); }
   $('#add-open').onclick = openAdd;
@@ -422,6 +550,20 @@ const grades = config.audience?.options ?? [];
     if (!r.ok) { say(r.error, true); return; }
     say(r.devCode ? `Local test site: emails are not really sent. Your code is ${r.devCode}.` : ''); if (r.devCode) $('#code').value = r.devCode;
     $('#sent-to').textContent = email; $('#f-email').hidden = true; $('#f-code').hidden = false; $('#code').focus();
+  };
+  // Email + password, for a parent who added one (src/pages/api/auth/password.ts).
+  const showPass = (on: boolean) => {
+    $('#f-pass').hidden = !on; $('#f-email').hidden = on; $('#f-code').hidden = true; $('#use-pass').hidden = on; $('#new-here').hidden = on;
+    if (on) { $('#pw-email').value = $('#email').value; ($('#pw-email').value ? $('#pw-pass') : $('#pw-email')).focus(); } else $('#email').focus();
+  };
+  $('#use-pass').onclick = () => showPass(true);
+  $('#use-code').onclick = () => showPass(false);
+  $('#f-pass').onsubmit = async (e: Event) => {
+    e.preventDefault(); const btn = $('#f-pass button[type=submit]'); btn.disabled = true; say('Signing in…');
+    const r = await postChecked('/api/auth/password/', { email: $('#pw-email').value.trim(), password: $('#pw-pass').value }, 'signin');
+    btn.disabled = false; $('#pw-pass').value = '';
+    if (!r.ok) { say(r.error, true); return; }
+    say(''); load();
   };
   $('#other-email').onclick = () => { $('#f-code').hidden = true; $('#f-email').hidden = false; $('#email').focus(); };
   $('#f-code').onsubmit = async (e: Event) => {

@@ -1,0 +1,37 @@
+/* #thanks (ThankYou.tsx): the receipt-style screen after checkout. Prefix ty-. */
+.pa .ty { padding-top: 26px; display: grid; gap: 14px; max-width: 560px; }
+.pa .ty-card { background: #FFFFFF; border: 2px solid var(--line); border-radius: 18px; padding: 18px 20px; }
+.pa .ty-k { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.pa .ty-note { margin-top: 10px; color: var(--muted); font-size: 15px; }
+.pa .ty-note a, .pa .ty-fine a { color: var(--primary); }
+.pa .ty-hero { text-align: center; padding: 10px 8px 4px; }
+.pa .ty-check { width: 84px; height: 84px; display: block; margin: 0 auto 10px; }
+.pa .ty-check circle { fill: var(--primary); stroke: none; transform-origin: 50% 50%; animation: tyPop .5s cubic-bezier(.2, .9, .3, 1.3) both; }
+.pa .ty-check path { fill: none; stroke: #FFFFFF; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 40; stroke-dashoffset: 40; animation: tyDraw .45s .35s ease-out forwards; }
+@keyframes tyPop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes tyDraw { to { stroke-dashoffset: 0; } }
+@keyframes tySpin { to { transform: rotate(360deg); } }
+.pa .ty-eye { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); }
+.pa .ty-h { font: 700 28px/1.15 var(--serif); color: var(--primary); margin-top: 6px; overflow-wrap: anywhere; }
+.pa .ty-sub { margin-top: 6px; color: var(--muted); font-size: 15px; }
+.pa .ty-dl { margin: 10px 0 0; }
+.pa .ty-dl > div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.pa .ty-dl > div:last-child { border-bottom: 0; }
+.pa .ty-dl dt { color: var(--muted); }
+.pa .ty-dl dd { margin: 0; font-weight: 700; text-align: right; }
+.pa .ty-dl dd span { display: block; font-weight: 400; font-size: 13px; color: var(--muted); }
+.pa .ty-next { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 12px; }
+.pa .ty-next li { display: flex; gap: 12px; align-items: flex-start; }
+.pa .ty-next i { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--ok-tint); color: var(--primary); font-style: normal; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.pa .ty-next b { display: block; font-size: 15.5px; }
+.pa .ty-next span { display: block; color: var(--muted); font-size: 14px; margin-top: 2px; }
+.pa .ty-acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.pa .ty-acts .pa-btn { flex: 1 1 160px; text-align: center; }
+.pa .ty-wait { text-align: center; padding: 28px 22px; }
+.pa .ty-spin { display: block; width: 44px; height: 44px; margin: 0 auto 12px; border-radius: 50%; border: 4px solid var(--line); border-top-color: var(--primary); animation: tySpin .9s linear infinite; }
+.pa .ty-dot { display: block; font-size: 34px; margin-bottom: 6px; }
+.pa .ty-fine { text-align: center; font-size: 13px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) {
+  .pa .ty-check circle, .pa .ty-check path { animation: none; stroke-dashoffset: 0; }
+  .pa .ty-spin { animation-duration: 2.5s; }
+}

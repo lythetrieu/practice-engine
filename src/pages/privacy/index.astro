@@ -9,6 +9,8 @@
 import LegalPage from './_LegalPage.astro';
 import { config, mascotName } from '../../pack';
 import { examName, gradeLabel, hasGrade, legal, MAX_CHILDREN, siteName } from './_legal';
+// The optional paid plan (pack.yaml `plan`): its lines show only when the pack has one.
+const plan = config.plan;
 ---
 <LegalPage title={`Privacy notice | ${siteName}`} description={`What ${siteName} collects, why, who sees it, how long we keep it, and how parents can review or delete it.`} path="/privacy/" eyebrow="Privacy">
 <!--
@@ -38,6 +40,9 @@ import { examName, gradeLabel, hasGrade, legal, MAX_CHILDREN, siteName } from '.
   <li><b>Email address.</b> To sign you in, and to send the sign-in code and one welcome note when you create the account. We do not send marketing email.</li>
   <li><b>When you confirmed you are a parent or guardian,</b> and when you last signed in or used the account.</li>
   <li><b>Sign-in codes.</b> Each 6-digit code is kept only as a scrambled value, for 10 minutes. A code works once.</li>
+  <li><b>A password, if you add one.</b> Kept only as a salted, scrambled value that cannot be turned back into the password. You can always sign in with an emailed code instead.</li>
+  {plan && <li><b>Purchases of {plan.name}, if you buy it.</b> The order number, the child it is for, the amount, when it ends, the email you paid with and the payment service’s customer number, so we can turn {plan.name} on, send receipts and handle refunds. We keep purchase records for accounting; when you delete your account they are unlinked from it and the email is removed. We never see or store your card details.</li>}
+  {plan && <li><b>“Ask a parent for more.”</b> When a child at a free limit taps this button, we save when they asked and what for (lessons or full tests), email you a short note, and show it on your account page. The child types nothing.</li>}
   <li><b>A sign-in session.</b> A random token in a cookie. We keep only a scrambled copy of it on our side.</li>
 </ul>
 
@@ -91,6 +96,7 @@ import { examName, gradeLabel, hasGrade, legal, MAX_CHILDREN, siteName } from '.
 <ul>
   <li><b>Cloudflare</b> hosts the site, stores our database, sends the sign-in emails, applies rate limits and, if turned on, runs the bot check. It handles information for us as our service provider. Its own <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener">privacy policy</a> covers what it does as the host.</li>
   <li><b>An optional AI tutor.</b> Some sites turn on a feature where {mascotName}, a friendly tutor, explains a question after a child taps a button such as “Why was my answer wrong?” The feature is optional and is off unless we turn it on. If we do, the question text, its answer choices, the right answer, the choice the child tapped, the pack’s explanation and a few plain lines about the lesson (its title, section and skills) are sent to <b>OpenRouter</b>, which passes them to the AI model that writes the reply. We do not send a name, an email address, a profile ID or a question ID, and the child types nothing: only buttons. We keep each reply in our database, with the question ID and the kind of help asked for, so we can check the quality and count daily limits.</li>
+  {plan && <li><b>Polar</b> (polar.sh) sells {plan.name} to parents as our merchant of record: it takes the payment, handles tax and sends receipts. When a parent buys, Polar receives the parent’s email address, our account and child IDs (random codes, not names), and the payment details the parent enters on Polar’s page. Polar’s own privacy policy covers what it does. Children never see a price or a payment page.</li>}
   <li><b>The law.</b> We may share information if the law requires it, or to protect someone’s safety or the site’s security.</li>
 </ul>
 
@@ -144,7 +150,7 @@ import { examName, gradeLabel, hasGrade, legal, MAX_CHILDREN, siteName } from '.
 <h2>How we keep it safe</h2>
 <ul>
   <li>All traffic uses HTTPS.</li>
-  <li>Parents have no password to steal: access is by an emailed code that expires, with limits on tries.</li>
+  <li>Parents sign in with an emailed code that expires, with limits on tries. A parent who adds a password gets it stored only as a salted, scrambled value, with limits on wrong tries; changing it signs out every other device.</li>
   <li>Children’s passwords and sign-in codes are stored scrambled with a secret key. Sign-in tokens are stored scrambled too.</li>
   <li>Changes to an account, such as deleting it or making a new login, need a recent sign-in.</li>
   <li>People who work on the site can see summaries of reports, errors and question statistics. Those views show no names and no email addresses.</li>

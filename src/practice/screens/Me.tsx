@@ -17,6 +17,8 @@ import { LESSONS } from '../curriculum';
 import { kidColor, initialOf } from '../family';
 import { useOnline } from '../offline';
 import { InstallRow, IosInstallSheet } from '../install';
+import { config } from '../../pack';
+import { hasPlan, limitsActive } from '../limits';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const dayShort = (k: string) => { const d = parseDay(k); return `${MONTHS[d.getMonth()]} ${d.getDate()}`; };
@@ -176,8 +178,26 @@ async function signOut(role: 'student' | 'parent') {
   location.href = '/account/';
 }
 
-/** Account, first in Settings: who is signed in, how passwords work (students: a parent makes a new one; parents have
-    none), and sign out. Site pages need a connection (not kept offline). */
+/** The paid plan (pack.yaml `plan`) for whoever is practicing: "On · until Nov 16, 2027" or "Not on". Never a price
+    or a buy button: a child's screen. Nothing when the pack has no plan. */
+function PlanRow() {
+  const { me } = useApp();
+  if (!config.plan || (me.role !== 'student' && !(me.role === 'parent' && me.as))) return null;
+  const on = hasPlan(me), name = config.plan.name;
+  const until = me.role === 'student' && me.proUntil ? me.proUntil.slice(0, 10) : null;
+  const val = on ? (until ? `On · until ${dayLong(until)}` : 'On') : 'Not on';
+  const sub = on ? 'No free limits.' : me.role === 'student' ? (limitsActive() ? `Want more? Ask a parent about ${name}.` : 'Everything is open right now.') : 'Your account page shows it.';
+  return (
+    <div className="me-row is-info">
+      <span className="me-row-text"><span className="me-row-name">{name}</span><span className="me-row-sub">{sub}</span></span>
+      <span className="me-row-val">{val}</span>
+    </div>
+  );
+}
+
+/** Account, first in Settings: who is signed in, how passwords work (students: a parent makes a new one; parents sign
+    in with a code, or a password they added), the paid plan when the pack has one, and sign out. Site pages need a
+    connection (not kept offline). */
 function AccountRows() {
   const { me, sfx } = useApp();
   const online = useOnline();
@@ -207,17 +227,21 @@ function AccountRows() {
           </div>
           <div className="me-row is-info">
             <span className="me-row-text"><span className="me-row-name">Password</span>
-              <span className="me-row-sub">Forgot it, or want a new one? Ask a parent. They can make a new one on their account page.</span></span>
+              <span className="me-row-sub">Forgot it, or want a new one? Ask a parent. On their account page they press New password next to your name.</span></span>
           </div>
+          <PlanRow />
         </>
       ) : (
         <>
           <div className="me-row is-info">
             <span className="me-row-text"><span className="me-row-name">Signed in as</span>
-              <span className="me-row-sub">{me.email ? <b>{me.email}</b> : 'Your parent account'}. You sign in with a code we email you: there is no password to remember.</span></span>
+              <span className="me-row-sub">{me.email ? <b>{me.email}</b> : 'Your parent account'}. You sign in with a code we email you, or with a password if you added one on your account page.</span></span>
           </div>
+          <PlanRow />
           {site('/account/#kids', 'Children and their logins', 'Add a child, make a new password, show a sign-in code.')}
           {site('/account/#reports', 'Reports', 'What each child practiced, strong skills and skills to work on.')}
+          {config.plan ? site('/account/#plan', `${config.plan.name} and receipts`, `${config.plan.name} for each child, receipts and invoices.`) : null}
+          {site('/account/#password', 'Password', 'Add or change a password for your account.')}
         </>
       )}
       <button type="button" className="me-row" disabled={leaving || !online} onClick={() => { sfx('tap'); setLeaving(true); void signOut(me.role as 'student' | 'parent'); }}>

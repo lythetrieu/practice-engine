@@ -6,9 +6,10 @@ import type { Kid } from './family';
 
 // Hash routes: #home, #learn (or #learn/<subject>/<world>), #review, #test, #me,
 // #play/<lesson id | unit check id | review>, #done (the lesson-complete screen),
-// #level[/<lesson id>] (dev only: any lesson, unsaved), #exam (the full test running), #exam/result/<test id>.
+// #level[/<lesson id>] (dev only: any lesson, unsaved), #exam (the full test running), #exam/result/<test id>,
+// #thanks (parents only: back from the paid plan's checkout, screens/ThankYou.tsx).
 export type Tab = 'home' | 'learn' | 'review' | 'progress' | 'test' | 'me';
-export interface Route { name: Tab | 'play' | 'done' | 'level' | 'start' | 'exam'; args: string[] }
+export interface Route { name: Tab | 'play' | 'done' | 'level' | 'start' | 'exam' | 'thanks'; args: string[] }
 
 // Who is practicing: a signed-in student, a child picked on a parent's device ("Who's practicing?",
 // family.ts), or a guest. name and grade are the student's or the picked child's.
@@ -27,7 +28,8 @@ export interface Me {
       connection, or not available right now), and the app asks again (PracticeApp). Cleared by the next
       answer. */
   kidsUnknown?: boolean;
-  /** Student only: an optional paid-plan flag, set when /api/me/ reports a plan. A parent's children carry it in kids[i].pro. The engine itself does not gate anything on it. */
+  /** Student only: whether this child has the paid plan (pack.yaml `plan`, /api/me/ plan.pro). A parent's children carry
+      it in kids[i].pro. Only the free limits look at it (limits.ts), and only while payments are on. */
   pro?: boolean;
   /** Student only: the end date of that plan (YYYY-MM-DD…), null without a date. */
   proUntil?: string | null;

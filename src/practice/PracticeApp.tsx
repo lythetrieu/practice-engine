@@ -23,6 +23,8 @@ const screens = {
   me: () => import('./screens/Me'),
   level: () => import('./screens/Level'),
   start: () => import('./screens/Start'),
+  capped: () => import('./screens/Capped'),
+  thanks: () => import('./screens/ThankYou'),
 };
 const Learn = lazy(screens.learn);
 const Lesson = lazy(screens.lesson);
@@ -37,6 +39,12 @@ import Who from './screens/Who';
 import { startSeen } from './startSeen';
 const LevelScreen = lazy(screens.level);
 const Start = lazy(screens.start);
+const Capped = lazy(screens.capped);
+const ThankYou = lazy(screens.thanks);
+import { lessonCap, setLimits } from './limits';
+// sessionStorage keys of the paid plan's checkout (screens/ThankYou.tsx; kept here so the first screen needs no chunk)
+const CHECKOUT_KEY = `pe.${config.id}.checkout.v1`;
+const CHECKOUT_PENDING_KEY = `pe.${config.id}.checkout.pending.v1`;
 import { familySync, kidsFrom, justLooking, setJustLooking, parentHint, type Kid } from './family';
 import { registerServiceWorker, useOnline, noteNetFail, noteNetOk, maybePersist } from './offline';
 import { loadAppBank, onAppBank } from './appBank';
@@ -58,7 +66,7 @@ function parse(hash: string): Route {
   let parts: string[];
   try { parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent); } catch (e) { return { name: 'home', args: [] }; }
   const name = parts[0] || 'home';
-  if ((TABS as string[]).includes(name) || name === 'play' || name === 'done' || name === 'start' || name === 'exam' || (name === 'level' && import.meta.env.DEV)) return { name: name as Route['name'], args: parts.slice(1) };
+  if ((TABS as string[]).includes(name) || name === 'play' || name === 'done' || name === 'start' || name === 'exam' || (name === 'thanks' && !!config.plan) || (name === 'level' && import.meta.env.DEV)) return { name: name as Route['name'], args: parts.slice(1) };
   return { name: 'home', args: [] };
 }
 
@@ -91,7 +99,24 @@ export default function PracticeApp() {
   // A brand-new device opens on the goal questions (Start.tsx) from the first frame, so Home and its nav never flash
   // first (that was a layout shift); Home's own check stays for a device that becomes new later.
   const [route, setRoute] = useState<Route>(() => {
+    // Back from the paid plan's checkout (/app/?checkout=<id>#thanks): the thank-you screen first, whatever the
+    // onboarding state or the account answer (screens/ThankYou.tsx). The id moves to this tab's storage and leaves the
+    // address, so a reload or a shared link does not ask again. Polar's own back link (/app/?back=1#thanks) carries no
+    // id: the checkout this tab opened (the account page saved it before leaving) answers.
+    try {
+      const q = new URLSearchParams(location.search), ok = (v: string | null) => !!v && /^[0-9a-f-]{36}$/i.test(v);
+      const pending = sessionStorage.getItem(CHECKOUT_PENDING_KEY);
+      const c = ok(q.get('checkout')) ? q.get('checkout') : q.has('back') && ok(pending) ? pending : null;
+      if (c && config.plan) {
+        sessionStorage.setItem(CHECKOUT_KEY, c);
+        sessionStorage.removeItem(CHECKOUT_PENDING_KEY);
+        history.replaceState(null, '', '/app/#thanks');
+        return { name: 'thanks', args: [] };
+      }
+      if (q.has('back') || q.has('checkout')) history.replaceState(null, '', '/app/#home');
+    } catch (e) { /* storage blocked: the account page still shows the plan */ }
     const r = parse(location.hash);
+    if (r.name === 'thanks') return r;
     if (r.name !== 'home' || !onboardingDue(boot.p)) return r;
     try { history.replaceState(null, '', '#start'); } catch (e) { /* the hash stays as it is */ }
     return { name: 'start', args: [] };
@@ -262,6 +287,7 @@ export default function PracticeApp() {
       meOpen.current = false;
       meFails.current = 0;
       setPipEnabled(d.pip === true);
+      setLimits(d.limits === true);   // the paid plan's free limits (limits.ts): false unless payments are on
       if (d.signedIn && d.role === 'student' && d.child) { setMe({ role: 'student', name: d.child.nickname || null, grade: d.child.grade ?? null, pro: d.plan?.pro === true, proUntil: typeof d.plan?.until === 'string' ? d.plan.until : null, username: typeof d.child.username === 'string' ? d.child.username : null }); release(); return; }
       // Signed out, or a parent: the student hint is stale (session ended), so stop greeting by it and forget
       // it, as /account/ does; signed out, the parent hint is stale too (as My Progress does).
@@ -375,11 +401,26 @@ export default function PracticeApp() {
 
   const switchWho = useCallback(() => setWho('pick'), []);
 
+  // The thank-you screen's "Practice as <child> here": that child, as "Who's practicing?" would pick them.
+  const practiceAs = useCallback((id: string) => {
+    const k = me.kids?.find((x) => x.id === id);
+    if (k && sync.current) pickKid(k); else go('#home');
+  }, [me.kids, pickKid, go]);
+
+  // A child signed in with their own login never sees the thank-you screen (it belongs to the parent's account).
+  useEffect(() => {
+    if (me.role === 'student' && route.name === 'thanks') {
+      try { history.replaceState(null, '', '#home'); sessionStorage.removeItem(CHECKOUT_KEY); } catch (e) { /* ignore */ }
+      setRoute({ name: 'home', args: [] });
+    }
+  }, [me.role, route.name]);
+
   const ctx: AppCtx = useMemo(() => ({ p, update, route, go, sfx, buzz, motion, me, toast, finishPlay, last, switchWho }),
     [p, update, route, go, sfx, buzz, motion, me, toast, finishPlay, last, switchWho]);
 
   const picking = who === 'pick' && !!me.kids && me.kids.length > 0;
-  const view = who === 'hold' ? 'hold' : picking ? 'who' : route.name;
+  const thanks = route.name === 'thanks' && me.role !== 'student';
+  const view = thanks ? 'thanks' : who === 'hold' ? 'hold' : picking ? 'who' : route.name;
   useEffect(() => setErrorScreen(view), [view]);
 
   // A new screen is announced and named: the page title changes, a polite message says where we are, and the
@@ -407,7 +448,8 @@ export default function PracticeApp() {
 
   let screen;
   let tab: Tab | null = null;
-  if (who === 'hold') screen = <p className="pa-body wh-wait" role="status">Loading your practice…</p>;
+  if (thanks) screen = <ThankYou onPractice={practiceAs} />;
+  else if (who === 'hold') screen = <p className="pa-body wh-wait" role="status">Loading your practice…</p>;
   else if (picking) screen = <Who kids={me.kids!} current={me.as ?? null} onPick={pickKid} onGuest={lookAround} />;
   else switch (route.name) {
     case 'learn': screen = <Learn />; tab = 'learn'; break;
@@ -417,7 +459,9 @@ export default function PracticeApp() {
     case 'exam': screen = <Exam key={route.args.join('/')} />; break;
     case 'me': screen = <MeScreen />; tab = 'me'; break;
     case 'play': {
-      screen = <Lesson key={route.args.join('/')} />; break;
+      // the paid plan's daily limit on new lessons (limits.ts; never while payments are off)
+      const cap = lessonCap(p, me, route.args[0] || '');
+      screen = cap ? <Capped cap={cap} /> : <Lesson key={route.args.join('/')} />; break;
     }
     case 'level': screen = <LevelScreen key={route.args.join('/')} />; break;
     case 'start': screen = <Start />; break;
@@ -478,6 +522,7 @@ function screenTitle(view: string, route: Route): string {
     case 'done': return 'Results';
     case 'level': return 'Lesson preview';
     case 'start': return 'Make your plan';
+    case 'thanks': return 'Thank you';
     case 'play': {
       const L = LESSONS[route.args[0] || ''];
       return L ? `Level ${L.level}: ${L.title}` : route.args[0] === 'review' ? 'Review round' : 'Practice';

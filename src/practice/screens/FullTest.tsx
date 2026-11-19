@@ -12,6 +12,9 @@ import { buildExam, examSize } from '../exam/build';
 import { readSave, writeSave, clearSave, clock } from '../exam/save';
 import { headlineOfTest, seenIn } from '../exam/results';
 import { dayLabelShort } from '../ui';
+import { testCap } from '../limits';
+import AskParent from '../AskParent';
+import './Capped.css';
 
 const T = config.fullTest;
 const RULE_ICONS = [
@@ -66,8 +69,10 @@ export default function FullTest() {
   const timeOptions = T.timeOptions.map((o) => ({ id: o.id, title: o.label, sub: [minutesText(examSize(o.id).minutes), o.note].filter(Boolean).join(' · ') }));
   const sectionOptions = T.sections.map((s) => ({ id: s.section, title: sectionName(s.section), sub: config.sections.find((x) => x.id === s.section)?.description }));
 
+  // the paid plan's free full tests (limits.ts; never while payments are off). A test already started can be finished.
+  const cap = testCap(p, me);
   const begin = () => {
-    if (!bankIn) return;
+    if (!bankIn || cap) return;
     if (saved && !window.confirm('Start a new test? Your saved test will be deleted.')) return;
     sfx('go');
     const seed = (Date.now() % 2147483647) | 0;
@@ -164,9 +169,17 @@ export default function FullTest() {
       </div>
 
       <footer className="ft-foot">
-        <button type="button" className="pa-btn coral ft-start" disabled={!bankIn} onClick={begin}>
-          {!bankIn ? 'Getting the test ready…' : T.sectionOrder === 'choose' && T.sections.length > 1 ? `Start with ${sectionShort(first)}` : 'Start the test'}
-        </button>
+        {cap && cap.kind === 'test' ? (
+          <div className="cap-ask" role="status">
+            <p>You’ve taken the {cap.allowed === 1 ? 'free full test' : `${cap.allowed} free full tests`}. You can still {saved ? 'finish your saved test, ' : ''}review your past tests and keep practicing lessons.</p>
+            <AskParent kind="tests" />
+            {me.role === 'parent' ? <p className="cap-parent">For parents: {config.plan?.name ?? 'Pro'} opens more full tests. <a href="/account/#plan">See it on your account page</a></p> : null}
+          </div>
+        ) : (
+          <button type="button" className="pa-btn coral ft-start" disabled={!bankIn} onClick={begin}>
+            {!bankIn ? 'Getting the test ready…' : T.sectionOrder === 'choose' && T.sections.length > 1 ? `Start with ${sectionShort(first)}` : 'Start the test'}
+          </button>
+        )}
         {parentLooking ? <p className="ft-paused">You’re looking around as a parent: a test taken now is not saved to a child.</p> : null}
       </footer>
     </div>

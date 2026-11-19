@@ -8,6 +8,8 @@ import LegalPage from '../privacy/_LegalPage.astro';
 import { config } from '../../pack';
 import { examName, legal, MAX_CHILDREN, siteName } from '../privacy/_legal';
 const missing = config.legal && !config.legal.governingLaw ? ['governingLaw'] : [];
+const plan = config.plan;
+const support = plan?.supportEmail || config.legal?.contactEmail || '';
 ---
 <LegalPage title={`Terms of use | ${siteName}`} description={`The rules for using ${siteName}: who can use it, accounts, fair use, and what we promise and do not promise.`} path="/terms/" eyebrow="Terms" missing={missing}>
 <!--
@@ -46,6 +48,14 @@ const missing = config.legal && !config.legal.governingLaw ? ['governingLaw'] : 
 <h2>About the practice content</h2>
 {config.site.disclaimer && <p>{config.site.disclaimer}</p>}
 <p>The questions and lessons here are practice material written for {siteName}. They are not real {examName} questions, and doing well here does not mean a student will do well on the real test. We try to keep the content correct, but it may have mistakes. If you find one, use the report button in the app.</p>
+
+{plan && (
+  <>
+    <h2 id="plan">{plan.name}</h2>
+    <p>A parent can buy {plan.name} for one child{plan.priceLabel ? ` for ${plan.priceLabel}` : ''}. It is one payment for {plan.months} months from the day you buy it, and it never renews: we will not charge you again unless you buy it again. The price on the checkout page is the price you pay. Polar (polar.sh) is our merchant of record: it sells {plan.name} to you, takes the payment and sends the receipt, under its own terms. Only a parent or guardian, 18 or older, may buy; children never see a price.</p>
+    <p id="refunds">{plan.refundDays > 0 ? <>You can ask for a full refund within {plan.refundDays} days of buying, for any reason{support ? <>: write to <a href={`mailto:${support}`}>{support}</a></> : null}. </> : null}When a purchase is refunded, {plan.name} ends for that child; their progress stays. If you remove the child from your account, {plan.name} for that child ends with it.</p>
+  </>
+)}
 
 <h2>Score estimates are estimates</h2>
 <p>Any score we show is our estimate from a student’s practice. It is not an official score, and it can be higher or lower than a real result.{config.scoring.disclaimer ? ` ${config.scoring.disclaimer}` : ''}</p>
