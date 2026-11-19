@@ -1,0 +1,165 @@
+/* Lesson-complete screen (cp-).  */
+
+/* medal, check draw, burst, streak bump, count bump, confetti, badge unlock */
+.pa .cp-medal { position: absolute; left: 50%; margin-left: -42px; animation: cpMedal .7s cubic-bezier(.22, 1, .36, 1) backwards; }
+@keyframes cpMedal { 0% { opacity: 0; transform: scale(.2) rotate(-20deg); } 45% { opacity: 1; transform: scale(1.2) rotate(6deg); } 70% { transform: scale(.93) rotate(-2deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
+.pa .cp-burstin { animation: cpBurst .6s cubic-bezier(.34, 1.56, .64, 1) backwards; }
+@keyframes cpBurst { from { opacity: 0; transform: scale(.3); } to { opacity: 1; transform: scale(1); } }
+.pa .cp-draw { animation: cpDraw .4s cubic-bezier(.65, 0, .35, 1) backwards; }
+@keyframes cpDraw { from { stroke-dashoffset: 50; } to { stroke-dashoffset: 0; } }
+.pa .cp-bump { display: inline-block; transform-origin: left center; animation: cpBump .45s cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes cpBump { 0%, 100% { transform: scale(1); } 40% { transform: scale(1.2); } }
+.pa .cnt-bump { animation: cpCount .34s cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes cpCount { 0%, 100% { transform: scale(1); } 45% { transform: scale(1.16); } }
+.pa .cp-fall { position: absolute; opacity: 0; animation: cpFall 1.8s linear both; }
+@keyframes cpFall {
+  0% { opacity: 0; transform: translateY(10px) scale(.4); animation-timing-function: cubic-bezier(.2, .8, .4, 1); }
+  12% { opacity: 1; transform: translateY(-22px) scale(1); animation-timing-function: cubic-bezier(.4, .1, .7, .9); }
+  72% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(max(520px, 66vh - 40px)) scale(1); }   /* 520px on phones, further on tall screens */
+}
+.pa .cp-spin { display: block; animation: cpSpin 1.8s linear forwards; }
+@keyframes cpSpin { from { transform: rotate(0) rotateY(0); } to { transform: rotate(540deg) rotateY(1080deg); } }
+.pa .cp-confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 2; }
+.pa .cp-piece { display: block; border: 0 solid var(--line-2); }
+
+/* layout */
+.pa .cp-main { padding: 16px 16px 16px; overflow-x: hidden; display: flex; flex-direction: column; gap: 16px; }
+.pa .cp-hero { position: relative; flex: none; align-self: center; width: 354px; max-width: 100%; height: 112px; }
+.pa .cp-hero.has-stars { height: 124px; }
+.pa .cp-burst { position: absolute; left: 0; top: 0; max-width: 100%; }
+.pa .cp-medal { top: 14px; }
+.pa .cp-hero.has-stars .cp-medal { top: 4px; }
+.pa .cp-stars { position: absolute; left: 0; right: 0; top: 92px; display: flex; justify-content: center; gap: 6px; }
+.pa .cp-title { text-align: center; }
+.pa .cp-title h1 { font-weight: 700; font-size: 34px; line-height: 1.1; letter-spacing: -.2px; color: var(--primary); }
+.pa .cp-title p { margin-top: 6px; font-size: 16px; color: var(--muted); }
+
+.pa .cp-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.pa .cp-tile { border: 2px solid; border-radius: 16px; overflow: hidden; text-align: center; background: #FFFFFF; }
+.pa .cp-tile-h { padding: 5px 0; font-size: 13px; font-weight: 700; }
+.pa .cp-tile-v { padding: 12px 0; font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pa .cp-num { display: inline-block; }
+.pa .cp-tile-n { padding: 0 6px 8px; margin-top: -6px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.pa .cp-tile.xp { border-color: var(--accent); }
+.pa .cp-tile.xp .cp-tile-h { background: var(--accent); color: var(--ink); }
+.pa .cp-tile.ok { border-color: var(--primary); }
+.pa .cp-tile.ok .cp-tile-h { background: var(--primary); color: #FFFFFF; }
+.pa .cp-tile.time { border-color: var(--sage); }
+.pa .cp-tile.time .cp-tile-h { background: var(--sage); color: var(--ink); }
+
+.pa .cp-card { flex: none; padding: 14px 16px; border: 2px solid var(--surface); border-radius: 18px; background: #FFFFFF; display: flex; flex-direction: column; gap: 12px; }
+.pa .cp-card h2 { display: flex; align-items: center; gap: 8px; font-family: var(--sans); font-size: 17px; font-weight: 700; color: var(--ink); }
+.pa .cp-streak h2 { color: var(--accent-ink); }
+.pa .cp-streak ol { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; text-align: center; }
+.pa .cp-streak li { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); }
+.pa .cp-today { color: var(--accent-ink); font-weight: 700; }
+.pa .cp-dotbox { position: relative; width: 30px; height: 30px; border-radius: 50%; background: var(--surface); }
+.pa .cp-dot { position: absolute; inset: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--primary); }
+.pa .cp-dot.today { background: var(--accent); box-shadow: 0 0 0 3px #F5C9B9; }
+.pa .cp-dot.fx-ring { position: absolute; }
+
+.pa .cp-skill { gap: 10px; }
+.pa .cp-segs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.pa .cp-seg { height: 12px; border-radius: 999px; background: #EAE3D7; overflow: hidden; }
+.pa .cp-seg.on { background: var(--primary); }
+.pa .cp-seg-fill { height: 12px; border-radius: 999px; background: var(--accent); }
+.pa .cp-note { font-size: 15px; line-height: 1.45; transform-origin: left center; }
+
+.pa .cp-mist { flex-direction: row; align-items: center; gap: 12px; padding: 14px 16px; border: 0; background: var(--surface); }
+.pa .cp-mist svg { flex: none; }
+.pa .cp-mist p { flex: 1; font-size: 15px; line-height: 1.4; }
+.pa .cp-mist a { flex: none; max-width: 86px; min-height: 44px; display: flex; align-items: center; text-align: right; font-size: 15px; font-weight: 700; line-height: 1.2; }
+
+.pa .cp-foot { flex: none; padding: 12px 16px calc(20px + env(safe-area-inset-bottom, 0px)); border-top: 2px solid var(--surface); }
+.pa .cp-pulse { border-radius: 16px; }
+.pa .cp-cta {
+  width: 100%; min-height: 54px; display: flex; align-items: center; justify-content: center; border-radius: 16px; border: 0;
+  background: var(--primary); color: #FFFFFF; box-shadow: 0 5px 0 var(--primary-edge); font: 700 18px var(--sans); text-decoration: none; cursor: pointer;
+}
+.pa a.cp-cta, .pa a.cp-cta:hover { color: #FFFFFF; }
+/* under the pass line: Retry first, then Review mistakes, then a quiet link back */
+.pa .cp-retry { display: flex; flex-direction: column; gap: 12px; }
+.pa .cp-retry .cp-ghost { background: #FFFFFF; border: 2px solid var(--primary); color: var(--primary); box-shadow: none; }
+.pa .cp-retry a.cp-ghost, .pa .cp-retry a.cp-ghost:hover { color: var(--primary); }
+.pa .cp-back { text-align: center; min-height: 44px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--muted); }
+
+/* badge unlock */
+.pa .cp-unlock { position: absolute; inset: 0; z-index: 20; padding: 24px; display: flex; align-items: center; justify-content: center; outline: none; }
+.pa .cp-dim { position: absolute; inset: 0; background: rgba(29, 35, 32, .55); animation: cpDim .25s ease backwards; }
+@keyframes cpDim { from { opacity: 0; } to { opacity: 1; } }
+.pa .cp-ucard { position: relative; width: 100%; max-width: 342px; padding: 14px 20px 16px; border-radius: 24px; background: #FFFFFF; box-shadow: 0 6px 0 var(--locked-edge); display: flex; flex-direction: column; align-items: center; text-align: center; }
+.pa .cp-stage { position: relative; flex: none; width: 210px; height: 210px; }
+.pa .cp-rays-wrap { position: absolute; left: 0; top: 0; width: 210px; height: 210px; }
+.pa .cp-rays { display: block; width: 210px; height: 210px; animation: cpRays 20s linear infinite; }
+@keyframes cpRays { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+.pa .cp-ubadge { position: absolute; left: 30px; top: 30px; width: 150px; height: 150px; animation: cpBadge .8s cubic-bezier(.22, 1, .36, 1) backwards; }
+.pa .cp-ubadge svg { display: block; }
+@keyframes cpBadge { 0% { opacity: 0; transform: scale(0); } 45% { opacity: 1; transform: scale(1.18); } 68% { transform: scale(.94); } 85% { transform: scale(1.03); } 100% { opacity: 1; transform: scale(1); } }
+.pa .cp-pivot { position: absolute; left: 105px; top: 105px; width: 0; height: 0; }
+.pa .cp-spark { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-origin: 0 0; animation: cpSpark .7s cubic-bezier(.22, 1, .36, 1) backwards; }
+@keyframes cpSpark { 0% { opacity: 0; transform: scale(0); } 55% { opacity: 1; transform: scale(1.15); } 100% { opacity: 1; transform: scale(1); } }
+.pa .cp-twinkle { position: absolute; animation: cpTwinkle 1.6s ease-in-out infinite; }
+@keyframes cpTwinkle { 0%, 100% { opacity: 1; transform: scale(1) rotate(0); } 50% { opacity: .35; transform: scale(.6) rotate(25deg); } }
+.pa .cp-ucard h2 { margin-top: 4px; font-size: 26px; line-height: 1.15; color: var(--primary); }
+.pa .cp-uname { margin-top: 6px; font-size: 20px; font-weight: 700; line-height: 1.25; color: var(--ink); }
+.pa .cp-udesc { margin-top: 4px; font-size: 16px; line-height: 1.4; color: var(--muted); }
+.pa .cp-uact { align-self: stretch; margin-top: 18px; }
+.pa .cp-uact a { margin-top: 8px; min-height: 44px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
+
+/* ---- responsive (responsive on every device) ----
+   The phone design above is unchanged. This screen has no tab bar, so the `pa` container is the whole window. */
+.pa .cp-more, .pa .cp-most { display: none; }   /* extra confetti for wide screens (Complete.tsx) */
+/* Safety net for very short windows: the badge card scrolls inside the dimmed overlay instead of being cut off. */
+.pa .cp-unlock { overflow-y: auto; }
+.pa .cp-ucard { margin: auto; }
+.pa .cp-dim { position: fixed; }   /* fixed to the .pa-screen box (a size container), so it stays put if the card scrolls */
+
+/* Medium and up: a centered 600px column, centered vertically when there is room; Continue capped and centered. */
+@container pa (min-width: 600px) {
+  .pa .cp-more { display: block; }
+  .pa .cp-main { gap: 18px; padding: 24px max(24px, calc((100% - 600px) / 2)); }
+  .pa .cp-main > :first-child { margin-top: auto; }
+  .pa .cp-main > :last-child { margin-bottom: auto; }
+  .pa .cp-foot { padding: 14px 24px calc(22px + env(safe-area-inset-bottom, 0px)); }
+  .pa .cp-pulse, .pa .cp-retry { max-width: 360px; margin: 0 auto; }
+  .pa .cp-ucard { max-width: 400px; padding: 18px 28px 22px; box-shadow: 0 6px 0 var(--locked-edge), 0 24px 60px rgba(29, 35, 32, .25); }
+}
+
+/* Short windows (a phone in landscape): the badge card lays out sideways (art left, text right) so it fits. */
+@container pa (min-width: 600px) {
+  @media (max-height: 520px) {
+    .pa .cp-main { gap: 14px; padding-top: 16px; padding-bottom: 16px; }
+    .pa .cp-foot { padding-top: 10px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+    .pa .cp-unlock { padding: 12px 24px; }
+    .pa .cp-ucard {
+      max-width: 580px; padding: 12px 24px 12px 12px; display: grid; grid-template-columns: 210px minmax(0, 1fr);
+      grid-template-rows: 1fr repeat(4, auto) 1fr; column-gap: 20px;
+    }
+    .pa .cp-stage { grid-column: 1; grid-row: 1 / -1; align-self: center; }
+    .pa .cp-ucard h2 { grid-column: 2; grid-row: 2; margin-top: 0; }
+    .pa .cp-uname { grid-column: 2; grid-row: 3; }
+    .pa .cp-udesc { grid-column: 2; grid-row: 4; }
+    .pa .cp-uact { grid-column: 2; grid-row: 5; margin-top: 14px; }
+  }
+}
+
+/* Expanded: type up a little. */
+@container pa (min-width: 900px) {
+  .pa .cp-most { display: block; }
+  .pa .cp-main { gap: 20px; }
+  .pa .cp-title h1 { font-size: 38px; }
+  .pa .cp-title p { font-size: 17px; }
+  .pa .cp-tile-h { padding: 6px 0; font-size: 14px; }
+  .pa .cp-tile-v { padding: 14px 0; font-size: 26px; }
+  .pa .cp-card { padding: 16px 20px; }
+  .pa .cp-card h2 { font-size: 18px; }
+  .pa .cp-note, .pa .cp-mist p { font-size: 16px; }
+  .pa .cp-cta { min-height: 56px; font-size: 19px; }
+}
+
+/* Mouse and trackpad: subtle hover states (the :active press effects stay). */
+@media (hover: hover) {
+  .pa .cp-cta:hover { filter: brightness(1.1); }
+  .pa .cp-mist a:hover, .pa .cp-uact a:hover { text-decoration-thickness: 2px; }
+}

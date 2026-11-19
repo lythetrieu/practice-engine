@@ -1,0 +1,69 @@
+---
+import Site from '../../layouts/Site.astro';
+import { config } from '../../pack';
+// The student sign-in page, easy to say out loud: <site>/student. A username and password from the parent, or a
+// "Scan to sign in" link (?t=…) from the parent's screen. A link only signs in after a click on "Sign in as <nickname>?":
+// a link someone else sent can't quietly sign this browser into their child's profile, or sign a parent out.
+// Signed-in students go to /account/, which shows their view with a "Start practicing" button into the app (/app/).
+// Static, noindex.
+---
+<Site title={`Student sign-in | ${config.name}`} description="Students: sign in with the username and password your parent made for you." path="/student/" noindex>
+<div class="eyebrow">Student</div>
+<h1>Sign in to practice</h1>
+<p class="callout" id="msg" role="status" hidden></p>
+<div class="card acct-box" id="box">
+  <p style="margin:0">Use the username and password your parent made for you, or scan the code on your parent’s screen.</p>
+  <form id="f" class="stack">
+    <label for="u">Username</label>
+    <input id="u" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="24" required>
+    <label for="p">Password</label>
+    <input id="p" type="password" autocomplete="current-password" maxlength="72" required>
+    <button class="btn primary" type="submit">Sign in</button>
+  </form>
+  <p class="note" style="margin:0">No login yet? Ask your parent to add you on the <a href="/account/">account page</a>.</p>
+</div>
+<!-- A sign-in link: who it signs in as, and a click to go on. -->
+<div class="card acct-box" id="ask" hidden>
+  <p class="ask-h" id="ask-h">Sign in as <b id="ask-name"></b>?</p>
+  <p class="note" id="ask-parent" style="margin:0" hidden>This signs the parent out on this device.</p>
+  <div class="row"><button class="btn primary" type="button" id="ask-yes">Sign in</button><button class="quiet" type="button" id="ask-no">Not you? Cancel</button></div>
+</div>
+<script>
+  import { useProfile, WHO_KEY } from '../../lib/client/profiles';
+
+  const $ = (s: string) => document.querySelector(s) as any;
+  const say = (t?: string, bad?: boolean) => { const m = $('#msg'); m.hidden = !t; m.textContent = t || ''; m.style.borderColor = bad ? 'var(--red)' : ''; };
+  const post = (path: string, body: unknown) => fetch(path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), credentials: 'same-origin' })
+    .then((r) => r.json()).catch(() => ({ ok: false, error: 'Could not reach the site. Check your connection and try again.' }));
+  const done = (child: any) => {
+    useProfile(child);
+    try { localStorage.setItem(WHO_KEY, JSON.stringify({ role: 'student', name: child.nickname })); } catch { /* storage blocked */ }
+    location.replace('/account/');
+  };
+  // A sign-in link: the token leaves the address bar at once and stays only in this page. The preview checks it
+  // without using it up; only "Sign in" does. Cancel forgets it and leaves the usual sign-in form.
+  let t = new URLSearchParams(location.search).get('t');
+  const form = () => { $('#ask').hidden = true; $('#box').hidden = false; };
+  if (t) {
+    history.replaceState(null, '', '/student/'); $('#box').hidden = true; say('Checking your sign-in code…');
+    post('/api/student/link/', { t, preview: true }).then((r) => {
+      if (!r.ok || !r.child) { t = null; form(); say(r.error || 'Something went wrong. Try again.', true); return; }
+      say(''); $('#ask-name').textContent = r.child.nickname; $('#ask-parent').hidden = !r.parent; $('#ask').hidden = false;
+      const y = $('#ask-yes'); y.setAttribute('aria-describedby', r.parent ? 'ask-h ask-parent' : 'ask-h'); y.focus();
+    });
+  }
+  $('#ask-yes').onclick = async () => {
+    if (!t) return; const b = $('#ask-yes'); b.disabled = true; say('Signing you in…');
+    const r = await post('/api/student/link/', { t }); t = null;
+    if (r.ok) return done(r.child); b.disabled = false; form(); say(r.error, true);
+  };
+  $('#ask-no').onclick = () => { t = null; form(); say(''); $('#u').focus(); };
+  $('#f').onsubmit = async (e: Event) => {
+    e.preventDefault(); const b = $('#f button'); b.disabled = true; say('Signing in…');
+    const r = await post('/api/student/login/', { username: $('#u').value, password: $('#p').value }); b.disabled = false; $('#p').value = '';
+    if (r.ok) return done(r.child); say(r.error, true);
+  };
+  // Back to this page from the browser's back/forward cache: load it fresh, never a copy from before.
+  addEventListener('pageshow', (e) => { if ((e as PageTransitionEvent).persisted) location.reload(); });
+</script>
+</Site>

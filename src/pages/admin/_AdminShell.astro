@@ -1,0 +1,154 @@
+---
+// The frame of every /admin/ page: the site layout, a small admin menu, the page's content, and the script that
+// sends the buttons' actions to /api/admin/ (asking the admin to confirm with an emailed code when the session is
+// older than a few minutes). The leading underscore keeps this file out of the routes.
+import Site from '../../layouts/Site.astro';
+import { config } from '../../pack';
+
+export interface Props { title: string; active: 'overview' | 'reports' | 'errors' | 'questions'; lede?: string }
+const { title, active, lede } = Astro.props;
+const tabs: [Props['active'], string, string][] = [['overview', 'Overview', '/admin/'], ['reports', 'Reports', '/admin/reports/'], ['errors', 'Errors', '/admin/errors/'], ['questions', 'Questions', '/admin/questions/']];
+---
+<Site title={`${title} | Admin | ${config.name}`} description="Admin area." path={Astro.url.pathname} noindex>
+  <div class="eyebrow">Admin</div>
+  <h1>{title}</h1>
+  {lede && <p class="lede">{lede}</p>}
+  <nav class="adm-tabs" aria-label="Admin">
+    {tabs.map(([id, label, href]) => <a href={href} aria-current={id === active ? 'page' : undefined}>{label}</a>)}
+  </nav>
+  <p class="callout" id="adm-msg" role="status" hidden></p>
+  <slot />
+
+  <dialog id="adm-ra" aria-labelledby="adm-ra-h">
+    <h2 id="adm-ra-h">Confirm it’s you</h2>
+    <p id="adm-ra-why">Changes need a sign-in from the last few minutes. We email a 6-digit code to your account address.</p>
+    <p class="note" id="adm-ra-note" hidden></p>
+    <form id="adm-ra-send" class="stack"><button class="btn primary" type="submit">Email me a code</button></form>
+    <form id="adm-ra-verify" class="stack" hidden>
+      <label for="adm-ra-code">Code</label>
+      <input id="adm-ra-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+      <button class="btn primary" type="submit">Confirm</button>
+    </form>
+    <button class="btn" id="adm-ra-cancel" type="button">Cancel</button>
+  </dialog>
+</Site>
+
+<style is:global>
+  .adm-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0 18px; }
+  .adm-tabs a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1rem; border-radius: 999px; background: var(--surface); color: var(--ink); font-weight: 700; text-decoration: none; }
+  .adm-tabs a[aria-current="page"] { background: var(--primary); color: #fff; }
+  .adm-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: 14px; margin: 8px 0 22px; }
+  .adm-stat { display: grid; gap: 2px; align-content: start; }
+  .adm-stat b { font-family: var(--display); font-size: 2rem; line-height: 1.1; color: var(--primary); }
+  .adm-stat span { font-weight: 700; }
+  .adm-stat small { color: var(--muted); font-size: .85rem; }
+  .adm-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 14px; }
+  .adm-links a.card { text-decoration: none; color: var(--ink); display: grid; gap: 4px; }
+  .adm-links a.card b { color: var(--primary); font-family: var(--display); font-size: 1.2rem; }
+  .adm-links a.card span { color: var(--muted); font-size: .95rem; }
+  .adm-bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin: 4px 0 14px; }
+  .adm-bar form { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: end; }
+  .adm-bar label { display: grid; gap: 2px; font-size: .85rem; }
+  .adm-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .adm-pills a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 .9rem; border-radius: 999px; border: 2px solid var(--line); color: var(--ink); font-weight: 700; text-decoration: none; font-size: .95rem; }
+  .adm-pills a[aria-current="true"] { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .adm-list { display: grid; gap: 12px; list-style: none; padding: 0; margin: 0; }
+  .adm-item { display: grid; gap: 8px; }
+  .adm-item .top { display: flex; gap: 8px 12px; flex-wrap: wrap; align-items: baseline; justify-content: space-between; }
+  .adm-item code, .adm-table code { font-size: .85em; background: var(--surface); padding: 1px 6px; border-radius: 6px; word-break: break-all; }
+  .adm-item .q { margin: 0; }
+  .adm-item .meta { margin: 0; color: var(--muted); font-size: .9rem; display: flex; gap: 4px 14px; flex-wrap: wrap; }
+  .adm-item details summary { cursor: pointer; font-weight: 700; color: var(--primary); }
+  .adm-item pre { margin: 6px 0 0; padding: 10px 12px; background: var(--surface); border-radius: 12px; overflow-x: auto; font-size: .8rem; white-space: pre-wrap; word-break: break-word; }
+  .adm-pill { display: inline-block; padding: 1px 10px; border-radius: 999px; font-size: .8rem; font-weight: 700; background: var(--surface); color: var(--ink); white-space: nowrap; }
+  .adm-pill.open { background: color-mix(in srgb, var(--accent) 22%, #fff); color: var(--accent-ink); }
+  .adm-pill.done { background: color-mix(in srgb, var(--green) 18%, #fff); color: color-mix(in srgb, var(--green) 70%, #000); }
+  .adm-pill.f-easy { background: color-mix(in srgb, var(--reward) 30%, #fff); color: #5a4300; }
+  .adm-pill.f-hard { background: color-mix(in srgb, var(--red) 20%, #fff); color: color-mix(in srgb, var(--red) 80%, #000); }
+  .adm-pill.f-check { background: var(--primary); color: #fff; }
+  .adm-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .site .btn.sm { min-height: 44px; padding: .4rem 1rem; font-size: .95rem; }
+  .adm-table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  .adm-table th, .adm-table td { text-align: left; padding: 10px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .adm-table th { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); white-space: nowrap; }
+  .adm-table th a { color: inherit; text-decoration: none; }
+  .adm-table th a:hover, .adm-table th a[aria-current="true"] { color: var(--primary); text-decoration: underline; }
+  .adm-table td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .adm-table .p { max-width: 34rem; }
+  .adm-table .sub { color: var(--muted); font-size: .85rem; }
+  .adm-empty { color: var(--muted); }
+  .adm-pager { display: flex; gap: 8px; margin-top: 16px; }
+  #adm-ra { position: fixed; inset: 0; margin: auto; height: fit-content; max-height: calc(100dvh - 32px); overflow: auto; border: 0; border-radius: 18px; padding: 24px; width: min(440px, calc(100vw - 32px)); box-shadow: 0 20px 60px #0004; background: #fff; color: var(--ink); display: none; gap: 12px; }
+  #adm-ra[open] { display: grid; }
+  #adm-ra::backdrop { background: color-mix(in srgb, var(--primary) 35%, transparent); }
+  #adm-ra h2 { margin: 0; font-size: 1.4rem; }
+  #adm-ra p { margin: 0; }
+  @media (max-width: 720px) {
+    /* Tables become cards on a phone: each cell shows its own label. */
+    .adm-table, .adm-table tbody, .adm-table tr, .adm-table td { display: block; width: 100%; }
+    .adm-table thead { position: absolute; left: -9999px; }
+    .adm-table tr { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 8px 12px; margin-bottom: 12px; }
+    .adm-table td { border: 0; padding: 4px 0 4px 7rem; text-align: left !important; position: relative; min-height: 1.6em; }
+    .adm-table td::before { content: attr(data-label); position: absolute; left: 0; top: 7px; width: 6.5rem; color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+    .adm-table td.p { max-width: none; padding-left: 0; }
+    .adm-table td.p::before { position: static; display: block; margin-bottom: 2px; }
+  }
+</style>
+
+<script>
+  const $ = <T extends HTMLElement>(s: string) => document.querySelector(s) as T;
+  const say = (t: string, bad = false) => { const m = $('#adm-msg'); m.textContent = t; m.hidden = !t; m.style.borderLeftColor = bad ? 'var(--red)' : ''; };
+
+  async function post(path: string, body: unknown): Promise<any> {
+    try {
+      const r = await fetch(path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+      return await r.json();
+    } catch { return { ok: false, error: 'We could not reach the server. Check your connection and try again.' }; }
+  }
+
+  // "Confirm it's you": the same emailed code as the account page (POST /api/auth/reauth/), then the change is sent again.
+  const dlg = $<HTMLDialogElement>('#adm-ra');
+  let done: ((ok: boolean) => void) | null = null;
+  function reauth(): Promise<boolean> {
+    return new Promise((resolve) => {
+      done = resolve;
+      $('#adm-ra-send').hidden = false; $('#adm-ra-verify').hidden = true; $('#adm-ra-note').hidden = true;
+      dlg.showModal();
+    });
+  }
+  const finish = (ok: boolean) => { dlg.close(); done?.(ok); done = null; };
+  $('#adm-ra-cancel').onclick = () => finish(false);
+  dlg.addEventListener('cancel', () => { done?.(false); done = null; });
+  $<HTMLFormElement>('#adm-ra-send').onsubmit = async (e) => {
+    e.preventDefault();
+    const note = $('#adm-ra-note');
+    const r = await post('/api/auth/reauth/', { step: 'send' });
+    note.hidden = false;
+    if (!r.ok) {
+      // The bot check is on: it can't run here. The account page can; or sign out and in again.
+      note.textContent = r.verify ? 'The bot check is on, and it only runs on the account page. Sign out and sign in again at /account/, then come back.' : r.error;
+      return;
+    }
+    note.textContent = r.devCode ? `Local development: the code is ${r.devCode}.` : 'Code sent. It works for 10 minutes.';
+    $('#adm-ra-send').hidden = true; $('#adm-ra-verify').hidden = false;
+    $<HTMLInputElement>('#adm-ra-code').focus();
+  };
+  $<HTMLFormElement>('#adm-ra-verify').onsubmit = async (e) => {
+    e.preventDefault();
+    const r = await post('/api/auth/reauth/', { step: 'verify', code: $<HTMLInputElement>('#adm-ra-code').value.trim() });
+    if (!r.ok) { const n = $('#adm-ra-note'); n.hidden = false; n.textContent = r.error; return; }
+    finish(true);
+  };
+
+  // Buttons: <button data-act="/api/admin/report/" data-body='{"id":3,"resolved":true}'>. On success the page reloads, so the counts are right.
+  document.addEventListener('click', async (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-act]');
+    if (!b) return;
+    b.disabled = true; say('');
+    const body = JSON.parse(b.dataset.body || '{}');
+    let r = await post(b.dataset.act!, body);
+    if (r.reauth && (await reauth())) r = await post(b.dataset.act!, body);
+    if (!r.ok) { say(r.error || 'That did not work.', true); b.disabled = false; return; }
+    location.reload();
+  });
+</script>

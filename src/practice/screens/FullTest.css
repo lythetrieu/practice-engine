@@ -1,0 +1,182 @@
+/* Full test tab (ft-).  */
+
+/* Spacing tightened so the intro plus the paused notice still fit a 390 x 844 phone without scrolling. */
+.pa .ft-screen { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.pa .ft-main { padding: 12px 16px 6px; display: flex; flex-direction: column; gap: 10px; }
+/* the two column groups only exist for the wide layout: on phones their children sit straight in ft-main */
+.pa .ft-col { display: contents; }
+.pa .ft-main > *, .pa .ft-col > * { flex: none; }
+
+.pa .ft-head { padding: 0 4px; }
+.pa .ft-head h1 { font-size: 28px; line-height: 32px; color: var(--primary); }
+.pa .ft-head p { margin-top: 2px; font-size: 15px; line-height: 20px; color: var(--muted); text-wrap: balance; }
+
+.pa .ft-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-radius: 18px; background: #FFFFFF; border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); text-align: center; }
+.pa .ft-stats > div { padding: 7px 4px 6px; }
+.pa .ft-stats > div + div { border-left: 2px solid var(--surface); }
+.pa .ft-num { font-family: var(--serif); font-size: 25px; font-weight: 700; line-height: 1.05; color: var(--primary); }
+.pa .ft-plus { position: relative; top: -2px; margin: 0 4px; font-size: 19px; font-weight: 400; }
+.pa .ft-lab { margin-top: 1px; font-size: 13px; line-height: 1.3; color: var(--muted); }
+
+.pa .ft-rules { padding: 11px 14px 12px; border-radius: 18px; background: var(--surface); }
+.pa .ft-rules h2 { margin-bottom: 8px; font-family: var(--sans); font-size: 16px; line-height: 1.25; }
+.pa .ft-rules ul { margin: 0; padding: 0; list-style: none; font-size: 15px; line-height: 1.3; display: flex; flex-direction: column; gap: 6px; }
+.pa .ft-rules li { display: flex; align-items: flex-start; gap: 10px; }
+.pa .ft-chip { flex: none; width: 24px; height: 24px; margin-top: -2px; border-radius: 8px; background: #FFFFFF; color: var(--primary); display: flex; align-items: center; justify-content: center; }
+
+.pa .ft-pick { margin: 0; padding: 0; border: 0; min-width: 0; }
+.pa .ft-pick legend { padding: 0 0 0 4px; margin-bottom: 6px; font-size: 16px; line-height: 1.25; font-weight: 700; }
+.pa .ft-opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.pa .ft-opt {
+  position: relative; min-height: 44px; display: flex; flex-direction: column; align-items: stretch; padding: 11px 12px 12px 14px;
+  border: 2px solid var(--line-2); border-radius: 18px; background: #FFFFFF; box-shadow: 0 4px 0 var(--line-2);
+  color: var(--ink); font: 700 17px/1.2 var(--sans); text-align: left;
+}
+.pa .ft-opt.on { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 7%, #FFFFFF); box-shadow: 0 4px 0 var(--primary); }
+.pa .ft-opt-title { display: block; }
+.pa .ft-radio { float: right; width: 22px; height: 22px; margin: -1px -2px -6px 8px; border-radius: 50%; border: 2px solid #A9A296; display: flex; align-items: center; justify-content: center; }
+.pa .ft-radio span { width: 12px; height: 12px; border-radius: 50%; background: transparent; }
+.pa .ft-opt.on .ft-radio { border-color: var(--primary); }
+.pa .ft-opt.on .ft-radio span { background: var(--primary); }
+.pa .ft-opt-sub { display: block; margin-top: auto; padding-top: 5px; font-weight: 400; font-size: 13px; line-height: 1.3; color: var(--muted); }
+
+.pa .ft-note { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; line-height: 1.3; color: var(--muted); }
+.pa .ft-note svg { flex: none; margin-top: 1px; }
+
+.pa .ft-foot { flex: none; padding: 4px 16px 6px; }
+.pa .ft-start { width: 100%; min-height: 52px; font-size: 18px; }
+.pa .ft-paused { margin-top: 8px; text-align: center; font-size: 15px; line-height: 20px; color: var(--muted); }
+.pa .ft-official { min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 15px; font-weight: 700; color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+.pa .ft-official.off { font-weight: 400; color: var(--muted); text-decoration: none; text-align: center; }
+
+/* Short phones (e.g. 320 x 568): the pinned Start bar would leave only ~340px for the intro and cut the
+   rules off mid-sentence, so here the whole intro scrolls as one page and Start follows the section choice
+   (as it does from 600px up). Taller phones (390 x 844, 360 x 780) keep the pinned bar.
+   A soft shade at the bottom edge shows there is more below; the cream cover at the end of the content
+   (background-attachment: local) hides it once you reach the bottom. */
+@container pa (max-width: 599px) {
+  @media (max-height: 600px) {
+    .pa .ft-screen {
+      overflow-y: auto; overscroll-behavior: contain;
+      background:
+        linear-gradient(rgba(251, 248, 243, 0), var(--bg) 60%) center bottom / 100% 32px no-repeat local,
+        radial-gradient(farthest-side at 50% 100%, rgba(30, 77, 58, .2), rgba(30, 77, 58, 0)) center bottom / 100% 14px no-repeat scroll;
+    }
+    .pa .ft-main { flex: none; min-height: auto; overflow: visible; padding-bottom: 12px; }
+    .pa .ft-foot { padding-bottom: 12px; }
+  }
+}
+
+/* Wider screens (responsive on every device). The screen adapts to the width it gets
+   (.pa-screen is the size container `pa`). From 600px the whole intro scrolls as one page (ft-screen),
+   so the Start button follows the content instead of a bar pinned under it:
+   600-899 one centered column (max 640px); >= 900 two columns in a centered 1080px container,
+   left = title, stats and rules, right = section choice, note, Start and the paused note. */
+@container pa (min-width: 600px) {
+  .pa .ft-screen {
+    overflow-y: auto; overscroll-behavior: contain; gap: 16px;
+    padding: 24px max(24px, calc((100cqi - 640px) / 2)) 32px;
+  }
+  .pa .ft-screen > * { flex: none; }
+  .pa .ft-main { display: contents; }
+  .pa .ft-col { display: flex; flex-direction: column; gap: 16px; }
+  .pa .ft-stats > div { padding: 12px 6px 10px; }
+  .pa .ft-num { font-size: 28px; }
+  .pa .ft-lab { margin-top: 3px; font-size: 14px; }
+  .pa .ft-rules { padding: 16px 20px 18px; }
+  .pa .ft-rules h2 { margin-bottom: 10px; font-size: 17px; }
+  .pa .ft-rules ul { font-size: 16px; gap: 8px; }
+  .pa .ft-chip { margin-top: -1px; }
+  .pa .ft-pick legend { margin-bottom: 8px; font-size: 17px; }
+  .pa .ft-opt { padding: 14px 14px 14px 16px; }
+  .pa .ft-opt-sub { font-size: 14px; }
+  .pa .ft-note span { max-width: 36em; } /* about 70 characters a line */
+  .pa .ft-foot { padding: 6px 0 0; display: flex; flex-direction: column; align-items: center; }
+  .pa .ft-start { width: min(100%, 360px); }
+  .pa .ft-paused { margin-top: 12px; }
+}
+
+@container pa (min-width: 900px) {
+  .pa .ft-screen {
+    display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 6fr); grid-template-rows: auto auto 1fr;
+    align-content: start; column-gap: 48px; row-gap: 20px;
+    padding: 36px max(32px, calc((100cqi - 1080px) / 2)) 40px;
+  }
+  /* the title runs across the top; the right column starts level with the stats */
+  .pa .ft-head { grid-column: 1 / -1; grid-row: 1; padding-bottom: 4px; }
+  .pa .ft-a { grid-column: 1; grid-row: 2 / span 2; gap: 20px; }
+  .pa .ft-b { grid-column: 2; grid-row: 2; gap: 20px; }
+  .pa .ft-foot { grid-column: 2; grid-row: 3; align-self: start; padding-top: 4px; }
+  .pa .ft-head h1 { font-size: 34px; line-height: 40px; }
+  .pa .ft-head p { margin-top: 4px; font-size: 17px; line-height: 24px; }
+  .pa .ft-stats { border-radius: 20px; }
+  .pa .ft-stats > div { padding: 16px 8px 14px; }
+  .pa .ft-num { font-size: 32px; }
+  .pa .ft-plus { font-size: 23px; }
+  .pa .ft-lab { font-size: 15px; }
+  .pa .ft-rules { padding: 20px 24px 22px; border-radius: 20px; }
+  .pa .ft-rules h2 { margin-bottom: 14px; font-size: 19px; }
+  .pa .ft-rules ul { font-size: 17px; line-height: 1.35; gap: 12px; }
+  .pa .ft-chip { width: 28px; height: 28px; margin-top: -3px; }
+  .pa .ft-pick legend { margin-bottom: 10px; font-size: 19px; }
+  .pa .ft-opts { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .pa .ft-opt { min-height: 72px; padding: 16px 18px; font-size: 18px; }
+  .pa .ft-opt-sub { font-size: 15px; }
+  .pa .ft-note { font-size: 16px; line-height: 1.35; }
+  /* as wide as the choices above it; the column itself is never wider than ~480px */
+  .pa .ft-start { width: 100%; max-width: 480px; min-height: 56px; }
+  .pa .ft-foot { align-items: stretch; }
+}
+
+/* Pointer devices: options lift a little, links darken (press effects stay on :active). */
+@media (hover: hover) {
+  .pa .ft-opt { transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease; }
+  .pa .ft-opt:not(.on):hover { border-color: #D6CCBC; }
+  .pa .ft-opt:hover:not(:active) { transform: translateY(-1px); box-shadow: 0 5px 0 var(--line-2); }
+  .pa .ft-opt.on:hover:not(:active) { box-shadow: 0 5px 0 var(--primary); }
+  .pa a.ft-start:hover { filter: brightness(1.06); }
+}
+
+/* The fixed practice tests T1-T6 (FullTest.tsx) */
+.pa .ft-dev-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.pa .ft-dev-btn { display: grid; gap: 2px; text-align: left; padding: 10px 12px; border-radius: 14px; font: inherit; font-weight: 700; cursor: pointer; }
+
+/* They are the main choice; the resume card sits above them. */
+.pa .ft-tests { display: grid; gap: 10px; }
+.pa .ft-tests h2 { margin: 0; font-size: 16px; line-height: 1.25; }
+.pa .ft-dev-btn { border: 2px solid var(--primary); background: #FFFFFF; color: var(--ink); box-shadow: 0 4px 0 var(--primary); min-height: 52px; font-size: 17px; }
+.pa .ft-dev-btn:disabled { border-color: var(--line-2); box-shadow: 0 4px 0 var(--line-2); opacity: .6; cursor: default; }
+.pa .ft-dev-btn span { font-size: 12px; opacity: 1; color: var(--muted); }
+.pa .ft-times { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pa .ft-times .ft-opt { font-size: 14px; min-height: 44px; padding: 9px 8px 10px 10px; }
+.pa .ft-times .ft-radio { width: 18px; height: 18px; margin: 0 -2px -4px 4px; }
+.pa .ft-times .ft-radio span { width: 10px; height: 10px; }
+.pa .ft-times .ft-opt-sub { font-size: 12px; padding-top: 3px; }
+.pa .ft-resume { padding: 12px 14px 14px; border-radius: 18px; background: color-mix(in srgb, var(--primary) 7%, #FFFFFF); border: 2px solid var(--primary); display: grid; gap: 6px; }
+.pa .ft-resume h2 { margin: 0; font-size: 16px; line-height: 1.25; }
+.pa .ft-resume p { margin: 0; font-size: 15px; line-height: 1.3; color: var(--muted); }
+.pa .ft-resume-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 4px; }
+.pa .ft-link { min-height: 44px; padding: 0 6px; border: 0; background: none; font: 700 15px/1 var(--sans); color: var(--primary); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+@container pa (max-width: 359px) { .pa .ft-times { grid-template-columns: minmax(0, 1fr); } }
+@container pa (min-width: 900px) { .pa .ft-times { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; } .pa .ft-times .ft-opt { min-height: 60px; padding: 12px 12px 12px 14px; font-size: 16px; } .pa .ft-times .ft-opt-sub { font-size: 13px; } }
+.pa .ft-confirm { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font: 600 15px/1.3 var(--sans); }
+.pa .ft-danger { color: #b3261e; }
+
+/* generated tests (tutor/testgen.ts): one "new test" card instead of the six fixed tests */
+.pa .ft-new-sub { margin: 4px 0 12px; font-size: 15px; line-height: 1.45; color: var(--muted); }
+.pa .ft-new-btn { width: 100%; background: var(--accent); border-color: var(--accent-edge); box-shadow: 0 4px 0 var(--accent-edge); color: var(--ink); }
+.pa .ft-new-btn span { color: var(--ink); opacity: .8; }
+.pa .ft-left { margin: 10px 0 0; font-size: 14px; line-height: 1.4; color: var(--muted); }
+.pa .ft-left b { color: var(--primary); }
+.pa .ft-left-low { color: var(--accent-ink); }
+
+/* Sections of the pack's test, and the list of finished tests */
+.pa .ft-sections { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.pa .ft-sections li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; border-radius: 14px; background: #FFFFFF; border: 2px solid var(--line); font-size: 14px; }
+.pa .ft-sections span { color: var(--muted); font-weight: 700; white-space: nowrap; }
+.pa .ft-past { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pa .ft-past-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #FFFFFF; border: 2px solid var(--line); color: var(--ink); text-decoration: none; }
+.pa .ft-past-row span { display: flex; flex-direction: column; }
+.pa .ft-past-row small { color: var(--muted); font-size: 13px; }
+.pa .ft-past-num { align-items: flex-end; }
+.pa .ft-past-num b { font-family: var(--serif); font-size: 20px; color: var(--primary); }

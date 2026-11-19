@@ -1,0 +1,133 @@
+---
+import Site from '../layouts/Site.astro';
+import { config, pack, sectionShort } from '../pack';
+
+// The home page, built only from the pack: config.site (title, description, hero, features, FAQ, disclaimer), plus an
+// "About the test" block worked out from config.sections, config.fullTest and config.testDates.
+const { site, fullTest: ft, sections } = config;
+const NEXT = '/account/?next=app';
+
+const fts = new Map(ft.sections.map((s) => [s.section, s]));
+const totalQuestions = ft.sections.reduce((n, s) => n + s.questions, 0);
+const perSection = ft.timing === 'per-section';
+const totalMinutes = perSection ? ft.sections.reduce((n, s) => n + (s.minutes ?? 0), 0) : (ft.minutes ?? 0);
+const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const lessons = pack.worlds.reduce((n, w) => n + w.lessons.length, 0);
+
+// Test dates still ahead (the page is built once; a small script below hides a date once it has passed).
+const todayIso = new Date().toISOString().slice(0, 10);
+const dates = config.testDates.filter((d) => d.date >= todayIso);
+
+const faqLd = site.faq.length ? {
+  '@type': 'FAQPage',
+  mainEntity: site.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+} : undefined;
+---
+<Site title={site.title} description={site.description} path="/" page={false} schema={faqLd}>
+  <section class="hero">
+    <div class="wrap grid">
+      <div>
+        <p class="eyebrow">{config.exam} practice</p>
+        <h1>{site.heroTitle}</h1>
+        <p class="lede">{site.heroText}</p>
+        <div class="row">
+          <a class="btn primary" href={NEXT}>Start practicing</a>
+          <a class="alt" href="/student/">I have a student login</a>
+        </div>
+        <p class="note">A parent makes the account and adds each child. A child signs in with the username and password the parent makes.</p>
+      </div>
+      <div class="today" aria-hidden="true">
+        <div class="head">
+          <Fragment set:html={pack.logo.replace(/<\?xml[^>]*\?>/g, '').trim()} />
+          <div><b>{config.name}</b><span>Daily goal: {plural(config.practice.dailyGoal, 'question')}</span></div>
+        </div>
+        <div class="path"><i class="done">1</i><s></s><i class="done">2</i><s></s><i class="now">3</i><s></s><i>4</i><s></s><i>5</i></div>
+        <div class="chips">{sections.map((s) => <span class="chip">{sectionShort(s.id)}</span>)}</div>
+      </div>
+    </div>
+  </section>
+
+  {site.features.length > 0 && (
+    <section class="band">
+      <div class="wrap">
+        <h2>How it works</h2>
+        <div class="features">
+          {site.features.map((f, i) => (
+            <div class="card"><span class="n">{i + 1}</span><h3>{f.title}</h3><p>{f.text}</p></div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="band">
+    <div class="wrap about">
+      <h2>About the {config.exam}</h2>
+      {config.examFull && <p class="lede" style="margin:0">{config.examFull}</p>}
+      <div class="sections">
+        {sections.map((s) => {
+          const t = fts.get(s.id);
+          return (
+            <div class="card sec">
+              <h3>{s.name}</h3>
+              {s.description && <p>{s.description}</p>}
+              {t && (
+                <div class="facts">
+                  <span>{t.questions}<small>questions</small></span>
+                  {perSection && t.minutes != null && <span>{t.minutes}<small>minutes</small></span>}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {totalQuestions > 0 && (
+        <div class="sum">
+          <p><b>{ft.title}.</b> {plural(totalQuestions, 'question')}{totalMinutes > 0 ? <> in {plural(totalMinutes, 'minute')}</> : null}, {perSection ? 'with a separate clock for each section' : 'with one clock for the whole test'}.{' '}
+            {ft.sectionOrder === 'choose' ? 'You choose which section to start with.' : 'The sections come in a fixed order.'}</p>
+          <p class="note" style="margin:.3rem 0 0">Every level and practice test in the app follows these rules. {lessons > 0 ? `This pack has ${plural(lessons, 'level')} of practice.` : ''}</p>
+        </div>
+      )}
+      {dates.length > 0 && (
+        <div id="dates">
+          <h3 style="margin:.4rem 0 0">Test dates</h3>
+          <ul class="dates">
+            {dates.map((d) => <li data-date={d.date}><b>{d.label}</b>{d.who && <span>{d.who}</span>}</li>)}
+          </ul>
+        </div>
+      )}
+    </div>
+  </section>
+
+  {site.faq.length > 0 && (
+    <section class="band faq">
+      <div class="wrap">
+        <h2>Questions</h2>
+        {site.faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+      </div>
+    </section>
+  )}
+
+  <section class="band">
+    <div class="wrap">
+      <div class="cta">
+        <h2>{config.tagline}</h2>
+        <p>Make a parent account, add your child, and start with a short level today.</p>
+        <div class="row" style="justify-content:center">
+          <a class="btn primary" href={NEXT}>Start practicing</a>
+          <a class="alt" href="/student/">I have a student login</a>
+        </div>
+      </div>
+      <p class="note" style="margin-top:18px">{site.disclaimer}</p>
+    </div>
+  </section>
+</Site>
+<script is:inline>
+  // Hides a test date once it has passed (the page is built once, the visitor may come later).
+  (function () {
+    var now = new Date(), t = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+    var items = document.querySelectorAll('#dates li[data-date]'), left = 0;
+    items.forEach(function (li) { if (li.dataset.date < t) li.hidden = true; else left++; });
+    var box = document.getElementById('dates'); if (box && !left) box.hidden = true;
+  })();
+</script>

@@ -1,0 +1,58 @@
+---
+/**
+ * Search and sharing tags for <head>: title, description, canonical, robots, Open Graph, Twitter, icons and one
+ * JSON-LD @graph. Names, colors and the site address come from the pack (src/pack); URLs are built from Astro.site,
+ * which astro.config.mjs takes from pack.yaml `site.url`.
+ */
+import { config } from '../../pack';
+
+type LdNode = Record<string, unknown>;
+export interface Props {
+  title: string;
+  description: string;
+  /** Canonical path with the trailing slash, e.g. '/'. Defaults to the current path. */
+  path?: string;
+  /** The page's own JSON-LD node(s) (for example a FAQPage). Merged into the @graph. */
+  schema?: object | object[];
+  /** Emits <meta name="robots" content="noindex,follow">. */
+  noindex?: boolean;
+  /** Social image: a path (resolved against Astro.site) or an absolute URL. Left out when not given. */
+  ogImage?: string;
+}
+
+const { title, description, path = Astro.url.pathname, schema, noindex = false, ogImage } = Astro.props;
+const site = Astro.site ?? new URL(Astro.url.origin);
+const abs = (p: string) => new URL(p, site).href;
+const is404 = /^\/404(\.html|\/)?$/.test(Astro.url.pathname) || path === '/404';
+const canonical = is404 ? undefined : abs(path);
+const robots = noindex || is404 ? 'noindex,follow' : undefined;
+
+const SITE_ID = abs('/#website');
+const nodes: LdNode[] = (Array.isArray(schema) ? schema : schema ? [schema] : []).map((n) => {
+  const { '@context': _c, ...rest } = n as LdNode;
+  return rest;
+});
+const graph: LdNode[] = is404 ? [] : [
+  { '@type': 'WebSite', '@id': SITE_ID, url: abs('/'), name: config.name, description: config.tagline, inLanguage: 'en' },
+  { '@type': 'WebPage', '@id': `${canonical}#webpage`, url: canonical, name: title, description, isPartOf: { '@id': SITE_ID }, inLanguage: 'en' },
+  ...nodes,
+];
+const ld = graph.length ? JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c') : '';
+---
+<title>{title}</title>
+<meta name="description" content={description} />
+{canonical && <link rel="canonical" href={canonical} />}
+{robots && <meta name="robots" content={robots} />}
+<meta name="theme-color" content={config.brand.colors.background ?? '#ffffff'} />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<meta property="og:site_name" content={config.name} />
+<meta property="og:type" content="website" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{canonical && <meta property="og:url" content={canonical} />}
+{ogImage && <meta property="og:image" content={abs(ogImage)} />}
+<meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{ogImage && <meta name="twitter:image" content={abs(ogImage)} />}
+{ld && <script type="application/ld+json" set:html={ld} />}

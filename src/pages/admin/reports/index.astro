@@ -1,0 +1,103 @@
+---
+// /admin/reports/ — problem reports, newest first. A question report shows the question from the pack. Resolve or reopen
+// with the buttons (POST /api/admin/report/). A report has a fixed reason and a little technical context, no free text,
+// and no learner: this page does not select who sent it.
+import Shell from '../_AdminShell.astro';
+import { REPORT_REASON, adminGate, listReports, packBank, questionIndex, reportCounts, type ReportStatus } from '../../../lib/server/admin';
+import { db } from '../../../lib/server/env';
+export const prerender = false;
+
+const gate = await adminGate(Astro);
+if (gate instanceof Response) return gate;
+const D = db();
+const sp = Astro.url.searchParams;
+const status: ReportStatus = (['open', 'resolved', 'all'] as const).find((s) => s === sp.get('status')) ?? 'open';
+const page = Math.min(Math.max(0, Math.floor(Number(sp.get('page')) || 0)), 1000);
+const [{ rows, more }, counts] = await Promise.all([listReports(D, status, page), reportCounts(D)]);
+const bank = rows.some((r) => r.context === 'app') ? questionIndex(await packBank()) : new Map();
+
+const href = (s: string, p = 0) => `/admin/reports/?status=${s}${p ? `&page=${p}` : ''}`;
+const when = (iso: string) => iso.replace('T', ' ').slice(0, 16) + ' UTC';
+const letter = (i: unknown) => (typeof i === 'number' && i >= 0 && i < 26 ? String.fromCharCode(65 + i) : null);
+const str = (v: unknown) => (typeof v === 'string' ? v : null);
+
+// The facts a report carries (api/report.ts rebuilds them from whitelisted values), as short labeled bits.
+function facts(meta: Record<string, unknown> | null, context: string): string[] {
+  if (!meta) return [];
+  const out: string[] = [];
+  const m = meta as Record<string, any>;
+  if (context === 'issue') {
+    if (m.screen) out.push(`Screen: ${m.screen}`);
+    if (Array.isArray(m.trail) && m.trail.length) out.push(`Before that: ${m.trail.map((t: any) => t.s).join(' → ')}`);
+  } else {
+    if (m.lesson) out.push(`Lesson: ${m.lesson}`);
+    if (m.pos != null && m.total != null) out.push(`Question ${m.pos} of ${m.total}`);
+    if (m.step?.kind) out.push(`Step: ${m.step.kind}${m.step.stage ? ` (${m.step.stage})` : ''}`);
+    if (letter(m.picked)) out.push(`Picked: ${letter(m.picked)}`);
+    if (typeof m.correct === 'boolean') out.push(m.correct ? 'Answered right' : 'Answered wrong');
+  }
+  if (m.device) out.push(`${m.device}${m.w && m.h ? ` ${m.w}×${m.h}` : ''}`);
+  if (m.browser) out.push(String(m.browser));
+  if (m.ver) out.push(`app ${m.ver}`);
+  return out;
+}
+---
+<Shell title="Problem reports" active="reports" lede="What students flagged. Newest first.">
+  <div class="adm-bar">
+    <div class="adm-pills" role="group" aria-label="Show">
+      <a href={href('open')} aria-current={status === 'open' ? 'true' : undefined}>Open ({counts.open})</a>
+      <a href={href('resolved')} aria-current={status === 'resolved' ? 'true' : undefined}>Resolved ({counts.resolved})</a>
+      <a href={href('all')} aria-current={status === 'all' ? 'true' : undefined}>All</a>
+    </div>
+  </div>
+
+  {rows.length === 0 && <p class="adm-empty">{status === 'open' ? 'No open reports. ' : 'Nothing here. '}Reports older than 12 months are deleted automatically.</p>}
+  <ul class="adm-list">
+    {rows.map((r) => {
+      const q = r.context === 'app' ? bank.get(r.item_id) : undefined;
+      const bits = facts(r.meta, r.context);
+      const lastErr = r.context === 'issue' && r.meta && typeof (r.meta as any).lastError?.message === 'string' ? String((r.meta as any).lastError.message) : null;
+      const step = r.context === 'issue' ? str((r.meta as any)?.step) : null;
+      return (
+        <li class="card adm-item adm-row">
+          <div class="top">
+            <span>
+              <span class={`adm-pill ${r.resolved_at ? 'done' : 'open'}`}>{r.resolved_at ? 'Resolved' : 'Open'}</span>
+              {' '}<b>{REPORT_REASON[r.reason] ?? r.reason}</b>
+            </span>
+            <span class="note">{when(r.created_at)}</span>
+          </div>
+          {r.context === 'issue'
+            ? <p class="q">A problem with the app itself.</p>
+            : <>
+                <p class="meta">
+                  <span>Question <code>{r.item_id}</code>{r.item_rev ? ` (rev ${r.item_rev})` : ''}</span>
+                  {q && <span>{q.sectionName} · {q.skillName} · difficulty {q.d}</span>}
+                  {r.same > 1 && <span>{r.same} reports on this question ({r.sameOpen} open)</span>}
+                </p>
+                <p class="q">{q ? q.prompt : <i>This question is not in the pack any more.</i>}</p>
+                {q?.opts && q.key != null && <p class="meta"><span>Marked answer: {String.fromCharCode(65 + q.key)}. {q.opts[q.key]}</span></p>}
+              </>}
+          {bits.length > 0 && <p class="meta">{bits.map((b) => <span>{b}</span>)}</p>}
+          {(lastErr || step) && (
+            <details><summary>Technical details</summary><pre>{[lastErr && `Last app error: ${lastErr}`, step && `Step: ${step}`].filter(Boolean).join('\n')}</pre></details>
+          )}
+          <div class="adm-btns">
+            {r.resolved_at
+              ? <button class="btn sm" type="button" data-act="/api/admin/report/" data-body={JSON.stringify({ id: r.id, resolved: false })}>Reopen</button>
+              : <button class="btn sm primary" type="button" data-act="/api/admin/report/" data-body={JSON.stringify({ id: r.id, resolved: true })}>Mark resolved</button>}
+            {!r.resolved_at && r.context === 'app' && r.sameOpen > 1 &&
+              <button class="btn sm" type="button" data-act="/api/admin/report/" data-body={JSON.stringify({ item: r.item_id, resolved: true })}>Resolve all {r.sameOpen} on this question</button>}
+          </div>
+        </li>
+      );
+    })}
+  </ul>
+
+  {(page > 0 || more) && (
+    <div class="adm-pager">
+      {page > 0 && <a class="btn sm" href={href(status, page - 1)}>Newer</a>}
+      {more && <a class="btn sm" href={href(status, page + 1)}>Older</a>}
+    </div>
+  )}
+</Shell>

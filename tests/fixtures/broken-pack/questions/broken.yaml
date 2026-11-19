@@ -1,0 +1,77 @@
+# Each question has one mistake. All are meant to be found by the validator.
+
+- id: b-format
+  skill: m.a
+  type: typed
+  prompt: What is 2 + 2?
+  answer: 4
+  explanation: Two and two make four.
+
+- id: b-answer-range
+  skill: m.a
+  type: mc
+  prompt: Pick one.
+  choices: ["one", "two", "three"]
+  answer: D
+  explanation: There is no choice D.
+
+- id: b-whywrong
+  skill: m.b
+  type: mc
+  prompt: Pick the first one.
+  choices: ["one", "two", "three"]
+  answer: A
+  whyWrong:
+    - "This line sits at the right answer, so it must be null."
+    - "Two is not the first."
+    - "Three is not the first."
+  explanation: A is the first choice.
+
+- id: b-skill
+  skill: m.nope
+  type: mc
+  prompt: Pick one.
+  choices: ["one", "two"]
+  answer: A
+  explanation: The skill does not exist.
+
+- id: b-dup
+  skill: v.word
+  type: mc
+  prompt: Pick one.
+  choices: ["one", "two"]
+  answer: A
+  explanation: First copy.
+
+- id: b-dup
+  skill: v.word
+  type: mc
+  prompt: Pick one, again.
+  choices: ["one", "two"]
+  answer: B
+  explanation: Second copy, with the same id.
+
+- id: b-inline
+  skill: v.word
+  type: inline
+  prompt: Choose the word.
+  text: "The dog [[run|runs|running]] home."
+  explanation: No choice is marked with a star.
+
+- id: b-fill
+  skill: m.a
+  type: fill
+  prompt: Fill the blanks.
+  text: "___ + ___ = 10"
+  tiles: ["4", "6", "7"]
+  answer: ["4"]
+  explanation: Two blanks, one answer.
+
+- id: b-passage
+  skill: v.word
+  type: mc
+  passage: no-such-passage
+  prompt: Which is right?
+  choices: ["one", "two"]
+  answer: A
+  explanation: The passage does not exist.

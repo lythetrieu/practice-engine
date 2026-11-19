@@ -1,0 +1,24 @@
+worlds:
+  - section: verbal
+    name: Word Workshop
+    unit: Vocabulary in context
+    lessons:
+      - { title: Synonyms, skills: [v.synonym] }
+      - { title: Sentence completion, skills: [v.sentence] }
+  - section: quant
+    name: Number Lab
+    unit: Reasoning with numbers
+    lessons:
+      - { title: Number reasoning, skills: [q.reason] }
+      - { title: Comparing quantities, skills: [q.compare] }
+  - section: reading
+    name: Reading Room
+    unit: Passages
+    lessons:
+      - { title: Main idea and details, skills: [r.passage] }
+  - section: math
+    name: Math Studio
+    unit: Algebra and geometry
+    lessons:
+      - { title: Algebra, skills: [m.algebra] }
+      - { title: Geometry, skills: [m.geometry] }

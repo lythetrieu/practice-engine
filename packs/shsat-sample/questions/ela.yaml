@@ -1,0 +1,168 @@
+# Ten original ELA questions for the sample pack. Written for this pack; no official item is used or reworded.
+
+- id: e-grammar-1
+  skill: e.grammar
+  difficulty: 1
+  type: inline
+  prompt: Choose the word in each menu that makes the sentences correct.
+  text: |
+    Maya and her brothers [[walks|*walk|walking]] to school together.
+    Each of them [[carry|*carries|carrying]] a lunch box.
+  explanation: "Maya and her brothers is more than one person, so the verb is walk. Each of them means one person at a time, so the verb is carries."
+  hint: "Ask who is doing the action. Is it one person or more than one?"
+
+- id: e-grammar-2
+  skill: e.grammar
+  difficulty: 4
+  type: multi
+  prompt: Which TWO sentences use commas correctly? Choose two answers.
+  choices:
+    - "Ravi packed apples, bread, and cheese for the trip."
+    - "The boy who won the race, got a ribbon."
+    - "Before we left, Mom checked the doors."
+    - "Please bring a pencil, and a ruler to class."
+  answer: ["A", "C"]
+  explanation: "Sentence A uses commas to separate three items in a list. Sentence C puts a comma after the opening phrase. In B, a comma wrongly splits the subject (the boy who won the race) from its verb. In D, the comma is not needed because \"and a ruler\" is not a full sentence."
+  hint: "Check each comma. Does it have a job, such as a list, an opening phrase, or joining two full sentences?"
+
+- id: e-grammar-3
+  skill: e.grammar
+  difficulty: 3
+  type: classify
+  prompt: Sort each sentence by the job its comma does.
+  buckets: ["Separates items in a list", "Follows an opening word or phrase", "Joins two full sentences"]
+  cards:
+    - { text: "We packed apples, bread, and cheese.", bucket: "Separates items in a list" }
+    - { text: "After lunch, we walked to the park.", bucket: "Follows an opening word or phrase" }
+    - { text: "Maya likes soccer, but Leo likes chess.", bucket: "Joins two full sentences" }
+    - { text: "First, mix the flour and the eggs.", bucket: "Follows an opening word or phrase" }
+    - { text: "The sky was gray, the wind was cold, and the lake was still.", bucket: "Separates items in a list" }
+    - { text: "I wanted to swim, but the water was too cold.", bucket: "Joins two full sentences" }
+  explanation: "A list needs commas between its items. A comma follows an opening word or phrase such as After lunch or First. A comma plus a word like but joins two sentences that could each stand alone."
+  hint: "For \"joins two full sentences,\" check that both halves could stand alone."
+
+- id: e-revise-1
+  skill: e.revise
+  difficulty: 2
+  type: mc
+  box: "(1) Many people think that a bat is a kind of bird. (2) [u]________[/u] a bat is a mammal. (3) It has fur, and it feeds milk to its young. (4) Birds have feathers and lay eggs."
+  prompt: Which word or phrase, placed at the start of sentence 2, best connects it to sentence 1?
+  choices: ["For example,", "However,", "Therefore,", "Meanwhile,"]
+  answer: "B"
+  whyWrong:
+    - "Sentence 2 is not an example of the idea in sentence 1. It corrects that idea."
+    - null
+    - "Therefore shows a result. A bat being a mammal is not a result of what people think."
+    - "Meanwhile shows two things happening at the same time. That does not fit here."
+  explanation: "Sentence 1 gives an idea that is wrong. Sentence 2 gives the truth. However shows that contrast."
+  hint: "Does sentence 2 agree with sentence 1, or go against it?"
+
+- id: e-revise-2
+  skill: e.revise
+  difficulty: 4
+  type: mc
+  box: "(1) The old bridge was built in 1920. (2) It was built of wood. (3) It was closed last year. (4) It was closed because it was unsafe."
+  prompt: Which revision best combines sentences 1 through 4 into one clear sentence?
+  choices:
+    - "The old bridge was built in 1920 and it was built of wood and it was closed last year and it was closed because it was unsafe."
+    - "The old wooden bridge, built in 1920, was closed last year because it was unsafe."
+    - "The old wooden bridge was built in 1920, it was closed last year because it was unsafe."
+    - "Built of wood in 1920, the old bridge was closed last year, and it was unsafe."
+  answer: "B"
+  whyWrong:
+    - "This repeats \"it was built\" and \"it was closed\" and strings clause after clause. It is wordy."
+    - null
+    - "Two full sentences are joined with only a comma. This is a run-on."
+    - "The word and hides the reason. The original says the bridge was closed because it was unsafe."
+  explanation: "Choice B is short, keeps every fact, and keeps the reason (because it was unsafe). Moving the details wooden and built in 1920 next to the bridge removes the repeated words."
+  hint: "Look for the choice that keeps all the facts without repeating words."
+
+- id: e-info-1
+  skill: e.info
+  difficulty: 2
+  type: mc
+  passage: bee-dance
+  prompt: Which sentence best states the main idea of the passage?
+  choices:
+    - "Honeybees live in hives that hold many thousands of bees."
+    - "Honeybees use a dance to tell other bees where to find flowers."
+    - "The sun is the most important part of a honeybee's day."
+    - "Scientists have studied honeybees for many years."
+  answer: "B"
+  whyWrong:
+    - "The passage mentions this, but only as a small detail in the last paragraph."
+    - null
+    - "The sun is used as a guide in the dance, but the passage is not mainly about the sun."
+    - "The passage says scientists tested the dance, but that is a single detail, not the whole text."
+  explanation: "Every paragraph explains the dance: what it looks like, what it tells, how bees use it, and why it helps. That makes the dance the main idea."
+  hint: "What do all five paragraphs have in common?"
+
+- id: e-info-2
+  skill: e.info
+  difficulty: 3
+  type: hot
+  passage: bee-dance
+  prompt: "Tap the sentence from the third paragraph that best supports this claim: The dance gives bees information about distance."
+  sentences:
+    - "The waggle run holds the message."
+    - "Its angle shows which way the flowers lie compared to the sun."
+    - "A bee that waggles straight up is pointing toward the sun."
+    - "A longer waggle run means the flowers are farther away."
+  answer: 4
+  explanation: "Only sentence 4 talks about how far away the flowers are. The others are about the message in general, or about direction."
+  hint: "Which sentence is about how far, not which way?"
+
+- id: e-info-3
+  skill: e.info
+  difficulty: 5
+  type: mc
+  passage: bee-dance
+  prompt: A bee does a long waggle run that leans to the left of straight up. What can the other bees tell from this dance?
+  choices:
+    - "The flowers are close, and they lie to the right of the sun."
+    - "The flowers are far away, and they lie to the left of the sun."
+    - "The flowers are far away, and they lie toward the sun."
+    - "The flowers are close, and they lie to the left of the sun."
+  answer: "B"
+  whyWrong:
+    - "A long run means far, not close. A run that leans left points left, not right."
+    - null
+    - "Toward the sun would be a run straight up. This run leans left."
+    - "The left side is right, but a long run means the flowers are far away, not close."
+  explanation: "The passage says a longer run means the flowers are farther away. It also says a run that leans left of straight up means the flowers lie to the left of the sun. Both clues fit choice B."
+  hint: "Use two clues: what the length tells you, and what the lean tells you."
+
+- id: e-story-1
+  skill: e.story
+  difficulty: 4
+  type: mc
+  passage: kite-day
+  prompt: Which lesson does the story most clearly teach?
+  choices:
+    - "A problem can often be fixed with a small change and a little help."
+    - "A store-bought kite is always better than one you make yourself."
+    - "It is best to give up when something fails twice."
+    - "Everyone should fly a kite on a windy day."
+  answer: "A"
+  whyWrong:
+    - null
+    - "Tomas's homemade kite flies well in the end, so the story does not say this."
+    - "Tomas fails three times, then fixes the kite and it flies. The story does not say to give up."
+    - "The story takes place on a windy day, but flying a kite is the setting, not the lesson."
+  explanation: "Tomas thinks his kite is bad. Lupe helps him see that it only needs a tail, and then it flies. The lesson is that a small change and some help can fix a problem."
+  hint: "What changes between the moment Tomas sits down and the end of the story?"
+
+- id: e-story-2
+  skill: e.story
+  difficulty: 2
+  type: order
+  passage: kite-day
+  prompt: Put these events from the story in the order they happen.
+  items:
+    - "The kite spins into the ground twice."
+    - "The kite catches on a branch of the oak tree."
+    - "Lupe says the kite needs a tail."
+    - "Tomas ties strips of his scarf to the kite."
+    - "The kite climbs higher than the school roof."
+  explanation: "First the kite spins down twice, and then it snags in the oak. Lupe frees it and says it needs a tail. Tomas adds the scarf strips. Only after that does the kite climb past the roof."
+  hint: "Look for the word that tells you when each thing happens, such as third time or this time."

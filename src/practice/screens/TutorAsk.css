@@ -1,0 +1,51 @@
+/* "Does that make sense?" and the tutor's answers, inside the answer sheet (TutorAsk.tsx). */
+.pa .ta { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.pa .ta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.pa .ta-q { font-weight: 700; font-size: 15px; margin-right: auto; }
+.pa .ta-btn { min-height: 40px; padding: 0 16px; border-radius: 999px; border: 2px solid rgba(29, 35, 32, .18); background: rgba(255, 255, 255, .8);
+  font: 700 15px var(--sans); color: var(--ink); cursor: pointer; }
+.pa .ta-menu { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 16px; background: #FFFFFF; border: 2px solid var(--line); }
+.pa .ta-who { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--primary); }
+.pa .ta-opt { min-height: 44px; padding: 8px 14px; border-radius: 12px; border: 2px solid var(--sage, #7FA38F); background: var(--ok-tint); color: var(--primary);
+  font: 700 15px var(--sans); text-align: left; cursor: pointer; box-shadow: 0 3px 0 var(--sage-edge, #6A8E7A); }
+.pa .ta-face { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--ok-tint); border: 2px solid var(--sage-tint); display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
+.pa .ta-face.sm { width: 28px; height: 28px; border-width: 1.5px; }
+.pa .ta-reply { display: flex; align-items: flex-start; gap: 10px; }
+.pa .ta-bubble { position: relative; flex: 1; min-width: 0; overflow-wrap: anywhere; max-height: 50vh; overflow-y: auto; padding: 10px 14px; border-radius: 4px 16px 16px 16px; background: #FFFFFF; border: 2px solid var(--sage-tint);
+  font-size: 15px; line-height: 1.5; }
+.pa .ta-bubble p { margin: 0 0 6px; }
+.pa .ta-bubble p:last-child { margin-bottom: 0; }
+.pa .ta-ask { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.pa .ta-wait { display: flex; gap: 6px; align-items: center; min-height: 44px; }
+.pa .ta-wait i { width: 8px; height: 8px; border-radius: 50%; background: var(--sage, #7FA38F); animation: taDot 1s ease-in-out infinite; }
+.pa .ta-wait i:nth-child(3) { animation-delay: .15s; }
+.pa .ta-wait i:nth-child(4) { animation-delay: .3s; }
+@keyframes taDot { 0%, 100% { transform: translateY(0); opacity: .5; } 50% { transform: translateY(-5px); opacity: 1; } }
+.pa .ta-note { margin: 0; font-size: 14px; line-height: 1.45; color: var(--muted); }
+.pa .ta-note a { color: var(--primary); font-weight: 700; }
+.pa .ta-good { color: var(--primary); font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .pa .ta-wait i { animation: none; opacity: .8; } }
+
+/* The ask button on the answer sheet's top row and beside Hint (Level.tsx) */
+.pa .lv-pip-btn { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px 0 4px; border-radius: 999px;
+  border: 2px solid var(--sage-tint); background: #FFFFFF; color: var(--primary); font: 700 15px var(--sans); cursor: pointer; }
+.pa .lv-pip-face { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--ok-tint); display: inline-flex; align-items: flex-end; justify-content: center; overflow: hidden; }
+.pa .lv-pip-tool { gap: 6px; }
+.pa .lv-pip-tool .lv-pip-face { width: 24px; height: 24px; }
+.pa .ta-hint { margin-top: 10px; }
+/* a phone: the sheet's row is tight, so the mascot's face alone says it there */
+@container pa (max-width: 419px) {
+  .pa .lv-pip-btn { padding: 0 4px; }
+  .pa .lv-pip-btn .lv-pip-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+}
+.pa .ta-did { margin: 6px 0 0; font-size: 13px; font-weight: 700; color: var(--primary); }
+.pa .ta-similar { margin-top: 8px; width: 100%; text-align: center; }
+/* The tutor points at a choice (action "highlight"): a ring that pulses a few times */
+.pa .ls-choice.is-pip { outline: 3px solid var(--reward); outline-offset: 3px; animation: taPoint 0.9s ease-in-out 3; }
+@keyframes taPoint { 0%, 100% { outline-color: var(--reward); } 50% { outline-color: color-mix(in srgb, var(--reward) 20%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .pa .ls-choice.is-pip { animation: none; } }
+/* the reviewed hints, in the mascot's bubble (one ask button, Level.tsx) */
+.pa .lv-pip-hints { margin-top: 10px; }
+.pa .lv-pip-hints .ta-bubble { list-style: none; margin: 0; display: flex; flex-direction: column; gap: 8px; max-height: none; overflow: visible; }
+.pa .lv-pip-hints .lv-hint { padding: 0; border: 0; border-radius: 0; background: none; }
+.pa .lv-pip-hints .lv-hint + .lv-hint { padding-top: 8px; border-top: 1px solid var(--ok-tint); }

@@ -1,0 +1,71 @@
+/* The full practice test (Exam.tsx). Uses the lesson screen's header, body and footer (Lesson.css, Level.css). */
+.pa .ex-head { gap: 10px; }
+.pa .ex-where { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; line-height: 1.2; }
+.pa .ex-where b { font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pa .ex-where span { font-size: 12px; color: var(--muted); font-weight: 700; }
+.pa .ex-clock {
+  flex: none; min-width: 64px; padding: 6px 10px; border-radius: 999px; background: var(--surface); border: 2px solid var(--line);
+  font-weight: 700; font-variant-numeric: tabular-nums; text-align: center; font-size: 15px;
+}
+.pa .ex-clock.is-low { background: var(--accent-tint); border-color: var(--accent); color: var(--accent-ink); }
+.pa .ex-clock.is-off { color: var(--muted); font-size: 12px; }
+.pa .ex-bar { flex: none; height: 4px; background: var(--line); }
+.pa .ex-bar span { display: block; height: 100%; background: var(--primary); transition: width .25s ease; }
+.pa .ex-wait { padding: 32px 20px; }
+
+.pa .ex-intro, .pa .ex-review, .pa .ex-results { padding: 24px 20px 28px; display: flex; flex-direction: column; gap: 14px; }
+.pa .ex-intro h1, .pa .ex-review h1, .pa .ex-results h1 { font-size: 28px; line-height: 1.15; }
+.pa .ex-kicker { font-size: 13px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: .04em; }
+.pa .ex-notice { padding: 10px 12px; border-radius: 12px; background: var(--accent-tint); color: var(--accent-ink); font-weight: 700; font-size: 14px; }
+.pa .ex-facts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pa .ex-facts li { padding: 12px 14px; border-radius: 14px; background: #FFFFFF; border: 2px solid var(--line); font-size: 15px; }
+.pa .ex-facts b { font-family: var(--serif); font-size: 20px; margin-right: 4px; }
+.pa .ex-sheet-h { font-size: 22px; margin-bottom: 8px; }
+.pa .ex-sheet-p { color: var(--muted); font-size: 15px; line-height: 1.45; }
+
+.pa .ex-grid { list-style: none; margin: 4px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 10px; }
+.pa .ex-num {
+  width: 100%; aspect-ratio: 1; border-radius: 14px; border: 2px solid var(--line); background: #FFFFFF; font-weight: 700; font-size: 17px; position: relative;
+}
+.pa .ex-num.is-done { background: var(--ok-tint); border-color: var(--sage); color: var(--primary); }
+.pa .ex-num.is-blank { border-style: dashed; color: var(--muted); }
+.pa .ex-num.is-flag::after { content: ''; position: absolute; top: 5px; right: 5px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+.pa .ex-num:disabled { cursor: default; }
+
+.pa .ls-foot.ex-foot { flex-direction: row; align-items: center; gap: 10px; }
+.pa .ex-foot .ls-cta { flex: 1 1 auto; width: auto; min-width: 0; }
+.pa .ex-foot .pa-btn { width: auto; }
+.pa .ex-back { flex: none; min-width: 84px; }
+.pa .ex-flag { flex: none; }
+.pa .ex-flag.on { color: var(--accent-ink); }
+
+.pa .ex-sub { color: var(--muted); font-weight: 700; margin-top: -6px; }
+.pa .ex-card { background: #FFFFFF; border: 2px solid var(--line); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.pa .ex-card h2 { font-size: 17px; }
+.pa .ex-score { align-items: flex-start; }
+.pa .ex-big { font-family: var(--serif); font-size: 46px; font-weight: 700; line-height: 1; color: var(--primary); }
+.pa .ex-range { color: var(--muted); font-weight: 700; }
+.pa .ex-bench { list-style: none; margin: 4px 0 0; padding: 0; width: 100%; display: flex; flex-direction: column; gap: 6px; }
+.pa .ex-bench li { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: baseline; padding: 8px 10px; border-radius: 10px; background: var(--surface); font-size: 14px; }
+.pa .ex-bench em { font-style: normal; font-weight: 700; font-size: 12px; }
+.pa .ex-bench .is-above em { color: var(--primary); }
+.pa .ex-bench .is-near em { color: var(--reward-edge); }
+.pa .ex-bench .is-below em { color: var(--accent-ink); }
+.pa .ex-secs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.pa .ex-secs li { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 14px; }
+.pa .ex-sec-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pa .ex-sec-bar { height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.pa .ex-sec-bar span { display: block; height: 100%; background: var(--primary); border-radius: 999px; }
+.pa .ex-sec-num { font-weight: 700; font-variant-numeric: tabular-nums; }
+.pa .ex-sec-num small { color: var(--muted); }
+.pa .ex-weak { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pa .ex-weak li { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pa .ex-weak span { display: flex; flex-direction: column; }
+.pa .ex-weak small { color: var(--muted); }
+.pa .ex-weak .pa-btn { flex: none; padding-inline: 16px; min-height: 40px; }
+.pa .ex-fine { font-size: 13px; color: var(--muted); line-height: 1.45; }
+.pa .ex-acts { display: flex; flex-direction: column; gap: 10px; }
+@container pa (min-width: 720px) {
+  .pa .ex-intro, .pa .ex-review, .pa .ex-results { max-width: 640px; margin: 0 auto; width: 100%; }
+  .pa .ex-acts { flex-direction: row; }
+}

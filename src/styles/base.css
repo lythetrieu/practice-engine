@@ -1,0 +1,6 @@
+@layer base {
+  /* The brand colors (--primary, --bg, ...) are set on <html> from the pack (src/pack/index.ts brandStyle). */
+  body { background: var(--bg, #fff); color: #1d2320; font-family: var(--font-body); }
+  h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
+  *, *::before, *::after { box-sizing: border-box; }
+}

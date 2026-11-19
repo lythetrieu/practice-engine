@@ -1,0 +1,42 @@
+- id: q-rea-1
+  skill: q.reason
+  difficulty: 2
+  type: mc
+  prompt: "A baker puts 12 muffins in each box. She fills 7 boxes and has 5 muffins left over. How many muffins did she bake in all?"
+  choices: ["84", "89", "91", "96"]
+  answer: B
+  explanation: "Seven full boxes hold 7 × 12 = 84 muffins. Adding the 5 left over gives 84 + 5 = 89."
+  whyWrong:
+    - "84 counts only the muffins in the boxes and leaves out the 5 extra."
+    - null
+    - "91 adds 7 to 84 instead of the 5 muffins that were left over."
+    - "96 is 8 boxes of 12, but she filled only 7 boxes."
+  hint: "Find the muffins in the full boxes first, then add the extras."
+- id: q-rea-2
+  skill: q.reason
+  difficulty: 4
+  type: mc
+  prompt: "A number is doubled, then 7 is subtracted from the result, and the new result is divided by 3. The final answer is 5. What was the original number?"
+  choices: ["8", "9", "11", "13"]
+  answer: C
+  explanation: "Work backward. Multiply 5 by 3 to get 15, add 7 to get 22, then halve it to get 11. Check: 11 doubled is 22, minus 7 is 15, divided by 3 is 5."
+  whyWrong:
+    - "Doubling 8 gives 16, and 16 − 7 = 9, which divided by 3 is 3, not 5."
+    - "Doubling 9 gives 18, and 18 − 7 = 11, which is not a multiple of 3."
+    - null
+    - "Doubling 13 gives 26, and 26 − 7 = 19, which is not a multiple of 3."
+  hint: "Undo the steps in the opposite order, starting from 5."
+- id: q-cmp-1
+  skill: q.compare
+  difficulty: 3
+  type: mc
+  prompt: "Compare the two quantities.\nColumn A: 3/8 of 40\nColumn B: 40% of 35"
+  choices: ["Column A is greater", "Column B is greater", "The two are equal", "There is not enough information to tell"]
+  answer: A
+  explanation: "Column A is 3/8 of 40, which is 3 × 5 = 15. Column B is 0.4 × 35 = 14. Since 15 is greater than 14, Column A is greater."
+  whyWrong:
+    - null
+    - "Column B comes to 14, which is less than 15."
+    - "The values are 15 and 14, so they are close but not equal."
+    - "Both quantities are fixed numbers, so there is enough information to compare them."
+  hint: "Work out each column as a single number before comparing."

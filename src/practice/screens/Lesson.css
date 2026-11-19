@@ -1,0 +1,213 @@
+/* Lesson screen (ls-): the question loop.  */
+
+/* choice tap press/pop and the progress-bar shine (A/B pairs so they can replay) */
+.pa .fx-tapA { animation: lsTapA .24s ease-out; }
+.pa .fx-tapB { animation: lsTapB .24s ease-out; }
+@keyframes lsTapA { 0% { transform: scale(1); } 35% { transform: scale(.95); } 75% { transform: scale(1.03); } 100% { transform: scale(1); } }
+@keyframes lsTapB { 0% { transform: scale(1); } 35% { transform: scale(.95); } 75% { transform: scale(1.03); } 100% { transform: scale(1); } }
+.pa .ls-shineA { animation: lsShineA .8s ease-out .15s both; }
+.pa .ls-shineB { animation: lsShineB .8s ease-out .15s both; }
+@keyframes lsShineA { 0% { left: -30px; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { left: 100%; opacity: 0; } }
+@keyframes lsShineB { 0% { left: -30px; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { left: 100%; opacity: 0; } }
+
+/* header: quit, progress, count, sound */
+.pa .ls-head { position: relative; z-index: 2; flex: none; display: flex; align-items: center; gap: 10px; padding: 6px 12px 16px; }
+.pa .ls-icon-btn { flex: none; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: var(--muted); }
+.pa .ls-icon-btn.is-muted { background: var(--surface); }
+.pa .ls-track { flex: 1; min-width: 0; position: relative; height: 16px; }
+.pa .ls-bar { height: 16px; background: #EAE3D7; border-radius: 999px; overflow: hidden; }
+.pa .ls-fill { position: relative; overflow: hidden; height: 100%; background: var(--primary); border-radius: 999px; transition: width .5s cubic-bezier(.22, 1, .36, 1); }
+.pa .ls-gloss { position: absolute; left: 6px; right: 6px; top: 3px; height: 4px; border-radius: 999px; background: rgba(255, 255, 255, .18); }
+.pa .ls-shine { position: absolute; top: 0; bottom: 0; left: -30px; width: 22px; background: rgba(255, 255, 255, .55); transform: skewX(-20deg); opacity: 0; }
+.pa .ls-count { flex: none; min-width: 30px; text-align: right; font-weight: 700; font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pa .ls-combo {
+  position: absolute; left: 0; top: 21px; display: flex; align-items: center; gap: 4px; padding: 2px 10px 2px 7px; border-radius: 999px;
+  background: var(--accent); box-shadow: 0 3px 0 var(--accent-edge); color: var(--ink); font-size: 12px; font-weight: 700; line-height: 16px;
+  white-space: nowrap; transform-origin: left center;
+}
+.pa .ls-xp { position: absolute; right: 0; top: 18px; display: flex; align-items: center; gap: 4px; font-size: 15px; font-weight: 700; color: var(--primary); white-space: nowrap; }
+
+/* prompt, scratch pad, choices */
+.pa .ls-main { padding: 2px 16px 10px; overflow-x: hidden; display: flex; flex-direction: column; gap: 8px; }
+.pa .ls-prompt-wrap { flex: none; display: flex; flex-direction: column; gap: 8px; }
+.pa .ls-chip {
+  align-self: flex-start; display: flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border-radius: 999px;
+  background: var(--ok-tint); color: var(--primary); font-size: 13px; font-weight: 700; line-height: 18px;
+}
+.pa .ls-prompt { outline: none; font-family: var(--serif); font-weight: 400; font-size: 21px; line-height: 1.36; letter-spacing: -.1px; }
+.pa .ls-scratch { flex: none; display: flex; flex-direction: column; gap: 2px; padding: 6px 12px; border: 2px dashed var(--locked-edge); border-radius: 14px; background: #FFFFFF; }
+.pa .ls-scratch:focus-within { border-color: var(--primary); border-style: solid; }
+.pa .ls-scratch label { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; line-height: 16px; color: var(--muted); }
+.pa .ls-scratch label span { font-weight: 400; }
+.pa .ls-scratch textarea {
+  width: 100%; margin: 0; padding: 0; border: 0; outline: none; background: transparent; resize: none;
+  font: 16px/1.35 var(--sans); color: var(--ink);
+}
+.pa .ls-scratch textarea::placeholder { color: #6F746F; }
+.pa .ls-choices { flex: none; display: flex; flex-direction: column; gap: 10px; }
+.pa .ls-choice {
+  width: 100%; min-height: 50px; display: flex; align-items: center; gap: 12px; padding: 5px 12px 5px 10px; text-align: left;
+  border: 2px solid #8F887B; border-radius: 14px; background: #FFFFFF; box-shadow: 0 4px 0 var(--line-2); color: var(--ink);   /* 3.5:1 edge (WCAG 1.4.11) */
+  font: 400 19px/1.25 var(--sans); cursor: pointer;
+}
+.pa .ls-choice.is-locked { cursor: default; }
+.pa .ls-letter {
+  flex: none; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 9px;
+  border: 2px solid var(--line-2); background: transparent; font-size: 14px; font-weight: 700; color: var(--muted);
+}
+.pa .ls-opt { flex: 1; min-width: 0; }
+.pa .ls-elim-tag { flex: none; margin-left: auto; padding-left: 8px; font-size: 13px; color: var(--muted); }
+/* eliminated: muted ink on a cream card (no opacity, so the text keeps its contrast) */
+.pa .ls-choice.is-struck { background: var(--bg); color: var(--muted); }
+.pa .ls-choice.is-struck .ls-opt { text-decoration: line-through; }
+.pa .ls-choice.is-picked { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 7%, #FFFFFF); box-shadow: 0 4px 0 var(--primary); }
+.pa .ls-choice.is-picked .ls-letter { border-color: var(--primary); background: var(--primary); color: #FFFFFF; }
+.pa .ls-choice.is-right { border-color: var(--primary); background: var(--ok-tint); box-shadow: 0 4px 0 var(--primary); }
+.pa .ls-choice.is-right .ls-letter { border-color: var(--primary); background: var(--primary); color: #FFFFFF; }
+.pa .ls-choice.is-wrong { border-color: var(--accent-ink); background: var(--accent-tint); box-shadow: 0 4px 0 var(--accent-ink); }
+.pa .ls-choice.is-wrong .ls-letter { border-color: var(--accent-ink); background: var(--accent-ink); color: #FFFFFF; }
+.pa .ls-mark { flex: none; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 50%; animation-delay: 120ms; }
+.pa .ls-mark.ok { background: var(--primary); }
+.pa .ls-mark.no { background: var(--accent-ink); }
+
+/* tools + Check */
+.pa .ls-foot { flex: none; padding: 10px 16px calc(20px + env(safe-area-inset-bottom, 0px)); border-top: 2px solid var(--surface); display: flex; flex-direction: column; gap: 10px; }
+.pa .ls-tools { display: flex; gap: 8px; }
+.pa .ls-tool {
+  flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border: 2px solid var(--line-2); border-radius: 12px; background: #FFFFFF; color: var(--ink);
+  font: 700 14px var(--sans); display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.pa .ls-tool.on { border-color: var(--primary); background: var(--ok-tint); }
+.pa .ls-cta {
+  width: 100%; min-height: 54px; border: 0; border-radius: 16px; font: 700 18px var(--sans); cursor: pointer;
+  background: var(--primary); color: #FFFFFF; box-shadow: 0 5px 0 var(--primary-edge);
+}
+.pa .ls-cta[disabled] { background: #E9E2D6; color: var(--muted); box-shadow: 0 5px 0 var(--locked-edge); cursor: default; }
+.pa .ls-cta[disabled]:active { transform: none; }
+.pa .ls-cta.green { margin-top: 4px; }
+
+/* feedback sheet */
+.pa .ls-live { flex: none; }
+.pa .ls-sheet { padding: 14px 16px calc(20px + env(safe-area-inset-bottom, 0px)); border-radius: 22px 22px 0 0; display: flex; flex-direction: column; gap: 8px; }
+.pa .ls-sheet.ok { background: var(--ok-tint); border-top: 2px solid var(--sage-tint); }
+.pa .ls-sheet.no { background: var(--accent-tint); border-top: 2px solid #F3CDBF; }
+.pa .ls-sheet-top, .pa .ls-sheet-mid { display: flex; align-items: center; gap: 10px; }
+.pa .ls-sheet-mid { gap: 8px; }
+.pa .ls-pip {
+  flex: none; width: 40px; height: 40px; border-radius: 50%; background: #FFFFFF; border: 2px solid var(--sage-tint); overflow: hidden;
+  display: flex; align-items: center; justify-content: center; animation-delay: 160ms;
+}
+.pa .ls-sheet.no .ls-pip { border-color: #F3CDBF; }
+.pa .ls-say {
+  position: relative; padding: 5px 12px; background: #FFFFFF; border: 2px solid var(--sage-tint); border-radius: 12px;
+  font-size: 15px; font-weight: 700; line-height: 1.3; color: var(--ink); transform-origin: left center; animation-delay: 280ms;
+}
+.pa .ls-sheet.no .ls-say { border-color: #F3CDBF; }
+.pa .ls-say svg { position: absolute; left: -8px; top: 50%; margin-top: -7px; }
+.pa .ls-saved {
+  margin-left: auto; flex: none; display: flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 999px; background: #FFFFFF;
+  border: 2px solid #F3CDBF; color: var(--accent-ink); font-size: 12px; font-weight: 700; line-height: 16px; white-space: nowrap;
+  transform-origin: right center; animation-delay: 380ms;
+}
+.pa .ls-verdict { display: flex; align-items: center; gap: 8px; font-family: var(--serif); font-size: 22px; font-weight: 700; line-height: 1.2; color: var(--primary); }
+.pa .ls-verdict-icon { flex: none; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; animation-delay: 120ms; }
+.pa .ls-verdict-icon.ok { background: var(--primary); }
+.pa .ls-verdict-icon.no { background: var(--accent-ink); }
+.pa .ls-nq { font-family: var(--serif); font-size: 22px; font-weight: 700; line-height: 1.2; color: var(--accent-ink); white-space: nowrap; }
+.pa .ls-answer {
+  margin-left: auto; flex: none; display: flex; align-items: center; gap: 6px; padding: 3px 11px 3px 5px; border-radius: 999px; background: #FFFFFF;
+  border: 2px solid var(--primary); box-shadow: 0 3px 0 var(--primary); color: var(--primary); font-size: 15px; line-height: 20px; white-space: nowrap;
+  transform-origin: right center; animation-delay: 220ms;
+}
+.pa .ls-answer-dot { flex: none; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--primary); }
+.pa .ls-explain { font-size: 15px; line-height: 1.42; }
+
+/* quit sheet */
+.pa .ls-quit { display: grid; gap: 10px; margin-top: 16px; }
+
+/* no questions / nothing to redo */
+.pa .ls-notice { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 24px 28px; }
+.pa .ls-notice h1 { font-size: 26px; line-height: 1.2; }
+.pa .ls-notice p { font-size: 16px; color: var(--muted); max-width: 300px; }
+.pa .ls-notice-btn { align-self: stretch; margin-top: 8px; }
+
+/* ---- responsive (responsive on every device) ----
+   The phone design above is unchanged. The lesson has no tab bar, so the `pa` container is the whole window. */
+
+/* Narrow phones (under 380px): the feedback sheet's top row wraps (Pip, bubble and flag, then the Saved pill
+   under the bubble) instead of squeezing the bubble to one word a line and pushing the flag off the screen. */
+@container pa (max-width: 379px) {
+  .pa .ls-sheet-top { flex-wrap: wrap; row-gap: 6px; }
+  .pa .ls-sheet-top .pa-flag { order: 2; }
+  .pa .ls-saved { order: 3; margin-left: 50px; }
+  .pa .ls-tool { gap: 5px; padding: 0 8px; }   /* "Scratch work" stays on one line */
+}
+
+/* Medium and up: header row centered (max 880px), question in a centered 680px column, the action bar
+   and the feedback band span the window with their content in the same 680px column. */
+@container pa (min-width: 600px) {
+  .pa .ls-head { align-self: center; width: 100%; max-width: 880px; gap: 14px; padding: 12px 24px 18px; }
+  .pa .ls-main { gap: 12px; padding: clamp(12px, 12vh - 64px, 80px) max(24px, calc((100% - 680px) / 2)) 24px; }   /* a little air above on tall screens */
+  .pa .ls-prompt { font-size: 22px; }
+  .pa .ls-choices { gap: 12px; }
+  .pa .ls-choice { min-height: 56px; padding: 6px 16px 6px 12px; }
+
+  .pa .ls-foot { flex-direction: row; align-items: center; gap: 16px; padding: 14px max(24px, calc((100% - 680px) / 2)) calc(20px + env(safe-area-inset-bottom, 0px)); }
+  .pa .ls-tool { flex: none; padding: 0 16px; }
+  .pa .ls-foot .ls-cta { width: auto; min-width: 200px; margin-left: auto; padding: 0 32px; }
+
+  .pa .ls-sheet {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 24px; row-gap: 8px; align-items: center; border-radius: 0;
+    padding: 16px max(24px, calc((100% - 680px) / 2)) calc(22px + env(safe-area-inset-bottom, 0px));
+  }
+  .pa .ls-sheet > * { grid-column: 1; }
+  .pa .ls-sheet > .ls-cta { grid-column: 2; grid-row: 1 / span 3; width: auto; min-width: 200px; margin-top: 0; padding: 0 32px; }
+
+  .pa .ls-notice p { max-width: 420px; }
+  .pa .ls-notice-btn { align-self: center; width: 100%; max-width: 360px; }
+}
+
+/* Short windows (a phone in landscape): tighter bars, so the question keeps room to scroll. */
+@container pa (min-width: 600px) {
+  @media (max-height: 520px) {
+    .pa .ls-head { padding-top: 4px; padding-bottom: 12px; }
+    .pa .ls-main { padding-top: 2px; padding-bottom: 12px; }
+    .pa .ls-foot { padding-top: 8px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+    .pa .ls-sheet { row-gap: 4px; padding-top: 10px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+  }
+}
+
+/* Expanded: type and spacing up a little. */
+@container pa (min-width: 900px) {
+  .pa .ls-head { padding: 16px 32px 22px; }
+  .pa .ls-main { gap: 14px; padding-top: clamp(20px, 12vh - 64px, 80px); }
+  .pa .ls-chip { padding: 4px 12px 4px 10px; font-size: 14px; }
+  .pa .ls-prompt { font-size: 24px; line-height: 1.38; }
+  .pa .ls-choices { gap: 14px; }
+  .pa .ls-choice { min-height: 60px; gap: 14px; font-size: 20px; }
+  .pa .ls-letter { width: 34px; height: 34px; font-size: 15px; }
+  .pa .ls-tool { min-height: 48px; font-size: 15px; }
+  .pa .ls-cta { min-height: 56px; font-size: 19px; }
+  .pa .ls-sheet { padding-top: 20px; padding-bottom: calc(26px + env(safe-area-inset-bottom, 0px)); }
+  .pa .ls-say { font-size: 16px; }
+  .pa .ls-verdict, .pa .ls-nq { font-size: 24px; }
+  .pa .ls-explain { font-size: 16px; }
+}
+
+/* Mouse and trackpad: subtle hover states (the :active press effects stay). */
+@media (hover: hover) {
+  .pa .ls-icon-btn:hover { background: var(--surface); color: var(--ink); }
+  .pa .ls-sheet .ls-flag:hover { background: rgba(255, 255, 255, .7); color: var(--ink); }
+  .pa .ls-choice:not(.is-locked):not(.is-picked):not(.is-struck):hover:not(:active) {
+    border-color: var(--sage); box-shadow: 0 5px 0 var(--sage); transform: translateY(-1px);
+  }
+  .pa .ls-choice.is-struck:not(.is-locked):hover { border-color: var(--locked-edge); }
+  .pa .ls-tool:hover { border-color: var(--sage); }
+  .pa .ls-tool.on:hover { border-color: var(--primary); }
+  .pa .ls-cta:not([disabled]):hover, .pa .ls-quit .pa-btn:hover, .pa .ls-notice-btn:hover { filter: brightness(1.1); }
+}
+
+/* Accessibility (E4, P6): the word next to a right or wrong mark on an answer row */
+.pa .ls-tag { flex: none; font-size: 13px; font-weight: 700; line-height: 16px; }
+.pa .ls-tag.ok { color: var(--primary); }
+.pa .ls-tag.no { color: var(--accent-ink); }

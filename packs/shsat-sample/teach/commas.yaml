@@ -1,0 +1,56 @@
+warmup:
+  type: mc
+  prompt: Which sentence uses commas correctly?
+  choices:
+    - "We bought milk eggs, and bread."
+    - "We bought milk, eggs, and bread."
+    - "We bought, milk, eggs, and bread."
+    - "We bought milk, eggs, and, bread."
+  answer: "B"
+  explanation: "In a list of three or more, put a comma after each item except the last one. The word and comes right before the last item."
+
+learn:
+  title: Three jobs for a comma
+  lines:
+    - "Use commas to separate items in a list: red, blue, and green."
+    - "Use a comma after an opening word or phrase: After lunch, we left."
+    - "Use a comma before and, but, or so when it joins two full sentences: I was tired, but I kept going."
+    - "Never put a comma between a subject and its verb."
+
+guided:
+  - type: inline
+    prompt: Choose the correct punctuation in each menu.
+    text: "After the [[game|*game,]] we ate pizza[[ but|*, but]] the salad was cold."
+    explanation: "After the game is an opening phrase, so it needs a comma. But joins two full sentences (we ate pizza and the salad was cold), so a comma goes before it."
+    hint: "Look for an opening phrase, and for two sentences joined by but."
+  - type: mc
+    prompt: Which sentence is punctuated correctly?
+    choices:
+      - "The class, was quiet."
+      - "When the bell rang the class got quiet."
+      - "The bell rang, and the class got quiet."
+      - "The bell rang and, the class got quiet."
+    answer: "C"
+    whyWrong:
+      - "A comma should not split the subject (the class) from its verb (was)."
+      - "The opening phrase When the bell rang needs a comma after it."
+      - null
+      - "The comma belongs before the word and, not after it."
+    explanation: "The bell rang and the class got quiet are two full sentences. A comma goes before the joining word and."
+    hint: "Find the two full sentences. Where does the joining word sit?"
+
+mistake:
+  type: mistake
+  prompt: Find the mistake in this fix.
+  context: "A student fixed the commas in this sentence: After the storm the park was full of puddles and the kids jumped in."
+  lines:
+    - "Step 1: After the storm is an opening phrase, so add a comma after it."
+    - "Step 2: The subject is the park and the verb is was, so put a comma between them."
+    - "Step 3: Add a comma before and, because it joins two full sentences."
+  wrongLine: 2
+  reasons:
+    - "No comma goes between a subject and its verb."
+    - "Commas are used only after opening phrases."
+    - "The comma should go after the word was."
+  reason: "A"
+  explanation: "A comma between the park and was breaks up the subject and its verb. The correct sentence is: After the storm, the park was full of puddles, and the kids jumped in."

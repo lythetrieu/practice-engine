@@ -1,0 +1,7 @@
+worlds:
+  - section: math
+    name: Number Town
+    unit: Arithmetic
+    lessons:
+      - { title: Adding, skills: [m.add] }
+      - { title: Multiplying, skills: [m.times] }

@@ -1,0 +1,34 @@
+---
+/**
+ * The page frame for the site: <html> with the pack's brand colors, the head tags (SeoHead), a skip link, the header,
+ * the page's content and the footer. layouts/Site.astro is a thin wrapper around it.
+ */
+import '../../styles/global.css';
+import '../../styles/pages.css';
+import { brandStyle } from '../../pack';
+import Nav from './Nav.astro';
+import Footer from './Footer.astro';
+import SeoHead from './SeoHead.astro';
+import type { Props as SeoProps } from './SeoHead.astro';
+
+export interface Props extends SeoProps {
+  /** true (default): content goes in <main class="page wrap">. false: a bare <main>, for pages that lay out their own sections. */
+  page?: boolean;
+}
+const { page = true, ...seo } = Astro.props;
+---
+<!doctype html>
+<html lang="en" style={brandStyle()}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <SeoHead {...seo} />
+  <slot name="head" />
+</head>
+<body class="site">
+  <a class="skip" href="#main">Skip to content</a>
+  <Nav />
+  {page ? <main id="main" class="page wrap"><slot /></main> : <main id="main"><slot /></main>}
+  <Footer />
+</body>
+</html>

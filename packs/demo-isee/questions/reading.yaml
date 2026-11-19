@@ -1,0 +1,38 @@
+- id: r-bee-1
+  skill: r.passage
+  difficulty: 2
+  type: mc
+  passage: honeybee-dance
+  prompt: "Which statement best describes the main idea of the passage?"
+  choices:
+    - "Honeybees use a dance to tell other bees where to find food."
+    - "Honeybees prefer flowers that are close to the hive."
+    - "Honeybees build their honeycomb in a way that keeps the hive dark."
+    - "Scientists have trained honeybees to follow directions."
+  answer: A
+  explanation: "Every paragraph is about the waggle dance and how it tells hivemates the direction and distance of food."
+  whyWrong:
+    - null
+    - "The passage says flowers may be a kilometer or more away, and it never says bees prefer nearby ones."
+    - "The darkness of the hive is mentioned only in passing and is not the topic."
+    - "The scientists in the passage only watched the bees; they did not train them."
+  hint: "Ask what the passage spends most of its time explaining."
+- id: r-bee-2
+  skill: r.passage
+  difficulty: 4
+  type: mc
+  passage: honeybee-dance
+  prompt: "A scout bee waggles along a line tilted to the left of straight up on the comb. What can the other bees conclude?"
+  choices:
+    - "The flowers lie directly toward the sun."
+    - "The flowers lie to the right of the sun."
+    - "The flowers lie to the left of the sun."
+    - "The flowers lie directly away from the sun."
+  answer: C
+  explanation: "The passage says straight up means toward the sun and a tilt to the right means the flowers are to the right of the sun. By the same pattern, a tilt to the left means the flowers are to the left of the sun."
+  whyWrong:
+    - "Directly toward the sun would be shown by a waggle straight up, not a tilt."
+    - "A tilt to the right, not the left, would point to flowers on the right."
+    - null
+    - "The passage describes no dance that points directly away from the sun."
+  hint: "Use the pattern the passage gives for a tilt to the right."

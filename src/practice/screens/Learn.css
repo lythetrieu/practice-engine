@@ -1,0 +1,286 @@
+/* Learn (world map). Prefix: ln-. */
+
+/* header: Math/ELA toggle + HUD */
+.pa .ln-head {
+  position: relative; z-index: 4; flex: none; height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 0 16px; background: var(--bg); border-bottom: 2px solid var(--line);
+}
+.pa .ln-toggle { display: flex; gap: 4px; padding: 3px; background: var(--surface); border-radius: 999px; }
+.pa .ln-toggle button { min-height: 44px; padding: 0 18px; border-radius: 999px; font: 700 15px var(--sans); color: var(--ink); background: transparent; }
+.pa .ln-toggle button.on { background: var(--primary); color: #FFFFFF; }
+
+/* the map area: one 390 x 696 frame (scaled down on a narrower phone) */
+.pa .ln-body { position: relative; z-index: 1; overflow-x: hidden; }
+.pa .ln-fit { position: relative; margin: 0 auto; overflow: hidden; }
+.pa .ln-map { position: relative; width: 390px; height: 696px; overflow: hidden; transform-origin: 0 0; }
+.pa .ln-fit.grow, .pa .ln-fit.grow .ln-map { height: 100%; min-height: 696px; }
+/* a frame wider than 390 px: the map stays 390 wide and centered, its scenery bleeds out to the edges */
+.pa .ln-fit.grow { width: 100%; }
+.pa .ln-fit.grow .ln-map { overflow: visible; margin: 0 auto; }
+.pa .ln-page { position: absolute; left: 0; top: 0; width: 390px; height: 100%; min-height: 696px; }
+.pa .ln-bg { position: absolute; left: 0; top: 0; display: block; overflow: visible; }
+.pa .ln-scrim { position: absolute; z-index: 3; left: 0; top: 0; width: 390px; height: 100%; min-height: 696px; cursor: default; background: transparent; }
+
+/* world paging: the new page slides in from the side it came from (A/B copies replay) */
+.pa .ln-page.ln-next.a { animation: lnNextA .44s cubic-bezier(.22, 1, .36, 1) backwards; }
+.pa .ln-page.ln-next.b { animation: lnNextB .44s cubic-bezier(.22, 1, .36, 1) backwards; }
+.pa .ln-page.ln-prev.a { animation: lnPrevA .44s cubic-bezier(.22, 1, .36, 1) backwards; }
+.pa .ln-page.ln-prev.b { animation: lnPrevB .44s cubic-bezier(.22, 1, .36, 1) backwards; }
+@keyframes lnNextA { from { transform: translateX(100%); } to { transform: none; } }
+@keyframes lnNextB { from { transform: translateX(100%); } to { transform: none; } }
+@keyframes lnPrevA { from { transform: translateX(-100%); } to { transform: none; } }
+@keyframes lnPrevB { from { transform: translateX(-100%); } to { transform: none; } }
+
+/* world banner */
+.pa .ln-banner {
+  position: absolute; z-index: 5; left: 16px; right: 16px; top: 10px; padding: 10px 8px 11px 16px;
+  background: var(--primary); color: #FFFFFF; border-radius: 18px; box-shadow: 0 5px 0 var(--primary-edge);
+}
+.pa .ln-banner-row { display: flex; align-items: center; gap: 6px; }
+.pa .ln-banner-txt { flex: 1; min-width: 0; }
+.pa .ln-banner h1 { font-size: 22px; line-height: 27px; color: #FFFFFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pa .ln-eyebrow { font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--sage-tint); }
+.pa .ln-eyebrow.dark { color: var(--muted); }
+.pa .ln-eyebrow.coral { display: block; margin-bottom: 2px; color: var(--accent-ink); }
+.pa .ln-unit { margin: 4px 0 0; font-size: 14px; line-height: 18px; color: var(--sage-tint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px; }
+.pa .ln-pager { flex: none; display: flex; gap: 4px; }
+.pa .ln-wbtn {
+  width: 44px; height: 44px; border-radius: 12px; background: color-mix(in srgb, var(--primary) 85%, #FFFFFF); color: #FFFFFF; display: flex; align-items: center; justify-content: center;
+  transition: transform .08s ease, background .12s ease;
+}
+.pa .ln-wbtn:hover { background: #346B53; }
+.pa .ln-wbtn:active { transform: translateY(2px); }
+.pa .ln-wbtn[aria-disabled="true"] { opacity: .42; }
+.pa .ln-wbtn[aria-disabled="true"]:hover { background: color-mix(in srgb, var(--primary) 85%, #FFFFFF); }
+.pa .ln-more {
+  position: absolute; right: 2px; top: calc(100% + 12px); width: max-content; padding: 9px 12px; background: #FFFFFF; border: 2px solid var(--line);
+  border-radius: 14px; box-shadow: 0 3px 0 var(--line); font-size: 15px; line-height: 1.4; color: var(--ink); transform-origin: calc(100% - 28px) 0;
+}
+.pa .ln-more .caret { position: absolute; right: 17px; top: -10px; }
+
+/* stops */
+.pa .ln-stop { position: absolute; z-index: 4; }
+.pa .ln-node { position: relative; display: block; border-radius: 50%; transition: transform .08s ease; }
+.pa .ln-node:active { transform: translateY(5px); }
+.pa .ln-node svg { position: relative; display: block; overflow: visible; }
+.pa .ln-ring { position: absolute; border-radius: 50%; box-shadow: 0 0 0 9px rgba(232, 112, 79, .2); }
+.pa .ln-chip {
+  position: absolute; width: 24px; height: 24px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center;
+}
+.pa .ln-chip.done { border: 2px solid var(--primary); box-shadow: 0 2px 0 var(--primary-edge); }
+.pa .ln-chip.lock { border: 2px solid var(--locked-edge); box-shadow: 0 2px 0 var(--locked-edge); }
+.pa .ln-stars { display: flex; justify-content: center; gap: 1px; margin-top: -7px; }
+.pa .ln-stars svg { display: block; }
+
+/* "Level 3 · Start" bubble over the current stop */
+.pa .ln-bubble { position: absolute; z-index: 1; left: 50%; bottom: 100%; transform: translateX(-50%); margin-bottom: 2px; white-space: nowrap; pointer-events: none; }
+.pa .ln-bubble p {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; background: #FFFFFF; border: 2px solid var(--line); border-radius: 14px; padding: 5px 12px;
+  font-size: 15px; line-height: 1.2; font-weight: 700; color: var(--accent-ink); box-shadow: 0 3px 0 var(--line);
+}
+.pa .ln-bubble .caret { position: absolute; left: 50%; top: 100%; margin: 1px 0 0 -9px; }
+/* the first stop sits right under the banner: its bubble goes beside it */
+.pa .ln-bubble.side { left: 100%; bottom: auto; top: 50%; transform: translateY(-50%); margin: 0 0 0 10px; }
+.pa .ln-bubble.side p { align-items: flex-start; }
+.pa .ln-bubble.side .caret { left: -9px; top: 50%; margin: -9px 0 0 0; }
+
+/* SAMPLE tag */
+.pa .ln-sample { display: inline-block; padding: 1px 7px; border-radius: 6px; background: var(--reward); color: #3D2A06; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: .04em; }
+
+/* chest: the lid tilts open on its back-left hinge */
+.pa .ln-lid { transform-box: fill-box; transform-origin: 0 100%; }
+.pa .ln-lid.is-open { transform: rotate(-24deg); }
+.pa .ln-lid.opening { animation: lnLid .55s cubic-bezier(.34, 1.56, .64, 1) backwards; }
+@keyframes lnLid { 0% { transform: rotate(0); } 30% { transform: rotate(3deg); } 100% { transform: rotate(-24deg); } }
+.pa .ln-burst { position: absolute; width: 0; height: 0; pointer-events: none; z-index: 2; }
+.pa .ln-spark { position: absolute; display: block; }
+.pa .ln-spark-fly { display: block; animation: lnSparkFly .75s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes lnSparkFly {
+  0% { opacity: 0; transform: translateY(0) scale(.3); }
+  30% { opacity: 1; transform: translateY(-22px) scale(1.1); }
+  100% { opacity: 0; transform: translateY(-48px) scale(.8); }
+}
+.pa .ln-xpfloat { position: absolute; left: 0; top: -34px; transform: translateX(-50%); white-space: nowrap; }
+.pa .ln-xpfloat .fx-float {
+  display: block; padding: 2px 10px; border-radius: 999px; background: #FFFFFF; border: 2px solid var(--line); box-shadow: 0 2px 0 var(--line);
+  font: 700 16px var(--sans); color: var(--primary);
+}
+
+/* closed world: drifting fog and the "Jump ahead" card */
+.pa .ln-fog { position: absolute; left: 0; top: 0; width: 390px; height: 696px; pointer-events: none; z-index: 4; }
+.pa .ln-fog-svg { display: block; }
+.pa .fog-drift { animation: lnFogDrift 9s ease-in-out infinite alternate; }
+@keyframes lnFogDrift { from { transform: translateX(-8px); } to { transform: translateX(8px); } }
+.pa .ln-jump {
+  position: absolute; z-index: 4; left: 14px; right: 14px; top: 582px; padding: 8px 12px 12px; background: #FFFFFF; border: 2px solid var(--locked-edge);
+  border-radius: 18px; box-shadow: 0 4px 0 var(--locked-edge); text-align: center;
+}
+.pa .ln-jump .ln-eyebrow { margin-bottom: 6px; }
+.pa .ln-jumpbtn {
+  width: 100%; min-height: 54px; padding: 4px 14px; border-radius: 14px; background: var(--primary); color: #FFFFFF; box-shadow: 0 4px 0 var(--primary-edge);
+  font: 700 16px var(--sans); display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; text-align: left; line-height: 1.2;
+}
+.pa .ln-jumpbtn svg { flex: none; }
+.pa .ln-jumpbtn small { display: block; font-size: 13px; font-weight: 400; }
+.pa .ln-jumpbtn[disabled] { background: var(--locked); color: var(--muted); box-shadow: 0 4px 0 var(--locked-edge); cursor: default; }
+.pa a.ln-jumpbtn { color: #FFFFFF; }
+/* worlds with the park layout end near the bottom-left: the card sits in the free corner instead */
+.pa .ln-jump.compact { left: 226px; right: 8px; top: 600px; padding: 6px 8px 8px; border-radius: 16px; }
+.pa .ln-jump.compact .ln-eyebrow { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.pa .ln-jump.compact .ln-jumpbtn { min-height: 62px; padding: 4px 8px; font-size: 14px; gap: 6px; }
+.pa .ln-jump.compact .ln-jumpbtn small { font-size: 12px; }
+
+/* Pip and his tip */
+.pa .ln-pip { position: absolute; z-index: 4; right: 12px; top: 108px; width: 58px; height: 58px; border-radius: 18px; }
+.pa .ln-pip-bob, .pa .ln-pip-hop { display: block; width: 58px; height: 58px; }
+.pa .ln-pip-hop { transform-origin: 50% 100%; }
+.pa .ln-pip svg { display: block; }
+.pa .ln-pip-eye { transform-box: fill-box; transform-origin: center; animation: lnBlink 4s linear infinite; }
+@keyframes lnBlink { 0%, 94%, 100% { transform: scaleY(1); } 95%, 98% { transform: scaleY(.1); } }
+.pa .ln-tipwrap { position: absolute; z-index: 6; right: 10px; top: 174px; width: 168px; }
+.pa .ln-tip { position: relative; transform-origin: calc(100% - 30px) 0; }
+.pa .ln-tip .caret { position: absolute; right: 21px; top: -10px; }
+.pa .ln-tip p { padding: 10px 12px; background: #FFFFFF; border: 2px solid var(--line); border-radius: 16px; box-shadow: 0 3px 0 var(--line); font-size: 15px; line-height: 1.4; color: var(--ink); }
+
+/* popover card under a stop (above it when there is no room) */
+.pa .ln-pop {
+  position: absolute; z-index: 6; width: 248px; padding: 14px 16px 16px; background: #FFFFFF; border: 2px solid var(--line); border-radius: 18px;
+  box-shadow: 0 4px 0 var(--line); text-align: left;
+  scroll-margin: 8px; /* when Learn.tsx scrolls a card into view on a short screen, keep its 3D edge clear */
+}
+.pa .ln-pop:focus { outline: none; }
+.pa .ln-pop .caret { position: absolute; }
+.pa .ln-pop .caret.up { top: -10px; }
+.pa .ln-pop .caret.down { top: 100%; }
+.pa .ln-popx { position: absolute; top: 0; right: 0; width: 44px; height: 44px; border-radius: 14px; color: var(--muted); display: flex; align-items: center; justify-content: center; }
+.pa .ln-popx:hover { background: var(--surface); }
+.pa .ln-kicker { margin: 0 30px 4px 0; font-size: 13px; line-height: 1.3; color: var(--muted); }
+.pa .ln-pop h2 { margin: 0 30px 0 0; display: flex; align-items: center; gap: 6px; font-size: 18px; line-height: 1.25; }
+.pa .ln-pop h2 svg { flex: none; }
+.pa .ln-line { margin: 6px 0 0; font-size: 15px; line-height: 1.4; color: var(--muted); }
+.pa .ln-chips { margin: 10px 0 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.pa .ln-xp { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px 3px 7px; border-radius: 999px; background: var(--ok-tint); color: var(--primary); font-size: 14px; font-weight: 700; }
+.pa .ln-act {
+  margin-top: 14px; width: 100%; min-height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 14px;
+  text-decoration: none; font: 700 17px var(--sans);
+}
+.pa .ln-act.coral { background: var(--accent); color: var(--ink); box-shadow: 0 4px 0 var(--accent-edge); }
+.pa .ln-act.green { background: var(--primary); color: #FFFFFF; box-shadow: 0 4px 0 var(--primary-edge); font-size: 16px; }
+.pa a.ln-act.coral { color: var(--ink); }
+.pa a.ln-act.green { color: #FFFFFF; }
+/* the whole bubble is a tap target (a transparent button over it; min 44 px tall) */
+.pa .ln-bubble .ln-bubble-go { position: absolute; inset: -8px -6px; z-index: 1; pointer-events: auto; border-radius: 16px; min-height: 44px; cursor: pointer; }
+.pa .ln-bubble p:has(.ln-bubble-go:active) { transform: translateY(2px); }
+
+/* ---- wider screens (responsive on every device) ----
+   Below 600 px the screen is the phone design above. Learn.tsx scales the whole 390 x 696 map frame by k
+   (below 1 only when that makes the whole drawing fit, never below 0.8; a screen too short for that keeps
+   k = 1 and scrolls) and sets --ln-col on the header:
+   - 600-899: one centered map column (at most 520 px wide), header controls lined up with the world banner;
+   - >= 900: the map, scaled to the height (at most 1.25x), beside a side panel with the world banner, the
+     world's progress and a plain list of the 7 stops (SIDE_W / GAP_W / PAD_W and SIDE_W_BIG / GAP_W_BIG
+     in Learn.tsx match the grids below and at >= 1400). */
+.pa .ln-cols { display: contents; }
+
+@container pa (min-width: 600px) {
+  /* the map frame sits on a field of its own color: soften the scenery where the drawing stops */
+  .pa .ln-mid .ln-bg, .pa .ln-wide .ln-bg {
+    height: 1600px; /* a mask clips to the box: give the scenery below the drawing room (LearnMaps: xMidYMin) */
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 22px, #000 calc(100% - 22px), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 22px, #000 calc(100% - 22px), transparent);
+  }
+  .pa .ln-mid .ln-fog-svg, .pa .ln-wide .ln-fog-svg {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 30px, #000 calc(100% - 30px), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 30px, #000 calc(100% - 30px), transparent);
+  }
+  .pa .ln-head { padding-left: max(16px, calc((100% - var(--ln-col, 520px)) / 2)); padding-right: max(16px, calc((100% - var(--ln-col, 520px)) / 2)); }
+}
+
+@container pa (min-width: 900px) {
+  .pa .ln-head { height: 76px; }
+  .pa .ln-toggle button { min-height: 48px; padding: 0 22px; font-size: 16px; }
+  .pa .ln-cols {
+    display: grid; grid-template-columns: auto 360px; justify-content: center; align-items: start; column-gap: 48px;
+    min-height: 100%; padding: 0 24px;
+  }
+  /* the map stays in view when the side panel is taller than the screen */
+  .pa .ln-wide .ln-fit { position: sticky; top: 0; margin: 0; }
+  .pa .ln-side { display: flex; flex-direction: column; gap: 12px; padding: 16px 0 20px; min-width: 0; }
+
+  /* the world banner, moved from the top of the map into the panel */
+  .pa .ln-side .ln-banner { position: relative; left: auto; right: auto; top: auto; padding: 14px 10px 15px 18px; }
+  .pa .ln-side .ln-banner h1 { font-size: 26px; line-height: 31px; white-space: normal; }
+  .pa .ln-side .ln-unit { font-size: 15px; line-height: 20px; white-space: normal; }
+
+  /* cards */
+  .pa .ln-card { padding: 14px 16px 16px; background: #FFFFFF; border: 2px solid var(--line); border-radius: 18px; box-shadow: 0 4px 0 var(--line); }
+  .pa .ln-card .ln-cardh { font-family: var(--sans); font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+  /* world progress */
+  .pa .ln-prog-n { font-family: var(--serif); font-size: 20px; line-height: 26px; font-weight: 700; color: var(--ink); }
+  .pa .ln-prog-n b { color: var(--primary); }
+  .pa .ln-segs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 10px; }
+  .pa .ln-segs span { height: 12px; border-radius: 999px; background: var(--locked); box-shadow: inset 0 -3px 0 var(--locked-edge); }
+  .pa .ln-segs span.on { background: var(--sage); box-shadow: inset 0 -3px 0 var(--sage-edge); }
+  .pa .ln-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .pa .ln-pill {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 3px 11px 3px 9px; border-radius: 999px;
+    background: var(--surface); color: var(--muted); font-size: 14px; line-height: 18px; font-weight: 700;
+  }
+  .pa .ln-pill svg { flex: none; }
+  .pa .ln-pill.ready { background: var(--accent-tint); color: var(--accent-ink); }
+  .pa .ln-pill.done { background: var(--ok-tint); color: var(--primary); }
+
+  /* the list of stops */
+  .pa .ln-list ol { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 2px; }
+  .pa .ln-row { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 4px 8px; margin: 0 -8px; border-radius: 14px; }
+  .pa .ln-row.current { background: var(--accent-tint); }
+  .pa .ln-row-tok { flex: none; width: 40px; height: 40px; }
+  .pa .ln-row-tok svg { display: block; overflow: visible; }
+  .pa .ln-row-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .pa .ln-row-name { font-size: 16px; line-height: 20px; font-weight: 700; color: var(--ink); }
+  .pa .ln-row.locked .ln-row-name, .pa .ln-row.soon .ln-row-name { color: var(--muted); }
+  .pa .ln-row-st { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 14px; line-height: 18px; color: var(--muted); }
+  .pa .ln-row.current .ln-row-st { color: var(--accent-ink); font-weight: 700; }
+  .pa .ln-row.done .ln-row-st { color: var(--primary); }
+  .pa .ln-row-stars { display: inline-flex; gap: 1px; }
+  .pa .ln-row-stars svg { display: block; }
+  .pa .ln-rowbtn {
+    flex: none; min-height: 44px; min-width: 76px; padding: 0 16px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+    background: var(--accent); color: var(--ink); box-shadow: 0 4px 0 var(--accent-edge); font: 700 16px var(--sans); text-decoration: none;
+  }
+  .pa a.ln-rowbtn { color: var(--ink); }
+}
+
+/* pointer devices: tokens lift a little, buttons brighten (presses still sink on :active) */
+@media (hover: hover) {
+  .pa .ln-node:hover:not(:active) { transform: translateY(-2px); }
+  .pa .ln-toggle button:not(.on):hover { background: rgba(255, 255, 255, .7); }
+  .pa .ln-act:hover, .pa .ln-rowbtn:hover, .pa .ln-jumpbtn:not([disabled]):hover { filter: brightness(1.06); }
+  .pa .ln-pip:hover .ln-pip-bob { filter: brightness(1.04); }
+}
+
+/* big screens: the map grows with the height, so the panel steps up a little too
+   (380 / 56 = SIDE_W_BIG / GAP_W_BIG in Learn.tsx) */
+@container pa (min-width: 1400px) {
+  .pa .ln-cols { grid-template-columns: auto 380px; column-gap: 56px; }
+  .pa .ln-side { gap: 14px; padding-top: 24px; }
+  .pa .ln-side .ln-banner h1 { font-size: 28px; line-height: 34px; }
+  .pa .ln-prog-n { font-size: 22px; line-height: 28px; }
+  .pa .ln-row { min-height: 56px; }
+  .pa .ln-row-tok { width: 44px; height: 44px; }
+  .pa .ln-row-tok svg { width: 44px; height: 44px; }
+  .pa .ln-row-name { font-size: 17px; line-height: 22px; }
+  .pa .ln-row-st { font-size: 15px; line-height: 20px; }
+}
+
+/* ---- the tutor on the map ---- */
+/* a stop on the plan ("!") or due for review (arrow): a small round mark at the top left of the token */
+.pa .ln-tmark { position: absolute; left: 6%; top: 4%; z-index: 2; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  border: 2px solid #FFFFFF; box-shadow: 0 2px 0 rgba(29, 35, 32, .2); }
+.pa .ln-tmark.plan { background: var(--accent-btn); }
+.pa .ln-tmark.due { background: var(--primary); }
+.pa .ln-tutor { margin: 8px 0 0; padding: 6px 10px; border-radius: 10px; background: var(--ok-tint); color: var(--primary); font-size: 14px; line-height: 1.35; font-weight: 700; }
+.pa .ln-act2 { display: flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 8px; border-radius: 14px; border: 2px solid var(--line);
+  background: #FFFFFF; color: var(--primary); font-weight: 700; font-size: 15px; text-decoration: none; box-shadow: 0 3px 0 var(--line); }
+.pa a.ln-act2:hover { color: var(--primary); border-color: var(--sage); }

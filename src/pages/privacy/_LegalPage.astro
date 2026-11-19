@@ -1,0 +1,38 @@
+---
+// The frame for /privacy/ and /terms/: the site layout, the "this is a template" banner when the pack has no legal block,
+// and the styles for long text. The leading underscore keeps this file out of the routes.
+import Site from '../../layouts/Site.astro';
+import { legal } from './_legal';
+
+export interface Props { title: string; description: string; path: string; eyebrow: string; missing?: string[] }
+const { title, description, path, eyebrow, missing = [] } = Astro.props;
+---
+<Site title={title} description={description} path={path}>
+  {/* Astro drops HTML comments from a template, so this one is written out as raw HTML to stay in the page source. */}
+  <Fragment set:html="<!-- This page is a TEMPLATE: a starting point, not legal advice. Have a lawyer read it before you go live, and keep it true to what the code does (docs/data-and-admin.md). -->" />
+  <div class="eyebrow">{eyebrow}</div>
+  <h1>{title.split(' | ')[0]}</h1>
+  {!legal.configured && (
+    <p class="callout legal-banner" role="note"><b>This is a template.</b> Fill in the legal block in pack.yaml before you go live.</p>
+  )}
+  {legal.configured && missing.length > 0 && (
+    <p class="callout legal-banner" role="note"><b>This is a template.</b> Add {missing.join(' and ')} to the legal block in pack.yaml before you go live.</p>
+  )}
+  <p class="note">Effective {legal.effective}</p>
+  <div class="legal"><slot /></div>
+</Site>
+
+<style is:global>
+  .legal { max-width: 46rem; }
+  .legal h2 { font-size: clamp(1.3rem, 1.1rem + 1vw, 1.7rem); margin: 2.2rem 0 .5rem; }
+  .legal h3 { font-size: 1.1rem; margin: 1.4rem 0 .3rem; }
+  .legal ul { list-style: disc; padding-left: 1.3rem; margin: .5rem 0; }
+  .legal li { margin: .3rem 0; }
+  .legal .tablewrap { overflow-x: auto; margin: .8rem 0; }
+  .legal table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+  .legal th, .legal td { text-align: left; vertical-align: top; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+  .legal th { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); white-space: nowrap; }
+  .legal .short { background: var(--surface); border-radius: 18px; padding: 6px 22px 10px; margin: 1.2rem 0; }
+  .legal .short h2 { margin-top: 1rem; }
+  .legal-banner { border-left-color: var(--red); background: color-mix(in srgb, var(--red) 10%, #fff); }
+</style>

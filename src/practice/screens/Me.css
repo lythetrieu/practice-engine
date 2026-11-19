@@ -1,0 +1,368 @@
+/* Me screen. Everything is prefixed me- and scoped under .pa.
+   The motion kit (fx-*) and the reduced-motion / .still guards live in ../app.css. */
+
+.pa .me-main { padding: 14px 16px 4px; display: flex; flex-direction: column; gap: 10px; overflow-x: hidden; }
+.pa .me-main > * { flex: none; }
+
+/* header */
+.pa .me-head { display: flex; align-items: center; gap: 12px; }
+.pa .me-avatar {
+  flex: none; width: 46px; height: 46px; border-radius: 50%; background: var(--primary); box-shadow: 0 3px 0 var(--primary-edge); color: #FFFFFF;
+  display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 22px; font-weight: 700;
+}
+.pa .me-who { flex: 1; min-width: 0; }
+.pa .me-who h1 { font-size: 24px; line-height: 27px; color: var(--primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pa .me-who p { margin: 1px 0 0; font-size: 15px; line-height: 18px; color: var(--muted); }
+.pa .me-gear {
+  flex: none; width: 44px; height: 44px; border-radius: 14px; border: 2px solid var(--line); background: #FFFFFF; box-shadow: 0 3px 0 var(--line);
+  color: var(--muted); display: flex; align-items: center; justify-content: center;
+}
+.pa .me-gear:active { box-shadow: none; }
+
+/* a parent's device (family profiles, ../family.ts): who is practicing, and Switch; or, with no child on the
+   account yet, one quiet line. Full-width rows under the name. */
+.pa .me-head { flex-wrap: wrap; row-gap: 10px; }
+.pa .me-as {
+  flex: 1 1 100%; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 5px 5px 5px 14px;
+  border: 2px solid var(--line); border-radius: 16px; background: #FFFFFF; box-shadow: 0 3px 0 var(--line);
+}
+.pa .me-as-t { flex: 1; min-width: 0; font-size: 15px; line-height: 20px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pa .me-as-t b { color: var(--ink); }
+.pa .me-swap {
+  flex: none; min-height: 44px; padding: 0 14px 0 12px; display: flex; align-items: center; gap: 6px; border-radius: 12px;
+  background: var(--ok-tint); color: var(--primary); font-size: 15px; font-weight: 700; transition: transform .08s ease;
+}
+.pa .me-swap:active { transform: translateY(2px); }
+/* offline (../offline.ts): Switch waits for a connection, with a short note under the row */
+.pa .me-as.off { flex-wrap: wrap; row-gap: 0; padding-bottom: 8px; }
+.pa .me-swap:disabled { background: var(--locked); color: var(--muted); cursor: default; transform: none; }
+.pa .me-as-off { flex: 1 1 100%; font-size: 13px; line-height: 18px; color: var(--muted); }
+.pa .me-hint { flex: 1 1 100%; font-size: 14px; line-height: 19px; color: var(--muted); }
+.pa .me-hint a { position: relative; font-weight: 700; }
+/* an inline link in a sentence: a larger invisible tap area (about 44 px tall), the text and focus ring unchanged */
+.pa .me-hint a::after { content: ""; position: absolute; inset: -12px -4px; }
+
+/* stats */
+.pa .me-stats {
+  margin: 0; padding: 6px 0; list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: #FFFFFF; border: 2px solid var(--line); border-radius: 18px; box-shadow: 0 3px 0 var(--line);
+}
+.pa .me-stats li { min-width: 0; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.pa .me-stats li + li { border-left: 2px solid #F2ECE2; }
+.pa .me-stat-n { display: flex; align-items: center; gap: 4px; font-size: 18px; font-weight: 700; line-height: 22px; color: var(--ink); }
+.pa .me-stat-l { font-size: 12px; line-height: 15px; color: var(--muted); }
+
+/* shared bits */
+.pa .me-abs { position: absolute; display: block; }
+.pa .me-bar { display: block; height: 12px; border-radius: 999px; background: #EAE3D7; overflow: hidden; }
+.pa .me-fill { display: block; height: 100%; border-radius: 999px; background: var(--accent); animation: meFill .7s cubic-bezier(.22, 1, .36, 1) backwards; transform-origin: left center; }
+@keyframes meFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes meDim { from { opacity: 0; } to { opacity: 1; } }
+
+/* "Almost there" */
+.pa .me-almost {
+  margin-top: 2px; padding: 10px 14px 10px 12px; border: 2px solid var(--line); border-radius: 20px; background: #FFFFFF; box-shadow: 0 4px 0 var(--line);
+  display: flex; align-items: center; gap: 12px;
+}
+.pa .me-almost-art { position: relative; flex: none; width: 60px; height: 68px; }
+.pa .me-almost-badge { left: 10px; top: 10px; }
+.pa .me-ring { animation: meRing 1s cubic-bezier(.22, 1, .36, 1) backwards; }
+@keyframes meRing { from { stroke-dashoffset: 169.6; } }
+.pa .me-almost-pill {
+  position: absolute; left: 50%; top: 49px; transform: translateX(-50%); padding: 0 6px; border: 2px solid var(--line); border-radius: 999px; background: #FFFFFF;
+  font-size: 12px; font-weight: 700; line-height: 15px; color: var(--accent-ink); white-space: nowrap;
+}
+.pa .me-almost-body { flex: 1; min-width: 0; }
+.pa .me-eyebrow { font-size: 12px; font-weight: 700; line-height: 15px; letter-spacing: .07em; text-transform: uppercase; color: var(--accent-ink); }
+.pa .me-almost-top { margin-top: 1px; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 8px; }
+.pa .me-almost-top h2 { font-size: 19px; line-height: 23px; }
+.pa .me-more { flex: none; font-size: 15px; font-weight: 700; line-height: 19px; color: var(--accent-ink); }
+.pa .me-almost-how { margin-top: 1px; font-size: 15px; line-height: 19px; color: var(--muted); }
+.pa .me-segs { margin-top: 7px; display: flex; gap: 4px; }
+.pa .me-seg { flex: 1; height: 8px; border-radius: 999px; background: #EAE3D7; overflow: hidden; }
+.pa .me-seg.next { background: var(--accent-tint); box-shadow: inset 0 0 0 2px var(--accent); }
+.pa .me-seg .me-fill { background: var(--accent); }
+
+/* badges section, chips */
+.pa .me-badges { margin-top: 2px; display: flex; flex-direction: column; gap: 10px; }
+.pa .me-badges-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-left: 4px; }
+.pa .me-badges-head h2 { font-size: 20px; line-height: 24px; }
+.pa .me-chips { display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: #F2ECE2; }
+.pa .me-chip {
+  min-height: 44px; padding: 0 8px 0 11px; border-radius: 999px; background: transparent; color: var(--ink);
+  font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 4px; transition: transform .08s ease;
+}
+.pa .me-chip:active { transform: translateY(2px); }
+.pa .me-chip.on { background: var(--primary); color: #FFFFFF; }
+.pa .me-chip-n {
+  min-width: 20px; padding: 0 6px; border-radius: 999px; background: #FFFFFF; color: var(--muted); font-size: 12px; line-height: 18px; text-align: center;
+}
+.pa .me-chip.on .me-chip-n { background: color-mix(in srgb, var(--primary) 85%, #FFFFFF); color: #FFFFFF; }
+
+/* grid */
+.pa .me-grid { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; align-content: start; }
+.pa .me-grid > li { min-width: 0; }
+.pa .me-empty { grid-column: 1 / -1; padding: 24px 12px; text-align: center; font-size: 15px; color: var(--muted); animation: none; }
+.pa .me-cell {
+  width: 100%; padding: 2px 0; border-radius: 16px; background: transparent; color: var(--ink);
+  display: flex; flex-direction: column; align-items: center; transition: background .15s ease, transform .08s ease;
+}
+.pa .me-cell:hover { background: #F2ECE2; }
+.pa .me-cell:active { transform: scale(.96); }
+.pa .me-art { position: relative; flex: none; display: block; width: 58px; height: 58px; }
+.pa .me-disc { position: absolute; left: 0; top: 0; width: 58px; height: 58px; border-radius: 50%; }
+.pa .me-art-e { left: 3px; top: 2px; }
+.pa .me-art-l { left: 8px; top: 8px; }
+.pa .me-lock { position: absolute; right: -3px; bottom: -2px; }
+.pa .me-ringSm { animation: meRingSm .9s cubic-bezier(.22, 1, .36, 1) backwards; }
+.pa .me-ringSmA { animation: meRingSmA .9s cubic-bezier(.22, 1, .36, 1) backwards; }
+.pa .me-ringSmB { animation: meRingSmB .9s cubic-bezier(.22, 1, .36, 1) backwards; }
+@keyframes meRingSm { from { stroke-dashoffset: 169.6; } }
+@keyframes meRingSmA { from { stroke-dashoffset: 169.6; } }
+@keyframes meRingSmB { from { stroke-dashoffset: 169.6; } }
+.pa .me-name {
+  width: 100%; margin-top: 4px; font-size: 12.5px; font-weight: 700; line-height: 15px; text-align: center;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+}
+.pa .me-date { display: flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 700; line-height: 15px; color: var(--primary); white-space: nowrap; }
+.pa .me-short { font-size: 12px; font-weight: 700; line-height: 15px; color: var(--muted); white-space: nowrap; }
+
+/* badge detail sheet (uses ui.tsx Sheet; this restyles it as a white sheet) */
+.pa-scrim:has(> .me-sheet) { animation: meDim .25s ease backwards; }
+.pa .pa-sheet.me-sheet {
+  padding: 10px 22px calc(28px + env(safe-area-inset-bottom, 0px)); background: #FFFFFF; border-radius: 26px 26px 0 0; box-shadow: 0 -6px 24px rgba(29, 35, 32, .18);
+  display: flex; flex-direction: column; align-items: center; text-align: center; outline: none;
+}
+.pa .me-sheet .pa-sheet-x { top: 10px; }
+.pa .me-handle { display: block; width: 44px; height: 5px; border-radius: 999px; background: var(--line-2); }
+.pa .me-stage { position: relative; flex: none; width: 200px; height: 200px; margin-top: 8px; }
+.pa .me-rays { position: absolute; left: 0; top: 0; width: 200px; height: 200px; animation: meRays 20s linear infinite; }
+.pa .me-rays svg { display: block; }
+@keyframes meRays { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+.pa .me-twinkle { position: absolute; animation: meTwinkle 1.6s ease-in-out infinite backwards; }
+@keyframes meTwinkle {
+  0%, 100% { opacity: .25; transform: scale(.5) rotate(0); }
+  50% { opacity: 1; transform: scale(1) rotate(25deg); }
+}
+.pa .me-bigart { position: absolute; left: 30px; top: 30px; width: 140px; height: 140px; }
+.pa .me-bigart svg:first-child { display: block; }
+.pa .me-biglock { position: absolute; right: 2px; bottom: 6px; }
+.pa .me-sheet-name { margin: 6px 0 0; font-size: 24px; line-height: 1.2; }
+.pa .me-sheet-how { margin: 6px 0 0; font-size: 16px; line-height: 1.4; color: var(--muted); }
+.pa .me-earned-pill {
+  margin: 14px 0 0; display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px 6px 10px; border-radius: 999px; background: var(--ok-tint); color: var(--primary);
+  font-size: 15px; font-weight: 700;
+}
+.pa .me-prog { margin-top: 14px; width: 100%; max-width: 300px; text-align: left; }
+.pa .me-prog-top { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; font-weight: 700; color: var(--ink); }
+.pa .me-prog .me-bar { margin-top: 6px; }
+.pa .me-cheer { margin-top: 10px; font-size: 16px; font-weight: 700; line-height: 1.35; text-align: center; color: var(--accent-ink); }
+.pa .me-cta {
+  margin-top: 20px; width: 100%; min-height: 54px; border-radius: 16px; background: var(--primary); color: #FFFFFF; box-shadow: 0 5px 0 var(--primary-edge);
+  font-family: var(--sans); font-size: 18px; font-weight: 700;
+}
+
+/* Settings sheet */
+.pa .me-rows { margin-top: 14px; display: grid; gap: 8px; }
+.pa .me-row {
+  width: 100%; min-height: 60px; padding: 8px 14px; border: 2px solid var(--line-2); border-radius: 16px; background: #FFFFFF; box-shadow: 0 3px 0 var(--line-2);
+  display: flex; align-items: center; gap: 10px; text-align: left; transition: transform .08s ease;
+}
+.pa .me-row:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line-2); }
+.pa .me-row-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pa .me-row-name { font-weight: 700; font-size: 17px; line-height: 22px; }
+.pa .me-row-sub { font-size: 14px; line-height: 18px; color: var(--muted); }
+.pa .me-row-val { flex: none; font-size: 15px; font-weight: 700; color: var(--muted); }
+.pa .me-switch { flex: none; position: relative; width: 52px; height: 30px; border-radius: 999px; background: var(--locked-edge); transition: background .15s ease; }
+.pa .me-switch.on { background: var(--primary); }
+.pa .me-knob { position: absolute; left: 3px; top: 3px; width: 24px; height: 24px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 3px rgba(29, 35, 32, .3); transition: transform .15s ease; }
+.pa .me-switch.on .me-knob { transform: translateX(22px); }
+.pa .me-danger .me-row-name { color: var(--accent-ink); }
+.pa .me-confirm { padding: 14px; border: 2px solid var(--accent); border-radius: 16px; background: var(--accent-tint); }
+.pa .me-confirm-title { font-family: var(--serif); font-size: 19px; font-weight: 700; line-height: 24px; color: var(--accent-ink); }
+.pa .me-confirm-text { margin-top: 2px; font-size: 15px; line-height: 20px; color: var(--ink); }
+.pa .me-confirm-btns { margin-top: 12px; display: grid; gap: 10px; }
+
+/* ---- Responsive (follow the device: responsive on every device) ----
+   Below 600 px the approved phone layout above is unchanged; these rules only adapt it.
+   .pa-screen is the size container `pa`, so the widths here are the screen's own width, not the window's. */
+
+/* narrow phones (< 390): the filter chips drop under the "Badges" title and share that row,
+   instead of running off the right edge */
+@container pa (max-width: 389px) {
+  .pa .me-badges-head { flex-wrap: wrap; row-gap: 8px; }
+  .pa .me-chips { flex: 1 1 auto; }
+  .pa .me-chip { flex: 1 1 auto; justify-content: center; }
+}
+
+/* medium (600-899: tablets in portrait, phones in landscape): one centered column, max 720 px */
+@container pa (min-width: 600px) {
+  .pa .me-main { gap: 14px; padding: 24px max(24px, calc((100cqi - 720px) / 2)) 36px; }
+  .pa .me-head { gap: 14px; }
+  .pa .me-avatar { width: 52px; height: 52px; font-size: 24px; }
+  .pa .me-who h1 { font-size: 26px; line-height: 30px; }
+  .pa .me-stats { padding: 10px 0; border-radius: 20px; }
+  .pa .me-stat-n { font-size: 20px; line-height: 25px; }
+  .pa .me-stat-l { font-size: 13px; line-height: 17px; }
+  .pa .me-almost { padding: 14px 22px 14px 16px; gap: 16px; border-radius: 22px; }
+  .pa .me-almost-top h2 { font-size: 20px; line-height: 25px; }
+  .pa .me-segs { margin-top: 9px; gap: 5px; }
+  .pa .me-badges { margin-top: 6px; gap: 14px; }
+  .pa .me-badges-head h2 { font-size: 21px; line-height: 26px; }
+  /* 5-7 columns as the width allows (auto-fill, min 120 px) */
+  .pa .me-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px 4px; }
+  .pa .me-cell { padding: 8px 4px 10px; }
+  .pa .me-name { margin-top: 6px; font-size: 13.5px; line-height: 17px; }
+  .pa .me-date, .pa .me-short { font-size: 12.5px; line-height: 16px; }
+
+  /* the badge sheet is a centered card here (app.css): round all corners, no drag handle */
+  .pa .pa-sheet.me-sheet { max-width: 440px; border-radius: 26px; padding: 22px 24px 26px; box-shadow: 0 24px 60px rgba(29, 35, 32, .25); }
+  .pa .me-sheet .pa-sheet-x { top: 12px; }
+  .pa .me-handle { display: none; }
+  .pa .me-stage { margin-top: 4px; }
+  /* Start over: the two answers side by side */
+  .pa .me-confirm-btns { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+
+/* expanded (900+: tablets in landscape, laptops, desktops): two columns in a centered 1080 px container.
+   Left (340 px): profile, the 4 stats (2 x 2), Almost there. Right: the filter chips and the badge grid.
+   DOM order is unchanged (left column first, then the badges). */
+@container pa (min-width: 900px) {
+  .pa .me-main {
+    display: grid; grid-template-columns: 340px minmax(0, 1fr); grid-template-rows: auto auto auto 1fr;
+    align-content: start; column-gap: clamp(24px, 3cqi, 48px); row-gap: 16px;
+    padding: 36px max(28px, calc((100cqi - 1080px) / 2)) 40px;
+  }
+  .pa .me-head { grid-column: 1; grid-row: 1; }
+  .pa .me-stats { grid-column: 1; grid-row: 2; }
+  .pa .me-almost { grid-column: 1; grid-row: 3; align-self: start; }
+  .pa .me-badges { grid-column: 2; grid-row: 1 / span 4; align-self: start; margin-top: 0; gap: 16px; }
+
+  .pa .me-avatar { width: 56px; height: 56px; font-size: 26px; }
+  .pa .me-who h1 { font-size: 28px; line-height: 32px; }
+  .pa .me-who p { margin-top: 2px; font-size: 16px; line-height: 20px; }
+
+  /* stats 2 x 2 */
+  .pa .me-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0; border-radius: 22px; }
+  .pa .me-stats li { padding: 14px 8px 13px; }
+  .pa .me-stats li + li { border-left: 0; }
+  .pa .me-stats li:nth-child(even) { border-left: 2px solid #F2ECE2; }
+  .pa .me-stats li:nth-child(n+3) { border-top: 2px solid #F2ECE2; }
+  .pa .me-stat-n { gap: 6px; font-size: 22px; line-height: 28px; }
+  .pa .me-stat-n svg { width: 19px; height: 19px; }
+  .pa .me-stat-l { font-size: 14px; line-height: 18px; }
+
+  .pa .me-almost { padding: 16px 18px 16px 14px; gap: 14px; border-radius: 24px; }
+  .pa .me-almost-top h2 { font-size: 21px; line-height: 26px; }
+  .pa .me-almost-how { font-size: 16px; line-height: 21px; }
+
+  .pa .me-badges-head { min-height: 56px; }
+  .pa .me-badges-head h2 { font-size: 24px; line-height: 30px; }
+  .pa .me-grid { gap: 14px 4px; }
+  .pa .me-cell { padding: 10px 4px 12px; border-radius: 18px; }
+  /* badge art 80 px (phone 58): every part keeps its place, scaled by 80/58 */
+  .pa .me-art, .pa .me-disc, .pa .me-ringbox { width: 80px; height: 80px; }
+  .pa .me-art-e { left: 4px; top: 3px; width: 72px; height: 72px; }
+  .pa .me-art-l { left: 11px; top: 11px; width: 58px; height: 58px; }
+  .pa .me-lock { right: -4px; bottom: -3px; width: 26px; height: 26px; }
+  .pa .me-name { margin-top: 8px; font-size: 14.5px; line-height: 18px; }
+  .pa .me-date, .pa .me-short { font-size: 13px; line-height: 17px; }
+}
+
+/* pointer devices: buttons brighten, badge cells lift a little (the :active press effects stay) */
+@media (hover: hover) {
+  .pa .me-gear { transition: transform .08s ease, box-shadow .12s ease, color .12s ease; }
+  .pa .me-gear:hover:not(:active) { transform: translateY(-1px); box-shadow: 0 4px 0 var(--line); color: var(--primary); }
+  .pa .me-swap:hover:not(:active):not(:disabled) { background: var(--sage-tint); }
+  .pa .me-chip { transition: transform .08s ease, background .12s ease; }
+  .pa .me-chip:not(.on):hover { background: rgba(255, 255, 255, .8); }
+  .pa .me-cell:hover:not(:active) { transform: translateY(-2px); }
+  .pa .me-row { transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease; }
+  .pa .me-row:hover:not(:active) { transform: translateY(-1px); border-color: var(--locked-edge); box-shadow: 0 4px 0 var(--locked-edge); }
+  .pa .me-cta { transition: transform .08s ease, filter .12s ease; }
+  .pa .me-cta:hover:not(:active) { filter: brightness(1.15); }
+}
+
+/* short screens (small phones such as 320 x 568): a little less air in the badge sheet so it fits without scrolling.
+   Height is not part of the `pa` container (inline-size only), so this one is a media query. */
+@media (max-height: 600px) {
+  .pa .pa-sheet.me-sheet { padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
+  .pa .me-stage { margin-top: 0; }
+  .pa .me-cta { margin-top: 14px; }
+}
+
+/* phones in landscape (wide but short): the badge sheet puts the big badge beside its text,
+   so the progress and the button stay in view */
+@container pa (min-width: 600px) {
+  @media (max-height: 520px) {
+    .pa .pa-sheet.me-sheet {
+      max-width: 620px; display: grid; grid-template-columns: 200px minmax(0, 1fr); column-gap: 28px;
+      align-items: center; text-align: left; padding: 20px 28px 20px 20px;
+    }
+    .pa .me-stage { grid-column: 1; grid-row: 1 / span 4; margin: 0; }
+    .pa .me-sheet > :not(.me-stage) { grid-column: 2; }
+    .pa .me-sheet-name { margin-top: 0; padding-right: 40px; }
+    .pa .me-earned-pill { justify-self: start; margin-top: 12px; }
+    .pa .me-prog { max-width: none; margin-top: 12px; }
+    .pa .me-cheer { text-align: left; }
+    .pa .me-cta { margin-top: 16px; }
+    /* Settings: the rows in two columns, so all of them fit the short screen */
+    .pa .pa-sheet.me-settings { max-width: 720px; padding-top: 16px; padding-bottom: 18px; }
+    .pa .me-settings .pa-sheet-x { top: 8px; }
+    .pa .me-settings .me-rows { margin-top: 10px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .pa .me-settings .me-danger, .pa .me-settings .me-confirm { grid-column: 1 / -1; }
+  }
+}
+
+/* "My plan" opens the goal questions (Start.tsx): a link styled like the other rows */
+.pa a.me-row, .pa a.me-row:hover { text-decoration: none; color: var(--ink); }
+
+/* ---- Me (not a page of badges): cards for this week, skills, reports, a row of badges ---- */
+.pa .me-card { padding: 12px 14px 14px; border: 2px solid var(--line); border-radius: 20px; background: #FFFFFF; box-shadow: 0 4px 0 var(--line); display: flex; flex-direction: column; gap: 10px; }
+.pa .me-card-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.pa .me-card-top h2 { font-size: 19px; line-height: 23px; color: var(--primary); }
+.pa .me-card-link { position: relative; border: 0; background: none; padding: 0; font: 700 15px var(--sans); color: var(--primary); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.pa .me-card-link::after { content: ""; position: absolute; inset: -12px -8px; }
+.pa .me-card-note { margin: 0; font-size: 14px; line-height: 19px; color: var(--muted); }
+.pa .me-count { font: 700 15px var(--sans); color: var(--muted); margin-left: 4px; }
+.pa .me-streak { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 15px; }
+
+.pa .me-days { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.pa .me-days li { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: var(--muted); }
+.pa .me-days i { width: 28px; height: 28px; border-radius: 50%; background: var(--surface); box-shadow: inset 0 0 0 2px var(--line); }
+.pa .me-days li.on i { background: var(--accent); box-shadow: inset 0 0 0 2px var(--accent-edge); }
+.pa .me-days li.today { color: var(--ink); }
+.pa .me-days li.today i { outline: 2px solid var(--primary); outline-offset: 2px; }
+.pa .me-week-n { margin: 0; font-size: 15px; line-height: 20px; color: var(--muted); }
+.pa .me-week-n b { color: var(--ink); }
+.pa .me-test { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 44px; padding: 8px 12px; border: 0; border-radius: 12px; background: var(--ok-tint); color: var(--primary); font: 15px/20px var(--sans); text-align: left; cursor: pointer; }
+.pa .me-test b { font-weight: 800; }
+
+.pa .me-skbar { display: flex; gap: 3px; height: 14px; border-radius: 999px; overflow: hidden; background: var(--surface); }
+.pa .me-skbar > span { flex-basis: 0; min-width: 8px; }
+.pa .me-sk-m { background: var(--primary); } .pa .me-sk-s { background: var(--sage); } .pa .me-sk-l { background: var(--reward); } .pa .me-sk-g { background: var(--accent); }
+.pa .me-sklegend { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; font-size: 14px; line-height: 19px; color: var(--muted); }
+.pa .me-sklegend li { display: flex; align-items: center; gap: 6px; }
+.pa .me-sklegend b { color: var(--ink); }
+.pa .me-sklegend i { flex: none; width: 10px; height: 10px; border-radius: 3px; }
+
+.pa .me-reports ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.pa .me-reports li { display: flex; align-items: center; gap: 10px; }
+.pa .me-kid-i { flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; background: var(--ok-tint); color: var(--primary); }
+.pa .me-kid-n { flex: 1; min-width: 0; display: flex; flex-direction: column; font-weight: 700; font-size: 16px; line-height: 20px; }
+.pa .me-kid-n small { font-weight: 400; font-size: 13px; color: var(--muted); }
+.pa .me-kid-go { flex: none; min-height: 40px; padding: 0 14px; font-size: 15px; }
+
+.pa .me-minis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+.pa .me-mini { min-width: 0; border: 0; background: none; padding: 2px 0; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; text-align: center; }
+.pa .me-mini .me-name { font-size: 13px; line-height: 16px; font-weight: 700; color: var(--ink); }
+.pa .me-mini .me-short, .pa .me-mini .me-date { font-size: 12px; line-height: 15px; color: var(--muted); }
+.pa .me-badges-sheet .me-badges-head { margin: 0 0 10px; }
+
+/* Settings, grouped: Account first */
+.pa .me-group { margin: 10px 2px 0; font: 800 13px var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.pa .me-rows > .me-group:first-child { margin-top: 0; }
+.pa .me-row.is-info { box-shadow: none; border-style: dashed; cursor: default; }
+.pa .me-row.is-info:active { transform: none; }
+.pa .me-row.is-off, .pa .me-row:disabled { opacity: .55; }
+.pa .me-links { margin: 4px 2px; font-size: 14px; color: var(--muted); }

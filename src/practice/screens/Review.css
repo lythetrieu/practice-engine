@@ -1,0 +1,182 @@
+/* Review tab (rv-). */
+
+.pa .rv-main { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+.pa .rv-main > * { flex: none; }
+
+.pa .rv-head { padding: 0 4px; }
+.pa .rv-titlerow { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pa .rv-h1 { font-size: 28px; line-height: 34px; color: var(--primary); }
+.pa .rv-sub { margin-top: 2px; font-size: 15px; line-height: 20px; color: var(--muted); text-wrap: balance; }
+.pa .rv-fixed {
+  display: flex; align-items: center; gap: 5px; min-height: 28px; padding: 0 11px 0 9px; border-radius: 999px;
+  background: var(--ok-tint); color: var(--primary); font-size: 13px; font-weight: 700; line-height: 18px;
+}
+
+/* Mistakes card */
+.pa .rv-card { padding: 12px 16px 14px; border-radius: 22px; background: var(--primary); color: #FFFFFF; box-shadow: 0 5px 0 var(--primary-edge); }
+.pa .rv-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pa .rv-card-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.pa .rv-icon { flex: none; width: 36px; height: 36px; border-radius: 50%; background: color-mix(in srgb, var(--primary) 85%, #FFFFFF); display: flex; align-items: center; justify-content: center; }
+.pa .rv-spin { display: flex; animation: rvSpin .9s cubic-bezier(.34, 1.2, .64, 1) backwards; animation-delay: 250ms; }
+@keyframes rvSpin { from { transform: rotate(0); } to { transform: rotate(-360deg); } }
+.pa .rv-card h2 { font-size: 21px; line-height: 26px; color: #FFFFFF; white-space: nowrap; }
+.pa .rv-time { flex: none; font-size: 14px; line-height: 18px; color: var(--sage-tint); }
+.pa .rv-mlist { margin: 8px 0 0; padding: 0; list-style: none; }
+.pa .rv-mrow { display: flex; align-items: center; gap: 10px; padding: 4px 0; border-top: 1.5px solid #2E6450; }
+.pa .rv-pill { flex: none; width: 42px; padding: 2px 0; border-radius: 999px; background: color-mix(in srgb, var(--primary) 85%, #FFFFFF); font-size: 12px; font-weight: 700; line-height: 16px; text-align: center; color: var(--sage-tint); }
+.pa .rv-mname { flex: 1; min-width: 0; font-size: 15px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pa .rv-count { flex: none; min-width: 34px; padding: 1px 8px; border-radius: 999px; background: #F6B9A6; color: var(--ink); font-size: 13px; font-weight: 700; line-height: 18px; text-align: center; }
+.pa .rv-more { color: var(--sage-tint); font-size: 14px; line-height: 20px; }
+.pa .rv-redo-wrap { margin-top: 8px; border-radius: 14px; animation-delay: 900ms; }
+.pa .rv-redo {
+  min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 14px;
+  background: var(--accent); color: var(--ink); box-shadow: 0 5px 0 var(--accent-edge); font-size: 18px; font-weight: 700; text-decoration: none;
+}
+.pa a.rv-redo, .pa a.rv-redo:hover { color: var(--ink); }
+
+/* Tutor: look back at your mistakes */
+.pa .rv-look { padding: 14px 16px; border-radius: 22px; background: #FFFFFF; border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); display: flex; flex-direction: column; gap: 6px; }
+.pa .rv-look h2 { font-size: 19px; line-height: 24px; color: var(--primary); }
+.pa .rv-look p { font-size: 15px; line-height: 20px; color: var(--ink); }
+.pa .rv-look-btn { margin-top: 6px; min-height: 48px; font-size: 17px; text-decoration: none; }
+.pa a.rv-look-btn { color: #FFFFFF; }
+
+/* No mistakes: a calm card */
+.pa .rv-empty {
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 22px;
+  background: var(--ok-tint); border: 2px solid var(--sage-tint); color: var(--ink);
+}
+.pa .rv-empty .rv-icon { width: 40px; height: 40px; background: var(--primary); color: #FFFFFF; }
+.pa .rv-empty h2 { font-size: 19px; line-height: 24px; color: var(--primary); }
+.pa .rv-empty p { margin-top: 2px; font-size: 15px; line-height: 20px; color: var(--ink); }
+
+/* Skills */
+.pa .rv-skills-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 8px 4px; }
+.pa .rv-h2 { font-size: 20px; line-height: 26px; }
+.pa .rv-toggle { display: flex; gap: 2px; padding: 3px; background: var(--surface); border-radius: 999px; }
+.pa .rv-toggle button { min-height: 44px; min-width: 64px; padding: 0 16px; border-radius: 999px; font-weight: 700; font-size: 15px; color: var(--ink); }
+.pa .rv-toggle button.on { background: var(--primary); color: #FFFFFF; }
+.pa .rv-list { margin: 0; padding: 0; list-style: none; background: #FFFFFF; border: 2px solid var(--line); border-radius: 20px; box-shadow: 0 4px 0 var(--line); overflow: hidden; }
+.pa .rv-li + .rv-li { border-top: 2px solid var(--surface); }
+.pa .rv-group { padding: 9px 14px 0; font-size: 12px; font-weight: 700; line-height: 16px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); }
+.pa .rv-row {
+  width: 100%; min-height: 50px; padding: 8px 14px 9px; text-align: left; font-size: 15px; background: transparent; color: var(--ink);
+  display: flex; flex-direction: column; gap: 6px; transition: background .15s ease;
+}
+.pa .rv-row.grouped { padding-top: 4px; }
+@media (hover: hover) { .pa .rv-row:hover { background: rgba(242, 236, 226, .5); } }
+.pa .rv-row.on { background: var(--surface); }
+.pa .rv-row:focus-visible { outline-offset: -3px; }
+.pa .rv-line { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pa .rv-name { min-width: 0; font-size: 15px; font-weight: 700; line-height: 20px; }
+.pa .rv-status { flex: none; display: flex; align-items: center; gap: 3px; font-size: 13px; font-weight: 700; line-height: 20px; color: var(--primary); }
+.pa .rv-row.locked .rv-name, .pa .rv-row.locked .rv-status { color: var(--muted); }
+.pa .rv-li.locked { background: var(--bg); }
+.pa .rv-bar { width: 100%; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+.pa .rv-seg { display: block; height: 8px; border-radius: 999px; background: #EAE3D7; overflow: hidden; }
+.pa .rv-fill { display: block; height: 100%; border-radius: 999px; background: var(--primary); }
+.pa .rv-bar.big { flex: 1; width: auto; gap: 5px; }
+.pa .rv-bar.big .rv-seg { height: 12px; }
+
+/* Skill sheet */
+.pa .pa-scrim:has(.rv-sheet) { animation: rvDim .25s ease backwards; }
+@keyframes rvDim { from { opacity: 0; } to { opacity: 1; } }
+.pa .rv-sheet { background: #FFFFFF; border-radius: 26px 26px 0 0; padding: 10px 20px calc(24px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; }
+.pa .rv-handle { display: block; align-self: center; width: 44px; height: 5px; border-radius: 999px; background: var(--line-2); }
+.pa .rv-sheet .pa-sheet-x { top: 10px; right: 12px; border-radius: 14px; }
+.pa .rv-eyebrow { margin: 16px 52px 0 0; font-size: 12px; font-weight: 700; line-height: 16px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); }
+.pa .rv-st { margin: 4px 44px 0 0; font-size: 24px; line-height: 1.2; text-wrap: balance; }
+.pa .rv-sbar { margin-top: 14px; display: flex; align-items: center; gap: 12px; }
+.pa .rv-sstatus { flex: none; font-size: 15px; font-weight: 700; line-height: 20px; color: var(--primary); }
+.pa .rv-next { margin-top: 16px; padding: 12px 14px; border-radius: 16px; background: var(--surface); display: flex; align-items: center; gap: 12px; }
+.pa .rv-flag { flex: none; width: 44px; height: 44px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; }
+.pa .rv-next p { min-width: 0; font-size: 15px; line-height: 20px; }
+.pa .rv-next-label { display: block; font-size: 13px; font-weight: 700; line-height: 18px; color: var(--muted); }
+.pa .rv-next-text { display: block; font-size: 17px; font-weight: 700; line-height: 23px; }
+.pa .rv-note { margin-top: 10px; padding: 0 4px; font-size: 15px; line-height: 20px; color: var(--muted); }
+.pa .rv-practice { margin-top: 18px; min-height: 54px; font-size: 18px; }
+.pa .rv-practice[aria-disabled="true"]:active { transform: none; box-shadow: 0 4px 0 var(--locked-edge) !important; }
+
+/* Narrow phones (under 360px, e.g. 320): "about N min" wraps under the title instead of running into it.
+   From 360px up the card top stays on one line, exactly as before (360 is the common Android width). */
+@container pa (max-width: 359px) {
+  .pa .rv-card-top { flex-wrap: wrap; row-gap: 0; }
+  .pa .rv-time { margin-left: 46px; }
+}
+
+/* Wider screens (responsive on every device). The screen adapts to the width it gets
+   (.pa-screen is the size container `pa`): 600-899 one centered column (max 640px); >= 900 two columns
+   in a centered 1080px container, left = Mistakes to redo (or the empty state), right = Skills. */
+@container pa (min-width: 600px) {
+  .pa .rv-main { gap: 16px; padding: 24px max(24px, calc((100cqi - 640px) / 2)) 32px; }
+  .pa .rv-sub { max-width: 36em; }
+  .pa .rv-card { padding: 16px 20px 18px; }
+  .pa .rv-card-top { flex-wrap: wrap; row-gap: 2px; } /* only wraps if the text is zoomed very large */
+  .pa .rv-mlist { margin-top: 10px; }
+  .pa .rv-mrow { padding: 6px 0; }
+  .pa .rv-redo-wrap { width: 100%; max-width: 360px; margin: 12px auto 0; }
+  .pa .rv-empty { padding: 18px 20px; }
+  .pa .rv-empty p { max-width: 36em; }
+  .pa .rv-skills-top { margin-bottom: 10px; }
+  .pa .rv-group { padding: 11px 18px 0; }
+  .pa .rv-row { min-height: 56px; padding: 10px 18px 11px; gap: 8px; }
+  .pa .rv-row.grouped { padding-top: 5px; }
+  /* the skill sheet is a centered card here (app.css): round all corners, no drag handle */
+  .pa .rv-sheet { border-radius: 26px; padding: 18px 24px 24px; }
+  .pa .rv-handle { display: none; }
+  .pa .rv-eyebrow { margin-top: 8px; }
+}
+
+@container pa (min-width: 900px) {
+  .pa .rv-main {
+    display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-content: start; align-items: start;
+    column-gap: 40px; row-gap: 24px; padding: 36px max(32px, calc((100cqi - 1080px) / 2)) 40px;
+  }
+  .pa .rv-head { grid-column: 1 / -1; }
+  .pa .rv-titlerow { justify-content: flex-start; gap: 16px; }
+  .pa .rv-h1 { font-size: 34px; line-height: 40px; }
+  .pa .rv-sub { margin-top: 4px; font-size: 17px; line-height: 24px; }
+  .pa .rv-fixed { min-height: 32px; padding: 0 13px 0 11px; font-size: 14px; }
+  /* the mistakes card stays in view while a long skills list scrolls */
+  .pa .rv-card, .pa .rv-empty { grid-column: 1; grid-row: 2; position: sticky; top: 24px; }
+  .pa .rv-skills { grid-column: 2; grid-row: 2; }
+  .pa .rv-card { padding: 20px 22px 22px; border-radius: 24px; }
+  .pa .rv-card h2 { font-size: 23px; line-height: 28px; }
+  .pa .rv-icon { width: 40px; height: 40px; }
+  .pa .rv-time { font-size: 15px; }
+  .pa .rv-mlist { margin-top: 14px; }
+  .pa .rv-mrow { padding: 8px 0; }
+  .pa .rv-mname { font-size: 16px; line-height: 22px; }
+  .pa .rv-pill { width: 46px; font-size: 13px; line-height: 18px; }
+  .pa .rv-count { font-size: 14px; line-height: 20px; }
+  .pa .rv-more { font-size: 15px; }
+  .pa .rv-redo-wrap { max-width: none; margin-top: 16px; }
+  .pa .rv-redo { min-height: 56px; font-size: 19px; }
+  .pa .rv-empty { flex-direction: column; align-items: flex-start; gap: 14px; padding: 22px 24px; }
+  .pa .rv-empty .rv-icon { width: 48px; height: 48px; }
+  .pa .rv-empty h2 { font-size: 21px; line-height: 27px; }
+  .pa .rv-empty p { margin-top: 4px; font-size: 16px; line-height: 23px; }
+  .pa .rv-skills-top { margin-bottom: 12px; }
+  .pa .rv-h2 { font-size: 23px; line-height: 30px; }
+  .pa .rv-name { font-size: 16px; line-height: 22px; }
+  .pa .rv-status { font-size: 14px; }
+  .pa .rv-row { min-height: 62px; padding: 12px 20px 13px; }
+  .pa .rv-row.grouped { padding-top: 6px; }
+  .pa .rv-group { padding: 13px 20px 0; font-size: 13px; }
+  .pa .rv-seg { height: 10px; }
+}
+
+/* two-column layout: the look-back card takes its own row above Mistakes and Skills */
+@container pa (min-width: 900px) {
+  .pa .rv-look { grid-column: 1 / -1; grid-row: 2; }
+  .pa .rv-look ~ .rv-card, .pa .rv-look ~ .rv-empty, .pa .rv-look ~ .rv-skills { grid-row: 3; }
+}
+
+/* Pointer devices: buttons brighten, the off subject lightens (press effects stay on :active). */
+@media (hover: hover) {
+  .pa .rv-redo { transition: transform .08s ease, filter .12s ease; }
+  .pa .rv-redo:hover { filter: brightness(1.06); }
+  .pa .rv-toggle button { transition: background .12s ease; }
+  .pa .rv-toggle button:not(.on):hover { background: rgba(255, 255, 255, .7); }
+  .pa .rv-practice:not([aria-disabled="true"]):hover { filter: brightness(1.15); }
+}

@@ -1,0 +1,338 @@
+/* Home screen (prefix hm-). */
+
+/* header */
+.pa .hm-top {
+  position: relative; z-index: 4; flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 10px 16px 8px; background: var(--bg); border-bottom: 2px solid var(--line);
+}
+.pa .hm-who { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.pa a.hm-avatar, .pa a.hm-avatar:hover {
+  flex: none; width: 44px; height: 44px; border-radius: 50%; background: var(--primary); color: #FFFFFF; box-shadow: 0 3px 0 var(--primary-edge);
+  display: flex; align-items: center; justify-content: center; text-decoration: none; font-family: var(--serif); font-size: 20px; font-weight: 700;
+}
+.pa .hm-hi {
+  margin: 0; font-family: var(--serif); font-size: 24px; font-weight: 700; line-height: 1.2; color: var(--primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
+
+/* scrolling area: the four cards spread over the height (the layout fits 390 x 844 without scrolling) */
+.pa .hm-main { padding: 12px 16px 14px; overflow-x: hidden; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
+.pa .hm-sec { flex: none; }
+.pa .hm-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 0 4px 6px; }
+.pa .hm-head-badges { height: 24px; align-items: center; }
+.pa .hm-headl { display: flex; align-items: baseline; gap: 8px; }
+.pa .hm-h2 { font-size: 20px; line-height: 24px; }
+.pa .hm-note { font-size: 13px; line-height: 18px; color: var(--muted); }
+
+/* SAMPLE tag (sample mode) */
+.pa .hm-sample {
+  flex: none; display: inline-block; padding: 0 6px; border-radius: 6px; background: var(--reward); color: #3D2A06;
+  font-size: 12px; font-weight: 700; line-height: 16px; letter-spacing: .04em; text-transform: uppercase;
+}
+
+/* continue card */
+.pa .hm-hero { flex: none; padding: 16px; background: var(--primary); color: #FFFFFF; border-radius: 22px; box-shadow: 0 5px 0 var(--primary-edge); }
+/* The goal pill wraps under the label when the card is narrower than a 390 phone's (no overlap at 320-375);
+   the SAMPLE tag wraps under the label instead of running under the pill. At 390 both fit on one line, as before. */
+.pa .hm-hero-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+/* 142 px ~ the "CONTINUE · SAMPLE" label's own width: label and pill stay on one row down to a ~370 px screen */
+.pa .hm-hero-l { flex: 1 1 142px; min-width: 0; }
+.pa .hm-label-row { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; }
+.pa .hm-label { font-size: 12px; font-weight: 700; line-height: 16px; letter-spacing: .1em; text-transform: uppercase; color: var(--sage-tint); }
+.pa .hm-world { margin: 2px 0 0; font-size: 15px; font-weight: 700; line-height: 20px; color: #FFFFFF; }
+.pa .hm-goal { flex: none; display: flex; align-items: center; gap: 8px; padding: 3px 14px 3px 3px; border-radius: 999px; background: #2A5C47; }
+.pa .hm-goal svg { display: block; }
+.pa .hm-goal-l { font-size: 12px; font-weight: 700; line-height: 15px; color: var(--sage-tint); }
+.pa .hm-goal-n { font-size: 15px; line-height: 19px; color: #FFFFFF; white-space: nowrap; }
+.pa .hm-goal-n strong { font-family: var(--serif); font-size: 17px; }
+.pa .hm-hero .hm-title {
+  margin: 12px 0 0; font-family: var(--serif); font-size: 22px; font-weight: 700; line-height: 1.2; color: #FFFFFF;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+}
+.pa .hm-hero .hm-title.long { font-size: 19px; }
+.pa .hm-hero-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; }
+.pa .hm-dots { position: relative; display: flex; align-items: center; gap: 10px; flex: none; }
+.pa .hm-track { position: absolute; left: 9px; right: 9px; top: 50%; height: 2px; margin-top: -1px; background: #45705D; }
+.pa .hm-dot { position: relative; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.pa .hm-dot.done { background: var(--sage); }
+.pa .hm-dot.current { width: 22px; height: 22px; background: var(--accent); box-shadow: 0 0 0 3px rgba(232, 112, 79, .35); }
+/* locked dots are filled with the card green so the connecting track does not show through them */
+.pa .hm-dot.locked { background: var(--primary); border: 2px solid var(--sage); }
+.pa .hm-sub { margin: 0; font-size: 13px; line-height: 1.3; color: var(--sage-tint); text-align: right; }
+.pa .hm-cta { margin-top: 14px; border-radius: 14px; }
+.pa .hm-capped { margin: 0 0 10px; font-size: 14px; line-height: 1.35; color: var(--sage-tint); }
+.pa a.hm-start, .pa a.hm-start:hover, .pa .hm-start {
+  width: 100%; min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 14px;
+  background: var(--accent); color: #1D2320; box-shadow: 0 5px 0 var(--accent-edge); text-decoration: none; font-size: 18px; font-weight: 700;
+}
+.pa .hm-start.off { background: var(--locked); color: var(--muted); box-shadow: 0 5px 0 var(--locked-edge); cursor: default; }
+
+/* the goal ring draws in */
+.pa .hm-ring-draw { animation: hmRingDraw .9s cubic-bezier(.22, 1, .36, 1) backwards; }
+@keyframes hmRingDraw { from { stroke-dashoffset: 94.2; } }
+.pa .hm-arc-draw { animation: hmArcDraw .9s cubic-bezier(.22, 1, .36, 1) backwards; }
+@keyframes hmArcDraw { from { stroke-dashoffset: 169.6; } }
+
+/* daily quests */
+.pa .hm-qlist {
+  list-style: none; margin: 0; padding: 0 10px 0 12px; background: #FFFFFF; border: 2px solid var(--line); border-radius: 20px; box-shadow: 0 4px 0 var(--line);
+}
+.pa .hm-q { display: flex; align-items: center; gap: 12px; padding: 6px 0; }
+.pa .hm-q + .hm-q { border-top: 2px solid var(--surface); }
+.pa .hm-qtile { flex: none; width: 36px; height: 36px; border-radius: 11px; display: flex; align-items: center; justify-content: center; }
+.pa .hm-qmain { flex: 1; min-width: 0; }
+.pa .hm-qname { font-size: 15px; font-weight: 700; line-height: 19px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pa .hm-qbarrow { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+.pa .hm-bar { flex: 1; height: 8px; border-radius: 999px; background: #EAE3D7; overflow: hidden; }
+.pa .hm-fill { height: 8px; border-radius: 999px; background: var(--accent); }
+.pa .hm-fill.ok { background: var(--primary); }
+.pa .hm-qcount { flex: none; width: 54px; display: flex; align-items: center; gap: 3px; font-size: 13px; font-weight: 700; line-height: 16px; color: var(--muted); }
+.pa .hm-qcount.ok { color: var(--primary); }
+.pa .hm-qside { flex: none; width: 60px; display: flex; justify-content: center; }
+.pa .hm-qwait { display: flex; width: 60px; height: 44px; align-items: center; justify-content: center; }
+.pa .hm-chest { display: block; overflow: visible; }
+.pa .hm-qopen {
+  position: relative; width: 60px; min-height: 46px; padding: 2px 0 3px; border-radius: 13px; background: var(--accent); box-shadow: 0 4px 0 var(--accent-edge);
+  color: #1D2320; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; font: 700 13px/14px var(--sans); cursor: pointer;
+}
+.pa .hm-qopen.got { background: transparent; box-shadow: none; color: var(--muted); cursor: default; }
+/* reward chest: the lid turns on its back-left hinge (bottom-left corner of the lid group) */
+.pa .hm-lid { transform-box: fill-box; transform-origin: 0 100%; }
+.pa .hm-lid.is-open { transform: rotate(-28deg); }
+.pa .hm-lid.opening { animation: hmChestLid .55s cubic-bezier(.34, 1.56, .64, 1) backwards; }
+@keyframes hmChestLid { 0% { transform: rotate(0); } 30% { transform: rotate(3deg); } 100% { transform: rotate(-28deg); } }
+.pa .hm-burst { position: absolute; left: 0; top: 0; width: 60px; height: 36px; pointer-events: none; }
+.pa .hm-spark { position: absolute; }
+.pa .hm-spark-fly { display: block; animation: hmSparkFly .75s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes hmSparkFly {
+  0% { opacity: 0; transform: translateY(0) scale(.3); }
+  30% { opacity: 1; transform: translateY(-16px) scale(1.1); }
+  100% { opacity: 0; transform: translateY(-36px) scale(.8); }
+}
+.pa .hm-plus { position: absolute; left: 50%; top: -14px; transform: translateX(-50%); white-space: nowrap; }
+.pa .hm-plus .fx-float { display: block; font: 700 16px var(--sans); color: var(--primary); }
+
+/* badges strip */
+.pa a.hm-seeall, .pa a.hm-seeall:hover {
+  min-height: 44px; margin: -10px -6px -10px 0; padding: 0 6px 0 12px; display: flex; align-items: center; gap: 2px;
+  color: var(--primary); text-decoration: none; font-size: 15px; font-weight: 700;
+}
+.pa .hm-strip {
+  display: flex; align-items: center; justify-content: space-between; padding: 8px 10px 14px; background: #FFFFFF;
+  border: 2px solid var(--line); border-radius: 20px; box-shadow: 0 4px 0 var(--line);
+}
+.pa a.hm-tile { position: relative; width: 60px; height: 62px; display: flex; align-items: center; justify-content: center; border-radius: 16px; text-decoration: none; }
+.pa .hm-bpop { display: block; width: 56px; height: 56px; }
+.pa .hm-bpop svg { display: block; }
+.pa .hm-lpop { position: relative; display: block; width: 58px; height: 58px; }
+.pa .hm-lring { position: absolute; left: 0; top: 0; }
+.pa .hm-lart { position: absolute; left: 9px; top: 9px; }
+.pa .hm-lcount {
+  position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%); padding: 0 7px; border: 2px solid var(--line); border-radius: 999px;
+  background: #FFFFFF; font-size: 12px; font-weight: 700; line-height: 18px; color: var(--accent-ink); white-space: nowrap;
+}
+
+/* test countdown */
+.pa a.hm-test, .pa a.hm-test:hover, .pa button.hm-test {
+  width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: #FFFFFF; border: 2px solid var(--line); border-radius: 20px;
+  box-shadow: 0 4px 0 var(--line); color: var(--ink); text-decoration: none; text-align: left;
+}
+.pa .hm-cal { flex: none; width: 50px; border: 2px solid var(--line); border-radius: 12px; overflow: hidden; background: #FFFFFF; text-align: center; }
+.pa .hm-cal-m { display: block; padding: 1px 0; background: var(--accent); font-size: 12px; font-weight: 700; line-height: 16px; letter-spacing: .1em; color: #1D2320; }
+.pa .hm-cal-d { display: block; padding: 1px 0 3px; font-family: var(--serif); font-size: 22px; font-weight: 700; line-height: 26px; color: #1D2320; }
+.pa .hm-test-t { flex: 1; min-width: 0; display: block; }
+.pa .hm-test-h { display: block; margin: 0; font-family: var(--serif); font-size: 18px; font-weight: 700; line-height: 23px; color: var(--ink); }
+.pa .hm-test-s { display: block; margin-top: 2px; font-size: 15px; font-weight: 700; line-height: 18px; color: var(--primary); }
+.pa .hm-go { flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--primary); box-shadow: 0 3px 0 var(--primary-edge); display: flex; align-items: center; justify-content: center; }
+
+/* Redo mistakes card and the "almost there" badge (replace the badges strip) */
+.pa .hm-redo {
+  display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 20px;
+  background: #FFFFFF; border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line);
+}
+.pa .hm-redo-ic { position: relative; flex: none; width: 52px; height: 52px; border-radius: 16px; background: var(--accent-tint); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; }
+.pa .hm-redo-n { position: absolute; right: -6px; top: -6px; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 999px; background: var(--accent-btn); color: #FFFFFF; font-size: 13px; line-height: 24px; text-align: center; box-shadow: 0 2px 0 var(--accent-btn-edge); }
+.pa .hm-redo-text { flex: 1; min-width: 0; }
+.pa .hm-redo-h { font-size: 19px; line-height: 24px; }
+.pa .hm-redo-sub { margin-top: 2px; font-size: 14px; line-height: 19px; color: var(--muted); }
+.pa .hm-redo-go {
+  flex: none; min-width: 76px; min-height: 46px; padding: 0 14px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+  background: var(--accent-btn); color: #FFFFFF; box-shadow: 0 4px 0 var(--accent-btn-edge); font-weight: 700; font-size: 16px; text-decoration: none;
+}
+.pa a.hm-redo-go, .pa a.hm-redo-go:hover { color: #FFFFFF; }
+.pa .hm-near {
+  display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 20px; text-decoration: none; color: var(--ink);
+  background: #FFFFFF; border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line);
+}
+/* keep the badge name ink on hover (the shared `.pa a:hover` would turn it dark green) */
+.pa a.hm-near:hover { color: var(--ink); }
+.pa .hm-near .hm-lpop { position: relative; flex: none; width: 58px; height: 58px; }
+.pa .hm-near-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pa .hm-near-text b { font-size: 17px; line-height: 22px; }
+.pa .hm-near-text span { font-size: 14px; line-height: 19px; color: var(--muted); }
+.pa .hm-near-n { flex: none; display: flex; flex-direction: column; align-items: flex-end; font-weight: 700; font-size: 16px; color: var(--accent-ink); }
+.pa .hm-near-n small { font-size: 12px; color: var(--accent-ink); }
+
+/* "Get the app" card (../install.tsx InstallCard): from the second day of practice, until used or dismissed */
+.pa .hm-inst {
+  display: flex; align-items: center; gap: 12px; padding: 12px 6px 12px 14px; border-radius: 20px;
+  background: #FFFFFF; border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line);
+}
+.pa .hm-inst-ic { flex: none; width: 44px; height: 44px; border-radius: 14px; background: var(--ok-tint); color: var(--primary); display: flex; align-items: center; justify-content: center; }
+.pa .hm-inst-text { flex: 1; min-width: 0; }
+.pa .hm-inst-h { font-size: 17px; line-height: 22px; }
+.pa .hm-inst-sub { margin-top: 2px; font-size: 14px; line-height: 19px; color: var(--muted); }
+.pa .hm-inst-go {
+  flex: none; min-height: 44px; padding: 0 14px; border-radius: 14px; background: var(--primary); color: #FFFFFF;
+  box-shadow: 0 4px 0 var(--primary-edge); font-weight: 700; font-size: 15px; white-space: nowrap;
+}
+.pa .hm-inst-x { flex: none; width: 44px; height: 44px; margin-left: -6px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+/* phones: no icon, so the line about working offline gets the room */
+@container pa (max-width: 419px) {
+  .pa .hm-inst-ic { display: none; }
+}
+
+/* ---- Responsive (follow the device) ----
+   Below 600 px the approved phone layout above is unchanged; these rules only adapt it.
+   .pa-screen is the size container `pa`, so widths here are the screen's own width, not the window's. */
+
+/* narrow phones (320-359): the greeting and quest names wrap instead of being cut off */
+@container pa (max-width: 359px) {
+  .pa .hm-hi {
+    font-size: 22px; line-height: 1.1; white-space: normal;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  }
+  /* the name never splits mid-word: it moves to the second line whole, and a name too long
+     for the space left beside the HUD ends in "..." there */
+  .pa .hm-hi-name {
+    display: inline-block; max-width: 100%; vertical-align: top; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    padding-bottom: 3px; margin-bottom: -3px;
+  }
+  .pa .hm-qname { white-space: normal; }
+  /* "Almost there" header: the "n of 14 earned" note goes under the title, "See all" stays on one line */
+  .pa .hm-head-badges { height: auto; }
+  .pa .hm-head-badges .hm-headl { flex-direction: column; align-items: flex-start; gap: 0; }
+  .pa .hm-head-badges .hm-h2 { white-space: nowrap; }
+  .pa a.hm-seeall { flex: none; white-space: nowrap; }
+}
+
+/* medium (600-899: tablets in portrait, phones in landscape): one centered column, max 640 px */
+@container pa (min-width: 600px) {
+  .pa .hm-top { padding: 12px max(24px, calc((100cqi - 640px) / 2)) 10px; }
+  .pa .hm-main { justify-content: flex-start; gap: 22px; padding: 22px max(24px, calc((100cqi - 640px) / 2)) 32px; }
+  .pa .hm-head { margin-bottom: 8px; }
+  .pa .hm-note { font-size: 14px; }
+
+  /* hero: the title spans the card; the level dots and the Start button share the bottom row,
+     so Start is a chunky button, not a full-width bar */
+  .pa .hm-hero {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "top top" "title title" "row cta";
+    column-gap: 20px; padding: 20px 22px 22px; border-radius: 24px;
+  }
+  .pa .hm-hero-top, .pa .hm-hero > .hm-label { grid-area: top; }
+  .pa .hm-hero .hm-title { grid-area: title; margin-top: 14px; font-size: 24px; }
+  .pa .hm-hero .hm-title.long { font-size: 22px; }
+  .pa .hm-hero-row { grid-area: row; align-self: center; justify-content: flex-start; flex-wrap: wrap; gap: 6px 16px; margin-top: 18px; }
+  .pa .hm-sub { font-size: 14px; text-align: left; }
+  .pa .hm-cta { grid-area: cta; align-self: center; width: 220px; margin-top: 18px; }
+
+  .pa .hm-qlist { padding: 0 14px 0 16px; border-radius: 22px; }
+  .pa .hm-q { gap: 14px; padding: 9px 0; }
+  .pa .hm-qtile { width: 40px; height: 40px; border-radius: 12px; }
+
+  .pa .hm-redo { gap: 14px; padding: 16px 18px; }
+  .pa .hm-redo-go { min-width: 96px; }
+  .pa .hm-near { gap: 14px; padding: 12px 18px; }
+  .pa a.hm-test, .pa a.hm-test:hover, .pa button.hm-test { gap: 14px; padding: 12px 16px; }
+}
+
+/* expanded (900+: tablets in landscape, laptops, desktops): two columns in a centered 1080 px container.
+   Left: Continue, then Redo / Almost there, then the test countdown. Right: Daily quests.
+   The header (greeting + HUD) spans both. DOM order stays hero, quests, next, test (row by row). */
+@container pa (min-width: 900px) {
+  .pa .hm-top { padding: 14px max(32px, calc((100cqi - 1080px) / 2)) 12px; }
+  .pa a.hm-avatar, .pa a.hm-avatar:hover { width: 48px; height: 48px; font-size: 22px; }
+  .pa .hm-hi { font-size: 28px; }
+  .pa .hm-main {
+    display: grid; grid-template-columns: minmax(0, 58fr) minmax(0, 42fr); grid-template-rows: auto auto auto 1fr;
+    grid-template-areas: "hero quests" "next quests" "test inst" ". .";
+    justify-content: stretch; align-content: start; gap: 24px 28px;
+    padding: 28px max(32px, calc((100cqi - 1080px) / 2)) 40px;
+  }
+  .pa .hm-main > .hm-hero { grid-area: hero; align-self: start; }
+  /* the quests card runs down to the bottom of the Redo / Almost there card, so both columns share
+     that edge and the right column leaves no tall hole; its three rows share the extra height */
+  .pa .hm-s-quests { grid-area: quests; align-self: stretch; display: flex; flex-direction: column; }
+  .pa .hm-s-quests .hm-qlist { flex: 1; display: flex; flex-direction: column; }
+  .pa .hm-s-quests .hm-q { flex: 1 1 auto; }
+  .pa .hm-s-next { grid-area: next; align-self: start; }
+  .pa .hm-s-test { grid-area: test; align-self: start; }
+  .pa .hm-s-inst { grid-area: inst; align-self: start; }
+
+  .pa .hm-h2 { font-size: 22px; line-height: 28px; }
+  .pa .hm-head-badges { height: 28px; }
+  .pa .hm-hero { padding: 22px 24px 24px; border-radius: 26px; }
+  .pa .hm-hero .hm-title { font-size: 27px; }
+  .pa .hm-hero .hm-title.long { font-size: 24px; }
+  .pa .hm-world { font-size: 16px; line-height: 21px; }
+  .pa .hm-cta { width: 240px; }
+
+  .pa .hm-q { padding: 12px 0; }
+  .pa .hm-qtile { width: 44px; height: 44px; border-radius: 13px; }
+  .pa .hm-qname { font-size: 16px; line-height: 21px; }
+  .pa .hm-qbarrow { margin-top: 7px; }
+
+  .pa .hm-redo-h { font-size: 21px; line-height: 26px; }
+  .pa .hm-redo-sub { font-size: 15px; line-height: 20px; }
+  .pa .hm-near-text b { font-size: 18px; line-height: 24px; }
+  .pa .hm-near-text span { font-size: 15px; line-height: 20px; }
+  .pa .hm-test-h { font-size: 20px; line-height: 25px; }
+}
+
+/* pointer devices: cards lift a little, buttons brighten (the :active press stays as it is) */
+@media (hover: hover) {
+  .pa a.hm-test, .pa button.hm-test, .pa a.hm-near, .pa a.hm-start, .pa a.hm-redo-go, .pa .hm-qopen, .pa a.hm-avatar {
+    transition: transform .08s ease, box-shadow .12s ease, filter .12s ease;
+  }
+  .pa a.hm-test:hover:not(:active), .pa button.hm-test:hover:not(:active), .pa a.hm-near:hover:not(:active) {
+    transform: translateY(-2px); box-shadow: 0 6px 0 var(--line);
+  }
+  .pa a.hm-test:hover .hm-go, .pa button.hm-test:hover .hm-go { filter: brightness(1.25); }
+  .pa a.hm-start:hover:not(:active) { transform: translateY(-1px); box-shadow: 0 6px 0 var(--accent-edge); filter: brightness(1.06); }
+  .pa a.hm-redo-go:hover:not(:active), .pa .hm-qopen.press:hover:not(:active) { filter: brightness(1.07); }
+  .pa a.hm-avatar:hover:not(:active) { filter: brightness(1.2); }
+  .pa a.hm-seeall:hover { text-decoration: underline; text-underline-offset: 3px; }
+}
+
+
+/* grade picker inside the test-day sheet, and the streak note */
+.pa-grades { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0 4px; }
+.pa-grade {
+  min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px solid var(--line-2); border-radius: 14px;
+  background: #FFFFFF; box-shadow: 0 3px 0 var(--line-2); cursor: pointer;
+}
+.pa-grade .d { font-weight: 700; font-size: 22px; line-height: 24px; }
+.pa-grade .w { font-size: 13px; color: var(--muted); }
+.pa-grade.on { border-color: var(--primary); background: var(--ok-tint); box-shadow: 0 3px 0 var(--primary); }
+.pa .hm-streak-note { margin: 10px 2px 0; font-size: 14px; line-height: 1.35; color: #DCE8E1; }
+
+/* ---- shorter Home: Your plan holds the redo row; quests fold into one row on phones ---- */
+.pa .hm-qstrip { width: 100%; display: none; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 20px; cursor: pointer;
+  background: #FFFFFF; border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); color: var(--ink); font: inherit; text-align: left; }
+.pa .hm-qmini { flex: none; display: flex; }
+.pa .hm-qstrip-t { flex: 1; min-width: 0; font-size: 15px; font-weight: 700; color: var(--muted); }
+.pa .hm-qstrip-chev { flex: none; color: var(--muted); transition: transform .15s; }
+.pa .hm-s-quests.is-open .hm-qstrip-chev { transform: rotate(180deg); }
+@container pa (max-width: 899px) {
+  .pa .hm-qstrip { display: flex; }
+  .pa .hm-s-quests:not(.is-open) .hm-qlist { display: none; }
+  .pa .hm-s-quests.is-open .hm-qstrip { margin-bottom: 8px; }
+}
+/* wide screens: Your plan sits under Continue in the left column (the old Redo slot) */
+@container pa (min-width: 900px) {
+  .pa .hm-main { grid-template-areas: "hero quests" "plan quests" "next test" ". inst"; }
+  .pa .hm-main > .tp { grid-area: plan; align-self: start; }
+  .pa .hm-s-next { grid-area: next; }
+  .pa .hm-s-test { grid-area: test; }
+  .pa .hm-s-inst { grid-area: inst; }
+}

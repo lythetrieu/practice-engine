@@ -1,0 +1,28 @@
+- id: m-alg-1
+  skill: m.algebra
+  difficulty: 2
+  type: mc
+  prompt: "If 4x + 7 = 31, what is the value of x?"
+  choices: ["4", "5", "7", "6"]
+  answer: D
+  explanation: "Subtract 7 from both sides to get 4x = 24, then divide both sides by 4 to get x = 6."
+  whyWrong:
+    - "If x = 4, then 4x + 7 = 23, not 31."
+    - "If x = 5, then 4x + 7 = 27, not 31."
+    - "If x = 7, then 4x + 7 = 35, not 31."
+    - null
+  hint: "Undo the addition first, then undo the multiplication."
+- id: m-geo-1
+  skill: m.geometry
+  difficulty: 4
+  type: mc
+  prompt: "A rectangle is 3 times as long as it is wide. Its perimeter is 64 centimeters. What is its area, in square centimeters?"
+  choices: ["144", "192", "216", "256"]
+  answer: B
+  explanation: "If the width is w, the length is 3w and the perimeter is 2(w + 3w) = 8w. So 8w = 64 and w = 8. The length is 24, and the area is 8 × 24 = 192."
+  whyWrong:
+    - "144 would come from a 6 by 24 rectangle, which has a perimeter of 60."
+    - null
+    - "216 would come from a 9 by 24 rectangle, which has a perimeter of 66."
+    - "256 would come from a 16 by 16 square, but this rectangle is not a square."
+  hint: "Write the perimeter using the width alone, then find the width first."

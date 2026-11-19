@@ -1,0 +1,126 @@
+# Ten original math questions for the sample pack. Written for this pack; no official item is used or reworded.
+
+- id: m-ratio-1
+  skill: m.ratio
+  difficulty: 1
+  type: mc
+  prompt: A bakery bakes 48 muffins in 4 hours at a steady rate. How many muffins does it bake each hour?
+  choices: ["8", "12", "44", "192"]
+  answer: "B"
+  whyWrong:
+    - "8 does not work: 8 muffins an hour for 4 hours is only 32 muffins."
+    - null
+    - "44 comes from subtracting 4. A rate needs division, not subtraction."
+    - "192 is 48 × 4. Multiplying gives a much bigger number, not the amount for one hour."
+  explanation: "Divide the total by the hours. 48 ÷ 4 = 12, so the bakery bakes 12 muffins each hour."
+  hint: "A rate for one hour means splitting the muffins evenly across the hours."
+
+- id: m-ratio-2
+  skill: m.ratio
+  difficulty: 4
+  type: typed
+  prompt: Rosa walks 3 miles in 45 minutes. She keeps the same pace. How many miles does she walk in 2 hours?
+  answer: 8
+  suffix: miles
+  explanation: "45 minutes is 3 miles, so 15 minutes is 1 mile. Two hours is 120 minutes, and 120 ÷ 15 = 8. Rosa walks 8 miles."
+  hint: "Change 2 hours to minutes first. Then find how many minutes it takes to walk 1 mile."
+
+- id: m-percent-1
+  skill: m.percent
+  difficulty: 2
+  type: mc
+  prompt: There are 30 students in a class. Of them, 40% walk to school. How many students walk to school?
+  choices: ["10", "12", "18", "40"]
+  answer: "B"
+  whyWrong:
+    - "10 is one third of 30. But 40% means 40 out of every 100, not one third."
+    - null
+    - "18 is the number who do NOT walk (60% of 30). The question asks for those who do."
+    - "40 is the percent, not a number of students. The class has only 30 students."
+  explanation: "10% of 30 is 3, so 40% is 4 × 3 = 12. Twelve students walk to school."
+  hint: "Find 10% of 30 first. Then build up to 40%."
+
+- id: m-percent-2
+  skill: m.percent
+  difficulty: 4
+  type: typed
+  prompt: A jacket costs $80. The store lowers the price by 25%. Then it lowers the new price by another 10%. What is the final price?
+  answer: 54
+  prefix: "$"
+  explanation: "25% off $80 takes off $20, so the price is $60. Then 10% of $60 is $6, so the final price is $60 − $6 = $54. The two discounts do not add up to 35% of $80."
+  hint: "Do the discounts one at a time. The second one is taken from the new price."
+
+- id: m-equation-1
+  skill: m.equation
+  difficulty: 2
+  type: mc
+  prompt: "What is the value of x in the equation 3x + 5 = 29?"
+  choices: ["6", "8", "10", "24"]
+  answer: "B"
+  whyWrong:
+    - "Check it: 3(6) + 5 = 23, not 29."
+    - null
+    - "Check it: 3(10) + 5 = 35, not 29."
+    - "24 is 29 − 5. That is only the first step. You still must divide by 3."
+  explanation: "Subtract 5 from both sides: 3x = 24. Then divide both sides by 3: x = 8."
+  hint: "Undo the + 5 first. Then undo the multiplying."
+
+- id: m-equation-2
+  skill: m.equation
+  difficulty: 3
+  type: fill
+  prompt: Drag a tile into each blank to finish solving the equation.
+  text: |
+    Solve 5n − 7 = 28.
+    Add 7 to both sides: 5n = ___
+    Divide both sides by 5: n = ___
+  tiles: ["21", "35", "7", "5"]
+  answer: ["35", "7"]
+  explanation: "28 + 7 = 35, so 5n = 35. Then 35 ÷ 5 = 7, so n = 7."
+  hint: "Whatever you do to one side of an equation, do to the other side."
+
+- id: m-inequality-1
+  skill: m.inequality
+  difficulty: 3
+  type: numline
+  prompt: "Graph all the values of x that make this true: 2x − 3 > 5"
+  min: 0
+  max: 8
+  step: 1
+  answer: { value: 4, closed: false, dir: right }
+  explanation: "Add 3 to both sides: 2x > 8. Divide by 2: x > 4. The number 4 itself does not work (it makes 5, not more than 5), so use an open circle at 4 and shade to the right."
+  hint: "Solve it like an equation. Then decide if the circle is open or closed."
+
+- id: m-stats-1
+  skill: m.stats
+  difficulty: 5
+  type: typed
+  prompt: The mean of 5 numbers is 12. A sixth number is added, and now the mean of all 6 numbers is 14. What is the sixth number?
+  answer: 24
+  explanation: "Five numbers with a mean of 12 add up to 5 × 12 = 60. Six numbers with a mean of 14 add up to 6 × 14 = 84. The sixth number is 84 − 60 = 24."
+  hint: "Mean × how many numbers = the sum. Find both sums."
+
+- id: m-geometry-1
+  skill: m.geometry
+  difficulty: 2
+  type: mc
+  prompt: A triangle has a base of 10 centimeters and a height of 6 centimeters. What is its area?
+  choices: ["60 square centimeters", "16 square centimeters", "30 square centimeters", "15 square centimeters"]
+  answer: "C"
+  whyWrong:
+    - "60 is base × height. That is the area of a rectangle. A triangle is half of that."
+    - "16 comes from adding the base and the height. Area needs multiplying."
+    - null
+    - "15 comes from taking half twice. Take half only once."
+  explanation: "The area of a triangle is half of base times height. Half of 10 × 6 is half of 60, which is 30 square centimeters."
+  hint: "A triangle fits twice into a rectangle with the same base and height."
+
+- id: m-geometry-2
+  skill: m.geometry
+  difficulty: 3
+  type: plot
+  prompt: The bottom side of a square runs from (1, 1) to (4, 1). Plot the two top corners of the square.
+  grid: { xmin: 0, xmax: 6, ymin: 0, ymax: 6 }
+  points: [[1, 4], [4, 4]]
+  explanation: "The bottom side is 3 units long (from x = 1 to x = 4). A square has equal sides, so the top corners are 3 units straight up: (1, 4) and (4, 4)."
+  hint: "How long is the bottom side? A square's sides are all that long."

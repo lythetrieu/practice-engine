@@ -1,0 +1,7 @@
+- { id: v.synonym, name: Synonyms, section: verbal }
+- { id: v.sentence, name: Sentence completion, section: verbal }
+- { id: q.reason, name: Number reasoning, section: quant }
+- { id: q.compare, name: Quantitative comparison, section: quant }
+- { id: r.passage, name: Main idea and details, section: reading }
+- { id: m.algebra, name: Algebra, section: math }
+- { id: m.geometry, name: Geometry, section: math }

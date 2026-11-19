@@ -1,0 +1,9 @@
+---
+// The layout every site page uses (home, account, student sign-in, 404). Props are SeoHead's (title, description, path,
+// schema, noindex, ogImage) and `page` (see components/site/Base.astro).
+import Base from '../components/site/Base.astro';
+import type { Props as BaseProps } from '../components/site/Base.astro';
+
+export type Props = BaseProps;
+---
+<Base {...Astro.props}><slot name="head" slot="head" /><slot /></Base>

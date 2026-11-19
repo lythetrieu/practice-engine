@@ -1,0 +1,84 @@
+/* "Who's practicing?" (prefix wh-): family profiles on a parent's device. Scoped under .pa; the motion kit
+   (fx-*) and the reduced-motion / .still guards live in ../app.css. No tab bar on this screen, so the `pa`
+   container is the whole window. */
+
+.pa .wh-main {
+  display: flex; flex-direction: column; overflow-x: hidden;
+  padding: max(24px, env(safe-area-inset-top, 0px)) 16px calc(24px + env(safe-area-inset-bottom, 0px));
+}
+/* auto margins center the column when it fits and let it scroll from the top when it doesn't */
+.pa .wh-col { margin: auto 0; width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.pa .wh-logo { display: block; width: 56px; height: 56px; }
+.pa .wh-h { margin-top: 14px; font-size: 30px; line-height: 36px; color: var(--primary); }
+.pa .wh-sub { margin-top: 6px; max-width: 34ch; font-size: 16px; line-height: 22px; color: var(--muted); }
+
+.pa .wh-kids { margin: 24px 0 0; padding: 0; list-style: none; width: 100%; display: grid; gap: 12px; }
+.pa .wh-kids > li { min-width: 0; }
+.pa .wh-kid {
+  position: relative; width: 100%; min-height: 76px; padding: 12px 14px; display: flex; align-items: center; gap: 14px; text-align: left;
+  border: 2px solid var(--line-2); border-radius: 20px; background: #FFFFFF; box-shadow: 0 4px 0 var(--line-2); color: var(--ink);
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.pa .wh-kid:active { transform: translateY(4px); box-shadow: 0 0 0 var(--line-2); }
+.pa .wh-kid.now { border-color: var(--sage); box-shadow: 0 4px 0 var(--sage); }
+.pa .wh-av {
+  flex: none; width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 24px; font-weight: 700; line-height: 1;
+  box-shadow: 0 3px 0 var(--edge, transparent);   /* --edge: the child's color, set by Who.tsx */
+}
+.pa .wh-t { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pa .wh-name { font-family: var(--serif); font-size: 22px; font-weight: 700; line-height: 27px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pa .wh-grade { font-size: 15px; line-height: 20px; color: var(--muted); }
+.pa .wh-now { flex: none; padding: 2px 10px; border-radius: 999px; background: var(--ok-tint); color: var(--primary); font-size: 13px; font-weight: 700; line-height: 18px; }
+.pa .wh-go { flex: none; color: var(--muted); }
+
+.pa .wh-guest {
+  margin-top: 18px; min-height: 48px; padding: 0 16px; border-radius: 12px;
+  font-size: 16px; font-weight: 700; color: var(--primary); text-decoration: underline; text-underline-offset: 3px;
+}
+
+/* waiting for /api/me/ on a parent's device (PracticeApp "hold"): the page's own loading line */
+.pa .wh-wait { display: flex; align-items: center; justify-content: center; padding: 24px; font-size: 17px; font-weight: 700; color: var(--primary); }
+
+/* medium (600-899): one centered column, max 560 px */
+@container pa (min-width: 600px) {
+  .pa .wh-main { padding: 40px 24px; }
+  .pa .wh-col { max-width: 560px; margin: auto; }
+  .pa .wh-logo { width: 64px; height: 64px; }
+  .pa .wh-h { font-size: 34px; line-height: 40px; }
+  .pa .wh-sub { font-size: 17px; line-height: 24px; }
+  .pa .wh-kids { margin-top: 28px; gap: 14px; }
+  .pa .wh-kid { min-height: 84px; padding: 14px 18px 14px 16px; border-radius: 22px; }
+  .pa .wh-av { width: 56px; height: 56px; font-size: 26px; }
+}
+
+/* expanded (900+): the children side by side as tiles (2-3 columns), the column widens to fit them */
+@container pa (min-width: 900px) {
+  .pa .wh-col { max-width: 840px; }
+  .pa .wh-n1 .wh-kids { max-width: 300px; }
+  .pa .wh-n2 .wh-kids { max-width: 600px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pa .wh-n3 .wh-kids { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pa .wh-kids { gap: 20px; margin-top: 36px; }
+  .pa .wh-kids > li { display: flex; }
+  .pa .wh-kid { flex-direction: column; justify-content: center; gap: 14px; min-height: 230px; padding: 28px 16px 24px; text-align: center; border-radius: 26px; box-shadow: 0 5px 0 var(--line-2); }
+  .pa .wh-kid.now { box-shadow: 0 5px 0 var(--sage); }
+  .pa .wh-av { width: 92px; height: 92px; font-size: 42px; box-shadow: none; }
+  .pa .wh-t { flex: none; align-items: center; width: 100%; gap: 2px; }
+  .pa .wh-name { max-width: 100%; font-size: 24px; line-height: 30px; }
+  .pa .wh-grade { font-size: 16px; line-height: 21px; }
+  .pa .wh-now { position: absolute; top: 12px; right: 12px; }
+  .pa .wh-go { display: none; }
+  .pa .wh-guest { margin-top: 26px; }
+}
+
+/* phones in landscape and other short windows: no logo, so the children come into view sooner */
+@media (max-height: 520px) {
+  .pa .wh-logo { display: none; }
+  .pa .wh-h { margin-top: 0; }
+}
+
+/* pointer devices: the cards lift a little (the :active press stays) */
+@media (hover: hover) {
+  .pa .wh-kid:hover:not(:active) { transform: translateY(-2px); border-color: var(--locked-edge); box-shadow: 0 6px 0 var(--locked-edge); }
+  .pa .wh-guest:hover { color: var(--primary-edge); }
+}

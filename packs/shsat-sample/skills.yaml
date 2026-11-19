@@ -1,0 +1,12 @@
+# Skill tags. Every question names one; lessons list the skills they draw questions from.
+# Ids are yours to choose; the app never shows them.
+- { id: m.ratio, name: Ratios and rates, section: math }
+- { id: m.percent, name: Percents, section: math }
+- { id: m.equation, name: Equations, section: math }
+- { id: m.inequality, name: Inequalities, section: math }
+- { id: m.stats, name: Probability and statistics, section: math }
+- { id: m.geometry, name: Geometry and the coordinate plane, section: math }
+- { id: e.grammar, name: Grammar and punctuation, section: ela }
+- { id: e.revise, name: Improving a passage, section: ela }
+- { id: e.info, name: Reading informational texts, section: ela }
+- { id: e.story, name: Reading stories, section: ela }

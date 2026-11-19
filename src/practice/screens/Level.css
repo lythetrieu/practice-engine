@@ -1,0 +1,433 @@
+/* The 10-step level (lv-): sample levels on #level. Builds on the lesson screen's look (Lesson.css). */
+
+.pa .lv-main { gap: 12px; padding-bottom: 20px; }
+/* Nothing in the question shrinks to make room: the area scrolls instead. A table box (overflow-x: auto) could otherwise
+   be squashed to a sliver when the hints opened under it. */
+.pa .lv-main > * { flex-shrink: 0; }
+.pa .lv-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pa .lv-format { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .02em; text-transform: uppercase; }
+.pa .lv-stage-warmup, .pa .lv-stage-learn { background: #FFF3D9; color: #7A5410; }
+.pa .lv-stage-guided { background: #E5EEF7; color: #24476B; }
+.pa .lv-stage-mistake { background: var(--accent-tint); color: var(--accent-ink); }
+.pa .lv-stage-boss { background: var(--ink); color: #FFFFFF; }
+.pa .lv-learn-title { font-weight: 700; }
+.pa .lv-note { font-size: 14px; color: var(--muted); }
+.pa .lv-correct { font-size: 15px; font-weight: 700; color: var(--primary); }
+.pa .lv-foot { flex-direction: column; }
+.pa .lv-skip { min-height: 44px; }
+
+/* boss: test mode */
+.pa .lv-main.is-boss { background: linear-gradient(#F4F1EA, var(--bg) 140px); }
+.pa .lv-boss {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 12px; border-radius: 12px;
+  background: var(--ink); color: #FFFFFF; font-size: 14px;
+}
+.pa .lv-boss-tag { padding: 2px 8px; border-radius: 6px; background: var(--reward); color: #3D2A06; font-weight: 700; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+.pa .lv-boss-text { flex: 1; min-width: 140px; }
+.pa .lv-boss-clock { font-variant-numeric: tabular-nums; font-weight: 700; }
+.pa .lv-boss-clock small { font-weight: 400; color: #D9DEDA; }   /* no opacity: the contrast stays measurable */
+.pa .lv-boss-clock.is-over { color: #FFB59E; }
+
+/* estimate */
+.pa .lv-est { display: flex; flex-direction: column; gap: 6px; padding: 8px 4px; }
+.pa .lv-est-val { text-align: center; font: 700 44px/1.1 var(--serif); color: var(--primary); font-variant-numeric: tabular-nums; }
+.pa .lv-est-track { position: relative; padding: 18px 0 26px; }
+.pa .lv-est input[type=range] { width: 100%; height: 36px; accent-color: var(--primary); }
+.pa .lv-est-real {
+  position: absolute; bottom: 0; transform: translateX(-50%); padding: 2px 8px; border-radius: 8px;
+  background: var(--accent-btn); color: #FFFFFF; font-weight: 700; font-size: 14px; white-space: nowrap;
+}
+.pa .lv-est-ends { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+
+/* learn card */
+.pa .lv-learn { display: flex; flex-direction: column; gap: 14px; }
+.pa .lv-learn-lines { margin: 0; padding: 0 0 0 22px; display: flex; flex-direction: column; gap: 10px; font-size: 17px; line-height: 1.45; }
+.pa .lv-bar-wrap { display: flex; flex-direction: column; gap: 8px; }
+.pa .lv-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.pa .lv-bar-part {
+  min-height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px;
+  background: var(--sage); border: 2px solid var(--sage-edge); box-shadow: 0 4px 0 var(--sage-edge); color: #FFFFFF; font-weight: 700; font-size: 18px;
+}
+.pa .lv-bar-part small { font-weight: 400; font-size: 12px; opacity: .9; }
+.pa .lv-bar-part.is-off { background: #FFFFFF; border-style: dashed; border-color: var(--accent); box-shadow: none; color: var(--accent-ink); text-decoration: line-through; }
+.pa .lv-bar-say { font-weight: 700; font-size: 16px; color: var(--primary); min-height: 22px; }
+
+/* drag (tap) into blanks */
+.pa .lv-fill { display: flex; flex-direction: column; gap: 14px; }
+.pa .lv-fill-text { font: 400 21px/2.1 var(--serif); }
+.pa .lv-fill.is-block .lv-fill-text { font-size: 18px; line-height: 1.6; }
+.pa .lv-slot {
+  display: inline-block; min-width: 88px; min-height: 40px; margin: 0 4px; padding: 0 10px; vertical-align: middle;
+  border: 2px dashed var(--locked-edge); border-radius: 10px; background: #FFFFFF; font: 700 19px/36px var(--sans); color: var(--ink);
+}
+.pa .lv-fill.is-block .lv-slot { display: block; width: 100%; min-height: 52px; margin: 0 0 8px; text-align: left; font-size: 16px; line-height: 1.35; padding: 8px 12px; }
+.pa .lv-slot.is-ready { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 7%, #FFFFFF); }
+.pa .lv-slot.is-full { border-style: solid; border-color: var(--primary); }
+.pa .lv-tiles { display: flex; flex-wrap: wrap; gap: 10px; }
+.pa .lv-fill.is-block .lv-tiles { flex-direction: column; }
+.pa .lv-tile {
+  min-height: 46px; padding: 6px 16px; border: 2px solid var(--line-2); border-radius: 12px; background: #FFFFFF; box-shadow: 0 4px 0 var(--line-2);
+  font: 700 18px var(--sans); color: var(--ink); text-align: left;
+}
+.pa .lv-fill.is-block .lv-tile { font: 400 16px/1.35 var(--sans); padding: 10px 14px; }
+.pa .lv-tile.is-held, .pa .lv-card-chip.is-held { border-color: var(--primary); box-shadow: 0 4px 0 var(--primary); background: color-mix(in srgb, var(--primary) 7%, #FFFFFF); }
+.pa .lv-tile.is-used { visibility: hidden; }
+
+/* right/wrong marks shared by the activities */
+.pa .is-right.lv-slot, .pa .lv-cell.is-right, .pa .lv-typed-box.is-right, .pa .lv-card-chip.is-right, .pa .lv-work-line.is-right,
+.pa .lv-reason.is-right, .pa .lv-order-slot.is-right, .pa .lv-hot-s.is-right, .pa .lv-menu.is-right {
+  border-color: var(--primary) !important; background: var(--ok-tint) !important;
+}
+.pa .is-wrong.lv-slot, .pa .lv-cell.is-wrong, .pa .lv-typed-box.is-wrong, .pa .lv-card-chip.is-wrong, .pa .lv-work-line.is-wrong,
+.pa .lv-reason.is-wrong, .pa .lv-order-slot.is-wrong, .pa .lv-hot-s.is-wrong, .pa .lv-menu.is-wrong {
+  border-color: var(--accent-ink) !important; background: var(--accent-tint) !important;
+}
+
+/* table */
+.pa .lv-table-wrap { overflow-x: auto; }
+.pa .lv-table { width: 100%; border-collapse: separate; border-spacing: 0; background: #FFFFFF; border: 2px solid var(--line-2); border-radius: 14px; overflow: hidden; font-size: 17px; }
+.pa .lv-table th, .pa .lv-table td { padding: 10px 12px; border-bottom: 2px solid var(--surface); text-align: left; }
+.pa .lv-table thead th { background: var(--surface); font-size: 14px; color: var(--muted); }
+.pa .lv-table tbody tr:last-child th, .pa .lv-table tbody tr:last-child td { border-bottom: 0; }
+.pa .lv-cell { display: inline-flex; align-items: center; gap: 2px; padding: 0 8px; border: 2px solid var(--line-2); border-radius: 10px; background: var(--bg); }
+.pa .lv-cell input, .pa .lv-typed-box input {
+  width: 4.5em; min-height: 40px; border: 0; outline: none; background: transparent; font: 700 18px var(--sans); color: var(--ink);
+}
+.pa .lv-cell:focus-within, .pa .lv-typed-box:focus-within { border-color: var(--primary); }
+.pa .lv-cell-ans { display: block; margin-top: 2px; font-weight: 700; color: var(--primary); font-size: 13px; }
+
+/* passages with numbered sentences */
+.pa .lv-passage { padding: 12px 14px; border-radius: 14px; background: #FFFFFF; border: 2px solid var(--line-2); font: 400 17px/1.55 var(--serif); }
+.pa .lv-passage-title { font-weight: 700; text-align: center; margin-bottom: 6px; }
+.pa .lv-passage sup, .pa .lv-hot sup { font: 700 12px var(--sans); color: var(--muted); }
+.pa .lv-long .ls-choice { align-items: flex-start; padding-top: 10px; padding-bottom: 10px; font-size: 16px; line-height: 1.45; }
+.pa .lv-long-label { display: block; font-size: 13px; color: var(--muted); }
+
+/* sort into buckets */
+.pa .lv-sort { display: flex; flex-direction: column; gap: 10px; }
+.pa .lv-sort-pool, .pa .lv-order-pool { display: flex; flex-wrap: wrap; gap: 8px; }
+.pa .lv-card-chip {
+  min-height: 44px; padding: 8px 12px; border: 2px solid var(--line-2); border-radius: 12px; background: #FFFFFF; box-shadow: 0 3px 0 var(--line-2);
+  font: 400 16px/1.3 var(--sans); color: var(--ink); text-align: left;
+}
+.pa .lv-card-chip small { display: block; font-weight: 700; color: var(--accent-ink); }
+.pa .lv-buckets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pa .lv-bucket { display: flex; flex-direction: column; gap: 8px; min-height: 140px; padding: 8px; border: 2px dashed var(--locked-edge); border-radius: 14px; background: var(--surface); }
+.pa .lv-bucket.is-ready { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 7%, #FFFFFF); }
+.pa .lv-bucket-head { min-height: 40px; padding: 4px 8px; border-radius: 10px; background: var(--primary); color: #FFFFFF; font-weight: 700; font-size: 15px; }
+.pa .lv-bucket-head[disabled] { background: var(--sage-edge); cursor: default; }
+.pa .lv-bucket-cards { display: flex; flex-direction: column; gap: 6px; }
+
+/* typed answer */
+.pa .lv-typed { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.pa .lv-typed-box { display: inline-flex; align-items: center; gap: 4px; padding: 0 14px; border: 2px solid var(--line-2); border-radius: 14px; background: #FFFFFF; font: 700 22px var(--sans); }
+.pa .lv-typed-box input { width: 9em; min-height: 54px; font-size: 22px; }
+.pa .lv-keys { display: flex; gap: 8px; }
+.pa .lv-key { min-width: 48px; min-height: 44px; border: 2px solid var(--line-2); border-radius: 10px; background: #FFFFFF; box-shadow: 0 3px 0 var(--line-2); font: 700 18px var(--sans); }
+
+/* speed round */
+.pa .lv-sprint { display: flex; flex-direction: column; align-items: stretch; gap: 12px; text-align: center; }
+.pa .lv-sprint-rule { font-size: 16px; }
+.pa .lv-sprint-go { align-self: center; min-width: 200px; }
+.pa .lv-sprint-time { height: 10px; border-radius: 999px; background: #EAE3D7; overflow: hidden; }
+.pa .lv-sprint-time span { display: block; height: 100%; background: var(--accent); transition: width 1s linear; }
+.pa .lv-sprint-meta { display: flex; justify-content: space-between; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pa .lv-sprint-q { font: 700 40px/1.2 var(--serif); padding: 18px 0; }
+.pa .lv-sprint-opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pa .lv-sprint-opt { min-height: 64px; border: 2px solid var(--line-2); border-radius: 14px; background: #FFFFFF; box-shadow: 0 4px 0 var(--line-2); font: 700 24px var(--sans); }
+.pa .lv-sprint-score { font: 700 56px/1 var(--serif); color: var(--primary); }
+.pa .lv-sprint-score small { font-size: 20px; color: var(--muted); }
+
+/* find the mistake */
+.pa .lv-mistake { display: flex; flex-direction: column; gap: 10px; }
+.pa .lv-context { padding: 10px 12px; border-radius: 12px; background: var(--surface); font-size: 15px; font-style: italic; }
+.pa .lv-work { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.pa .lv-work-line {
+  width: 100%; display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; text-align: left; border: 2px solid var(--line-2); border-radius: 12px;
+  background: #FFFFFF; box-shadow: 0 3px 0 var(--line-2); font: 400 17px/1.35 var(--sans);
+}
+.pa .lv-work-line.is-picked, .pa .lv-reason.is-picked, .pa .lv-hot-s.is-picked { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 7%, #FFFFFF); }
+.pa .lv-work-n { flex: none; width: 26px; height: 26px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; background: var(--surface); font: 700 13px var(--sans); color: var(--muted); }
+.pa .lv-reasons { margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px; }
+.pa .lv-reasons legend { margin-bottom: 6px; }
+.pa .lv-step-h { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; }
+.pa .lv-step-h span { padding: 2px 8px; border-radius: 6px; background: var(--primary); color: #FFFFFF; font-size: 12px; letter-spacing: .03em; text-transform: uppercase; }
+.pa .lv-step-h.is-later { color: var(--muted); }
+.pa .lv-step-h.is-later span { background: var(--locked); color: var(--muted); }   /* faded, still 4.8:1 */
+.pa .lv-reason { padding: 10px 12px; text-align: left; border: 2px solid var(--line-2); border-radius: 12px; background: #FFFFFF; font: 400 16px/1.35 var(--sans); }
+
+/* order */
+.pa .lv-order { display: flex; flex-direction: column; gap: 12px; }
+.pa .lv-order-placed { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.pa .lv-order-slot { display: flex; gap: 10px; align-items: center; min-height: 48px; padding: 6px 10px; border: 2px dashed var(--locked-edge); border-radius: 12px; background: var(--surface); }
+.pa .lv-order-slot.is-full { border-style: solid; border-color: var(--line-2); background: #FFFFFF; }
+.pa .lv-order-take { flex: 1; text-align: left; font: 400 16px/1.35 var(--sans); }
+.pa .lv-order-key { margin: 0; padding: 10px 12px 10px 30px; border-radius: 12px; background: var(--ok-tint); font-size: 15px; }
+
+/* hot text */
+.pa .lv-hot { padding: 12px 14px; border-radius: 14px; background: #FFFFFF; border: 2px solid var(--line-2); font: 400 18px/1.7 var(--serif); }
+.pa .lv-hot-s { display: inline; padding: 2px 4px; margin: 0 1px; border: 2px solid transparent; border-radius: 8px; text-align: left; font: inherit; line-height: inherit; }
+.pa .lv-hot-s:hover { background: #F4EFE6; }
+
+/* inline choice */
+.pa .lv-inline { font: 400 19px/2.2 var(--serif); }
+.pa .lv-menu-wrap { display: inline-block; }
+.pa .lv-inline .lv-cell-ans { display: inline; margin: 0 4px 0 0; font-size: 16px; }
+.pa .lv-menu { min-height: 40px; margin: 0 4px; padding: 0 8px; border: 2px solid var(--primary); border-radius: 10px; background: #FFFFFF; font: 700 17px var(--sans); color: var(--ink); }
+
+/* list of sample levels */
+.pa .lv-list, .pa .lv-done { display: flex; flex-direction: column; gap: 12px; padding: 24px 16px 32px; max-width: 640px; width: 100%; margin: 0 auto; }
+.pa .lv-kicker { font-size: 13px; font-weight: 700; color: var(--accent-ink); text-transform: uppercase; letter-spacing: .04em; }
+.pa .lv-list h1, .pa .lv-done h1 { font-size: 28px; line-height: 1.2; }
+.pa .lv-list-sub { color: var(--muted); }
+.pa .lv-card {
+  display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border: 2px solid var(--line-2); border-radius: 16px; background: #FFFFFF;
+  box-shadow: 0 4px 0 var(--line-2); text-decoration: none; color: var(--ink);
+}
+.pa .lv-card-world { font-size: 13px; font-weight: 700; color: var(--muted); }
+.pa .lv-card-title { font: 700 21px/1.25 var(--serif); }
+.pa .lv-card-formats { font-size: 13px; color: var(--primary); }
+.pa .lv-back { margin-top: 8px; }
+
+/* summary */
+.pa .lv-done { text-align: center; align-items: center; }
+.pa .lv-stars { display: flex; gap: 6px; justify-content: center; }
+.pa .lv-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
+.pa .lv-stats p { display: flex; flex-direction: column; padding: 10px; border-radius: 14px; background: #FFFFFF; border: 2px solid var(--line-2); }
+.pa .lv-stats b { font: 700 22px var(--serif); color: var(--primary); }
+.pa .lv-stats span { font-size: 13px; color: var(--muted); }
+.pa .lv-star-rule { font-size: 13px; color: var(--muted); }
+.pa .lv-formats { width: 100%; text-align: left; padding: 12px 14px; border-radius: 14px; background: var(--ok-tint); }
+.pa .lv-formats-h { font-weight: 700; margin-bottom: 6px; }
+.pa .lv-formats ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.pa .lv-formats li { padding: 3px 10px; border-radius: 999px; background: #FFFFFF; font-size: 13px; font-weight: 700; color: var(--primary); }
+.pa .lv-done-btns { display: grid; gap: 10px; width: 100%; max-width: 360px; margin-top: 6px; }
+
+@container pa (min-width: 600px) {
+  .pa .lv-main { padding-left: max(24px, calc((100% - 720px) / 2)); padding-right: max(24px, calc((100% - 720px) / 2)); }
+  .pa .lv-foot { flex-direction: row; }
+  .pa .lv-foot .ls-tools { flex: 1; }
+}
+@media (hover: hover) {
+  .pa .lv-tile:not([disabled]):hover, .pa .lv-card-chip:hover, .pa .lv-work-line:hover, .pa .lv-reason:hover, .pa .lv-sprint-opt:hover { border-color: var(--sage); }
+  .pa .lv-card:hover { border-color: var(--sage); }
+}
+
+/* multiple choice: Eliminate mode (the real test's Answer Eliminator) */
+.pa .lv-elim-on { padding: 8px 12px; border-radius: 12px; background: #FFF3D9; border: 2px solid #F1DDB0; font-size: 14px; font-weight: 700; }
+.pa .ls-choices.is-elim .ls-choice:not(.is-struck) { border-style: dashed; }
+
+/* multiple response */
+.pa .lv-multi .lv-box { flex: none; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--line-2); border-radius: 7px; font-weight: 700; color: #FFFFFF; }
+.pa .lv-multi.is-picked .lv-box, .pa .lv-multi.is-right .lv-box { background: var(--primary); border-color: var(--primary); }
+.pa .lv-multi.is-wrong .lv-box { background: var(--accent-ink); border-color: var(--accent-ink); }
+.pa .lv-multi-count { font-weight: 700; }
+
+/* number line and grids (LevelGraph.tsx) */
+.pa .lv-graph { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+.pa .lv-numline, .pa .lv-grid { width: 100%; max-width: 420px; align-self: center; height: auto; touch-action: manipulation; }
+.pa .lv-numline { background: #FFFFFF; border: 2px solid var(--line-2); border-radius: 14px; }
+.pa .lv-grid { border: 2px solid var(--line-2); border-radius: 12px; }
+.pa .lv-hit { cursor: pointer; outline: none; }
+.pa .lv-hit:focus-visible { stroke: var(--primary); stroke-width: 3; }
+.pa .lv-graph-tools { display: flex; flex-direction: column; gap: 8px; }
+.pa .lv-graph-tools > div { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pa .lv-graph-tools span { font-size: 13px; font-weight: 700; color: var(--muted); min-width: 52px; }
+.pa .lv-chip-btn {
+  min-height: 42px; padding: 0 14px; border: 2px solid var(--line-2); border-radius: 12px; background: #FFFFFF; box-shadow: 0 3px 0 var(--line-2);
+  font: 700 15px var(--sans); color: var(--ink);
+}
+.pa .lv-chip-btn.on { border-color: var(--primary); background: var(--ok-tint); box-shadow: 0 3px 0 var(--primary); }
+.pa .lv-chip-btn[disabled] { opacity: .55; cursor: default; }
+.pa .lv-arrow { min-width: 46px; font-size: 20px; }
+.pa .lv-tool-1.on { border-color: #7A3E8E; background: #F1E7F5; box-shadow: 0 3px 0 #7A3E8E; }
+.pa .lv-solset-list { margin: 0; padding: 0; list-style: none; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.pa .lv-solset-list li { padding: 3px 10px; border-radius: 999px; background: var(--surface); font-size: 14px; }
+
+/* Bank questions: a figure and a data table under the prompt. */
+.lv-fig { margin: 4px 0 12px; display: flex; justify-content: center; }
+.lv-fig svg { max-width: 100%; height: auto; max-height: 320px; }
+.lv-tbl { margin: 4px 0 12px; overflow-x: auto; }
+.lv-tbl table { border-collapse: collapse; margin: 0 auto; font-size: 15px; }
+.lv-tbl caption { font-weight: 600; padding-bottom: 6px; }
+.lv-tbl th, .lv-tbl td { border: 1px solid #C9CFC6; padding: 6px 12px; text-align: center; }
+.lv-tbl th { background: #EEF2EA; }
+
+/* Reading passage beside the step. Phones: folded behind "Read the passage". */
+.lv-passage { margin: 0 16px 8px; border: 1px solid var(--line, #d7dbd7); border-radius: 12px; background: var(--card, #fff); }
+.lv-passage-toggle { width: 100%; text-align: left; padding: 10px 14px; font: inherit; font-weight: 700; background: none; border: 0; cursor: pointer; color: inherit; }
+.lv-passage-body { display: none; padding: 0 16px 14px; max-height: 55vh; overflow-y: auto; font-family: Georgia, 'Times New Roman', serif; line-height: 1.6; }
+.lv-passage.open .lv-passage-body { display: block; }
+.lv-passage-title { font-size: 1.15em; margin: 4px 0 6px; }
+.lv-passage-intro { margin: 0 0 8px; }
+.lv-para { display: flex; gap: 10px; margin: 0 0 8px; }
+.lv-pn { flex: none; width: 1.6em; font-family: system-ui, sans-serif; font-weight: 700; font-size: .85em; color: #5C625D; text-align: right; }
+.lv-stanza { margin: 0 0 10px; }
+.lv-line { display: flex; gap: 10px; }
+.lv-ln { flex: none; width: 1.8em; text-align: right; font-family: system-ui, sans-serif; font-size: .8em; color: #5C625D; }
+.lv-passage-src { font-size: .8em; color: #5C625D; margin-top: 10px; }
+/* Side by side only when the screen itself has room for both (container `pa`, app.css): passage >= ~380px and
+   question >= ~420px, so >= 880px, split about 55/45. Narrower screens stack with the "Read the passage" toggle. */
+@container pa (min-width: 880px) {
+  .lv-passage { position: absolute; left: 16px; top: 72px; bottom: var(--lv-bottom, 96px); width: calc(55cqw - 28px); min-width: 380px; margin: 0; display: flex; flex-direction: column; }
+  .lv-passage-toggle { display: none; }
+  .lv-passage-body { display: block; max-height: none; flex: 1; padding-top: 14px; }
+  .pa .lv-main.has-passage { margin-left: 55cqw; min-width: 420px; max-width: 45cqw; padding-left: 20px; padding-right: 20px; }
+}
+
+
+/* Teaching texts and short poems inside a step prompt keep their line breaks. */
+.lv-main .ls-prompt { white-space: pre-line; }
+
+
+/* Part B: the sentence the question is about, above the stem */
+.pa .lv-box-text { padding: 12px 14px; border-radius: 14px; background: #FFFFFF; border: 2px solid var(--line-2); font: 400 18px/1.55 var(--serif); }
+.pa .lv-box-text p { margin: 0; }
+.pa .lv-box-text u { text-decoration-thickness: 2px; text-underline-offset: 3px; }
+
+/* Hint and the why-wrong line */
+.pa .lv-hint { padding: 10px 12px; border-radius: 12px; background: #FFF3D9; border: 2px solid #F1DDB0; font-size: 15px; line-height: 1.4; }
+.pa .lv-wrong { font-size: 15px; line-height: 1.42; padding: 8px 10px; border-radius: 10px; background: #FFFFFF; border: 2px solid #F3CDBF; }
+.pa .lv-key-wide { min-width: 84px; }
+
+/* Feedback sheet that can fold away: on a phone it takes at most 40% of the screen and the answer stays above it */
+.pa .ls-live { position: relative; z-index: 6; }
+.pa .lv-sheet { max-height: 40vh; max-height: 40dvh; overflow: hidden; }
+.pa .lv-sheet-handle {
+  align-self: center; display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 0 14px; margin: -6px 0 -2px;
+  border: 0; background: none; font: 700 13px var(--sans); color: var(--muted); cursor: pointer;
+}
+.pa .lv-sheet-grip { width: 36px; height: 5px; border-radius: 3px; background: rgba(29, 35, 32, .28); }
+.pa .lv-sheet-body { display: flex; flex-direction: column; gap: 8px; min-height: 0; overflow-y: auto; overscroll-behavior: contain; flex: 1 1 auto; }
+.pa .lv-sheet-body .ls-saved { align-self: flex-start; margin-left: 0; }
+.pa .lv-sheet .ls-cta { flex: none; }
+.pa .lv-sheet.is-folded { max-height: none; }
+/* A Pip reply needs room to be read: the sheet may then take most of the screen (Hide folds it away), and the reply does
+   not scroll inside the sheet's own scroll (otherwise a 130px window with its first line cut off). */
+.pa .lv-sheet:not(.is-folded):has(.ta-reply) { max-height: 75vh; max-height: 75dvh; }
+.pa .lv-sheet .ta-bubble { max-height: none; overflow-y: visible; }
+@container pa (min-width: 600px) {
+  .pa .lv-sheet { max-height: 45vh; max-height: 45dvh; overflow-y: auto; }
+  .pa .lv-sheet-handle { margin: 0; }
+  .pa .lv-sheet > .lv-sheet-handle { grid-column: 1; justify-self: start; }
+  .pa .lv-sheet > .ls-cta { grid-row: 1 / span 3; }
+}
+/* the passage panel on a wide screen never sits over the sheet */
+.pa .lv-passage { z-index: 1; }
+.lv-passage-toggle::after { content: ''; display: inline-block; width: 8px; height: 8px; margin-left: 10px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-3px) rotate(45deg); transition: transform .15s; }
+.lv-passage.open .lv-passage-toggle::after { transform: translateY(1px) rotate(-135deg); }
+
+/* Accessibility (E4, P6): right and wrong never by color alone. A mark and words come with every colored result;
+   the words sit in the content alternative text, so a screen reader reads them too. */
+.pa :is(.lv-slot, .lv-card-chip, .lv-work-line, .lv-reason, .lv-hot-s, .lv-cell, .lv-typed-box, .lv-order-slot, .lv-menu-wrap).is-right::after {
+  content: " ✓"; content: " ✓" / " Correct."; margin-left: 6px; font-weight: 700; font-style: normal; color: var(--primary);
+}
+.pa :is(.lv-slot, .lv-card-chip, .lv-work-line, .lv-reason, .lv-hot-s, .lv-cell, .lv-typed-box, .lv-order-slot, .lv-menu-wrap).is-wrong::after {
+  content: " ✗"; content: " ✗" / " Not correct."; margin-left: 6px; font-weight: 700; font-style: normal; color: var(--accent-ink);
+}
+.pa .lv-slot.is-right::after, .pa .lv-slot.is-wrong::after { font-family: var(--sans); }
+.pa .lv-rightis { font-size: 15px; line-height: 1.4; color: var(--primary); }
+.pa .lv-sheet-body[hidden] { display: none; }
+.pa .lv-sheet-chev { transition: transform .15s; }
+.pa .lv-sheet-handle[data-open="false"] .lv-sheet-chev { transform: rotate(180deg); }
+.pa .lv-hint b { font-weight: 700; }
+
+/* ---- tutor rounds ---- */
+/* the hint ladder: each opened hint stays, newest last */
+.pa .lv-hints { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pa .ls-tool:disabled { opacity: .55; cursor: default; }
+/* "Like the real test: no hints here" on the first question of a check */
+.pa .lv-testnote { margin: 0; font-size: 14px; line-height: 1.4; color: var(--muted); }
+/* why a tutor round asks this question ("Building block", "Try a similar one") */
+.pa .ls-chip.lv-tag { background: #FFF3D9; color: #8A5A0B; }
+/* guided review: the missed question, shown again with its answer */
+.pa .lv-lookback { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 16px; background: var(--bg); border: 2px solid var(--line); }
+.pa .lv-lookback-label { margin: 0; font-size: 13px; font-weight: 700; color: var(--accent-ink); }
+.pa .lv-lookback-q { margin: 0; font-size: 16px; line-height: 1.4; }
+.pa .lv-lookback-ans { margin: 0; font-size: 15px; color: var(--primary); }
+.pa .lv-lookback-why { margin: 0; font-size: 14px; line-height: 1.45; color: var(--muted); }
+.pa .lv-reflect .ls-opt { font-weight: 700; }
+
+/* ---- question layout and feedback, (our own look) ---- */
+.pa .lv-main { --amber: var(--reward); --amber-ink: #8A5A0B; --amber-tint: #FFF3D9; --amber-edge: #F1DDB0; }
+/* 1. A picture or hands-on step: the prompt steps back, the activity takes the middle of the screen. */
+.pa .lv-main.is-visual .ls-prompt { font-size: 18px; line-height: 1.4; }
+.pa .lv-main:not(.has-passage) { justify-content: safe center; }
+@container pa (min-width: 600px) { .pa .lv-main.is-visual .ls-prompt { font-size: 20px; } }
+
+/* 2. Short choices two by two. */
+.pa .ls-choices.is-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pa .ls-choices.is-grid .ls-choice { min-height: 56px; position: relative; }
+/* the tick or cross sits on the corner, so a short answer keeps its one line after Check */
+.pa .ls-choices.is-grid .ls-mark { position: absolute; top: -10px; right: -10px; box-shadow: 0 0 0 3px #FFFFFF; }
+/* After Check, the choices that are neither the pick nor the answer step back. */
+.pa .ls-choices.is-checked .ls-choice:not(.is-right):not(.is-wrong):not(.is-picked) { opacity: .5; transition: opacity .25s ease; }
+
+/* 3. The whole screen takes the answer's color: a frame and a glow just above the sheet. Amber, not red: a miss is
+      a step, not a failure. */
+.pa .lv-state { position: absolute; inset: 4px; z-index: 1; pointer-events: none; border-radius: 22px; opacity: 0;
+  transition: opacity .25s ease, box-shadow .25s ease; }
+.pa .lv-state.is-right { opacity: 1; box-shadow: inset 0 0 0 3px var(--primary); background: radial-gradient(120% 40% at 50% 100%, rgba(127, 163, 143, .35), transparent 70%); }
+.pa .lv-state.is-wrong { opacity: 1; box-shadow: inset 0 0 0 3px var(--reward); background: radial-gradient(120% 40% at 50% 100%, rgba(227, 167, 47, .3), transparent 70%); }
+.pa .lv-main .ls-choice.is-wrong { border-color: var(--amber); background: var(--amber-tint); box-shadow: 0 4px 0 var(--amber-ink); }
+.pa .lv-main .ls-mark.no { background: var(--amber-ink); }
+.pa .lv-main .ls-choice.is-wrong .ls-letter { border-color: var(--amber-ink); background: var(--amber-ink); }
+.pa .lv-sheet.no { background: var(--amber-tint, #FFF3D9); border-top-color: #F1DDB0; }
+.pa .lv-sheet.no .ls-nq { color: #8A5A0B; }
+@media (prefers-reduced-motion: reduce) { .pa .lv-state { transition: none; } }
+.pa .still .lv-state { transition: none; }
+
+/* 4. A compact sheet: the verdict, the XP and "Why?" on one row; the explanation opens on demand when right. */
+.pa .lv-sheet-top { display: flex; align-items: center; gap: 10px; min-height: 36px; touch-action: none; }
+.pa .lv-verdict-icon { flex: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.pa .lv-verdict-icon.ok { background: var(--primary); }
+.pa .lv-verdict-icon.no { background: #8A5A0B; }
+.pa .lv-sheet-top .ls-verdict, .pa .lv-sheet-top .ls-nq { flex: 1; min-width: 0; }
+.pa .lv-xp { flex: none; padding: 3px 10px; border-radius: 999px; background: #FFFFFF; color: var(--primary); font-weight: 700; font-size: 14px; border: 2px solid var(--sage-tint); }
+.pa .lv-why { flex: none; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 2px solid rgba(29, 35, 32, .18); background: rgba(255, 255, 255, .7);
+  font: 700 15px var(--sans); color: var(--ink); cursor: pointer; }
+.pa .lv-why.on { background: #FFFFFF; }
+.pa .lv-sheet .lv-sheet-body:not([hidden]) { animation: fxFadeUp .22s ease both; }
+.pa .still .lv-sheet .lv-sheet-body:not([hidden]) { animation: none; }
+
+/* A run of right answers: a small burst under the progress bar, every third one. */
+.pa .lv-burst { position: absolute; top: 58px; right: 14px; z-index: 7; display: flex; align-items: center; gap: 6px; margin: 0;
+  padding: 6px 12px 6px 8px; border-radius: 999px; background: #FFFFFF; border: 2px solid #F3CDBF; box-shadow: 0 4px 0 #F3CDBF;
+  font: 700 15px var(--sans); color: var(--accent-ink); pointer-events: none; animation: fxPopA .42s cubic-bezier(.34, 1.56, .64, 1) backwards, lvBurstOut .4s ease 1.8s forwards; }
+@keyframes lvBurstOut { to { opacity: 0; transform: translateY(-8px); } }
+.pa .still .lv-burst { animation: lvBurstOut .01s linear 2s forwards; }
+/* every activity's wrong mark in the same amber as the frame */
+.pa .lv-main :is(.lv-slot, .lv-cell, .lv-typed-box, .lv-card-chip, .lv-work-line, .lv-reason, .lv-order-slot, .lv-hot-s, .lv-menu).is-wrong {
+  border-color: var(--amber-ink) !important; background: var(--amber-tint) !important; }
+.pa .lv-main :is(.lv-slot, .lv-card-chip, .lv-work-line, .lv-reason, .lv-hot-s, .lv-cell, .lv-typed-box, .lv-order-slot, .lv-menu-wrap).is-wrong::after { color: var(--amber-ink); }
+.pa .lv-main .lv-multi.is-wrong .lv-box { background: var(--amber-ink); border-color: var(--amber-ink); }
+/* a grid cell is narrow: the tick alone says it */
+.pa .ls-choices.is-grid .ls-tag { display: none; }
+
+/* placement self-rating: the question as a card, then No / Maybe / Yes */
+.pa .lv-ratecard { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-radius: 18px; background: #FFFFFF; border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
+.pa .lv-ratecard-q { margin: 0; font-family: var(--serif); font-size: 18px; line-height: 1.4; }
+.pa .lv-ratecard-opts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 15px; }
+.pa .lv-ratecard-opts li { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 10px; background: var(--bg); }
+.pa .lv-ratecard-opts span { flex: none; width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--line-2); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--muted); }
+.pa .lv-ratecard-note { margin: 0; font-size: 14px; color: var(--muted); }
+.pa .lv-rate-foot { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pa .lv-rate-btn { min-height: 54px; border-radius: 16px; border: 2px solid var(--line); background: #FFFFFF; box-shadow: 0 4px 0 var(--line); font: 700 18px var(--sans); color: var(--ink); cursor: pointer; }
+.pa .lv-rate-btn:last-child { background: var(--primary); border-color: var(--primary-edge); box-shadow: 0 4px 0 var(--primary-edge); color: #FFFFFF; }
+
+/* "Run the wrong answer" (LevelGraph.tsx, Estimate, Typed): the student's answer stays drawn in amber, the answer
+   comes in beside it in green a moment later, and one line says what the student's answer means. */
+.pa .lv-run { margin: 8px 0 0; padding: 8px 12px; border-left: 4px solid var(--amber, var(--reward)); border-radius: 0 12px 12px 0;
+  background: var(--amber-tint, #FFF3D9); color: var(--ink); font-size: 15px; line-height: 1.45; animation: fxFadeUp .3s ease .45s both; }
+.pa .lv-reveal { animation: lvReveal .5s ease .3s both; transform-box: fill-box; transform-origin: center; }
+@keyframes lvReveal { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .pa .lv-run, .pa .lv-reveal { animation: none; } }
+.pa .still .lv-run, .pa .still .lv-reveal { animation: none; }
+/* The answer sheet, short first: the key line, then the rest on request; older hints folded */
+.pa .lv-explain { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.pa .lv-more { position: relative; border: 0; background: none; padding: 0; font: 700 15px var(--sans); color: var(--primary); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.pa .lv-more::after { content: ""; position: absolute; inset: -10px -6px; }
+.pa .lv-hints-old summary { cursor: pointer; font-size: 14px; font-weight: 700; color: var(--muted); }
+.pa .lv-hints-old ol { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; color: var(--muted); }
+.pa .lv-hints > .lv-hint { margin: 0; }
+.pa .lv-hints-old + .lv-hint { padding-top: 8px; border-top: 1px solid var(--ok-tint); }

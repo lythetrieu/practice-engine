@@ -1,0 +1,285 @@
+/* Practice app: shared base, tokens and the motion kit (shared class names and timings). Everything is scoped under .pa so it never touches site pages.
+   Screen-only styles and keyframes live next to each screen (screens/*.css). */
+
+.pa {
+  /* Brand colors: defaults here, the pack's own set on .pa by PracticeApp (src/pack/index.ts brandVars). */
+  --primary: #1E4D3A; --primary-edge: #143728; --accent: #E8704F; --reward: #E3A72F; --bg: #FBF8F3; --frame: #E6EFE1;
+  /* derived from the brand colors, so a pack sets five colors and the rest follows */
+  --sage: color-mix(in srgb, var(--primary) 55%, #FFFFFF); --sage-edge: color-mix(in srgb, var(--primary) 75%, #FFFFFF);
+  --sage-tint: color-mix(in srgb, var(--primary) 20%, #FFFFFF); --ok-tint: color-mix(in srgb, var(--primary) 12%, #FFFFFF);
+  --accent-edge: color-mix(in srgb, var(--accent) 78%, #000000); --accent-btn: color-mix(in srgb, var(--accent) 84%, #000000);
+  --accent-btn-edge: color-mix(in srgb, var(--accent) 64%, #000000); --accent-ink: color-mix(in srgb, var(--accent) 72%, #000000);
+  --accent-tint: color-mix(in srgb, var(--accent) 12%, #FFFFFF);
+  --reward-edge: color-mix(in srgb, var(--reward) 78%, #000000);
+  --surface: color-mix(in srgb, var(--bg) 92%, #8A7A60); --line: color-mix(in srgb, var(--bg) 85%, #9C8456); --line-2: color-mix(in srgb, var(--bg) 87%, #8F8270);
+  --ink: #1D2320; --muted: #5C625D;
+  --locked: #E9E2D6; --locked-edge: #D3C9B9;
+  --serif: 'Charis SIL', Georgia, serif; --sans: 'Andika', system-ui, sans-serif;
+  position: fixed; inset: 0; overflow: hidden;
+  background: var(--frame);
+  color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.4;
+  -webkit-tap-highlight-color: transparent;
+}
+.pa *, .pa *::before, .pa *::after { box-sizing: border-box; }
+.pa h1, .pa h2, .pa h3, .pa p { margin: 0; }
+.pa h1, .pa h2, .pa h3 { font-family: var(--serif); font-weight: 700; color: var(--ink); }
+/* :where keeps this reset at class weight, so any button class later in the cascade wins */
+.pa :where(button) { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.pa a { color: var(--primary); }
+.pa a:hover { color: var(--primary-edge); }
+.pa button:focus-visible, .pa a:focus-visible, .pa [tabindex]:focus-visible, .pa input:focus-visible, .pa textarea:focus-visible, .pa select:focus-visible {
+  outline: 3px solid var(--primary); outline-offset: 3px;
+}
+.pa .on-dark:focus-visible { outline-color: #FFFFFF; }
+.pa .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Responsive shell (follow the device: responsive on every device).
+   Window sizes follow Material 3 window size classes: compact < 600px (phones), medium 600-1199px
+   (tablets, phones in landscape), expanded >= 1200px (laptops, desktops).
+   - compact: the screen fills the window, the 5-tab bar sits at the bottom (the approved phone design);
+   - medium: the tab bar becomes a navigation rail on the left (icons with labels under them);
+   - expanded: the rail becomes a sidebar with the brand and labels beside the icons.
+   Each screen adapts to the width it gets, not the window: .pa-screen is a size container named `pa`,
+   so screens use @container pa (min-width: 600px) / (min-width: 900px) for wider layouts. */
+.pa-shell {
+  position: relative; height: 100%; background: var(--bg); display: grid; overflow: hidden;
+  grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; grid-template-areas: "stage" "nav";
+}
+.pa-stage {
+  grid-area: stage; min-width: 0; min-height: 0; display: flex; flex-direction: column; position: relative;
+  /* landscape phones with a notch: keep content out of the side safe areas */
+  padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px);
+}
+/* Browsers without container queries get none of the wider screen layouts: keep the phone design centered. */
+@supports not (container-type: inline-size) {
+  .pa-screen { width: 100%; max-width: 480px; margin: 0 auto; }
+}
+@media (min-width: 600px) {
+  .pa-shell.has-nav { grid-template-columns: auto minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); grid-template-areas: "nav stage"; }
+  .pa-shell.has-nav .pa-stage { padding-left: 0; }   /* the rail already covers the left safe area */
+}
+.pa-screen { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; position: relative; container: pa / inline-size; }
+/* The scrolling part of a screen. Layouts are made to fit a 390 x 844 phone without scrolling;
+   on shorter screens this scrolls instead of cutting content off. */
+.pa-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+
+/* Sample-mode ribbon */
+.pa-sample {
+  flex: none; display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 5px 12px; background: var(--primary); color: #FFFFFF; font-size: 12px; font-weight: 700; line-height: 16px; text-align: center;
+}
+.pa-sample b { background: var(--reward); color: #3D2A06; border-radius: 6px; padding: 0 6px; letter-spacing: .04em; }
+
+/* Offline banner (PracticeApp, offline.ts): calm, not an error. Progress is saved here either way. */
+.pa-offline {
+  flex: none; display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 6px 12px; background: var(--surface); border-bottom: 2px solid var(--line); color: var(--ink);
+  font-size: 13px; font-weight: 700; line-height: 18px; text-align: center;
+}
+.pa-offline svg { flex: none; color: var(--muted); }
+
+/* Bottom nav (5 tabs); a rail or sidebar on wider windows (see the shell above) */
+.pa-nav {
+  grid-area: nav; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px;
+  padding: 6px max(6px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(6px, env(safe-area-inset-left, 0px));
+  border-top: 2px solid var(--line); background: var(--bg);
+}
+.pa-nav .pa-nav-brand { display: none; }
+.pa-nav a.pa-nav-item {
+  min-height: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  border-radius: 14px; color: var(--muted); text-decoration: none; font-size: 12px; font-weight: 700;
+}
+.pa-nav a.pa-nav-item[aria-current="page"] { background: var(--ok-tint); color: var(--primary); }
+@media (min-width: 600px) {
+  .pa-nav {
+    display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 6px; overflow-y: auto;
+    width: calc(88px + max(8px, env(safe-area-inset-left, 0px)));   /* grows by the notch instead of squeezing the items */
+    padding: max(14px, env(safe-area-inset-top, 0px)) 8px max(14px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+    border-top: 0; border-right: 2px solid var(--line);
+  }
+  .pa-nav a.pa-nav-item { min-height: 64px; font-size: 13px; }
+}
+@media (min-width: 1200px) {
+  .pa-nav { width: 248px; padding: 24px 16px; gap: 8px; }
+  .pa-nav .pa-nav-brand {
+    display: flex; align-items: center; gap: 10px; padding: 4px 12px 18px; color: var(--primary);
+    font-family: var(--serif); font-weight: 700; font-size: 20px; line-height: 1.15; text-decoration: none;
+  }
+  .pa-nav a.pa-nav-item { flex-direction: row; justify-content: flex-start; gap: 14px; min-height: 52px; padding: 0 16px; font-size: 17px; }
+}
+
+/* Chunky 3D "pressable" buttons */
+.pa .press { transition: transform .08s ease; }
+.pa .press:active { transform: translateY(4px); }
+.pa-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 20px;
+  border-radius: 16px; font-family: var(--sans); font-size: 17px; font-weight: 700; text-decoration: none; letter-spacing: .02em;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.pa-btn:active { transform: translateY(4px); box-shadow: none !important; }
+.pa-btn.coral { background: var(--accent-btn); color: #FFFFFF; box-shadow: 0 4px 0 var(--accent-btn-edge); }
+.pa-btn.green { background: var(--primary); color: #FFFFFF; box-shadow: 0 4px 0 var(--primary-edge); }
+.pa-btn.ghost { background: #FFFFFF; color: var(--primary); border: 2px solid var(--line-2); box-shadow: 0 4px 0 var(--line-2); }
+.pa-btn[disabled], .pa-btn[aria-disabled="true"] { background: var(--locked); color: var(--muted); box-shadow: 0 4px 0 var(--locked-edge); cursor: default; }
+.pa a.pa-btn.coral, .pa a.pa-btn.green { color: #FFFFFF; }
+
+/* Bottom sheets and scrims */
+.pa-scrim { position: absolute; inset: 0; z-index: 40; background: rgba(29, 35, 32, .42); display: flex; align-items: flex-end; justify-content: center; }
+.pa-sheet {
+  position: relative; width: 100%; background: var(--bg); border-radius: 24px 24px 0 0;
+  padding: 20px 20px calc(22px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -8px 30px rgba(29, 35, 32, .18);
+  max-height: 92%; overflow-y: auto;
+}
+/* On wider windows a sheet is a centered card instead of spanning the whole bottom edge. */
+@container pa (min-width: 600px) {
+  .pa-scrim { align-items: center; padding: 24px; }
+  .pa-sheet { max-width: 520px; border-radius: 24px; padding-bottom: 22px; box-shadow: 0 24px 60px rgba(29, 35, 32, .25); }
+}
+
+/* Toasts (badge unlocked, quest claimed) */
+.pa-toast {
+  position: absolute; left: 16px; right: 16px; top: 12px; z-index: 60; max-width: 440px; margin: 0 auto; display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 16px; background: var(--primary); color: #FFFFFF; font-weight: 700;
+  box-shadow: 0 4px 0 var(--primary-edge), 0 12px 24px rgba(29, 35, 32, .2);
+}
+
+/* ---- motion kit: shared names and timings ---- */
+/* entrances use fill-mode backwards so the end state never pins transform (keeps :active press working) */
+.pa .fx-pop { animation: fxPop .42s cubic-bezier(.34, 1.56, .64, 1) backwards; }
+.pa .fx-popA { animation: fxPopA .42s cubic-bezier(.34, 1.56, .64, 1) backwards; }
+.pa .fx-popB { animation: fxPopB .42s cubic-bezier(.34, 1.56, .64, 1) backwards; }
+@keyframes fxPop { 0% { opacity: 0; transform: scale(.6); } 70% { opacity: 1; transform: scale(1.06); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes fxPopA { 0% { opacity: 0; transform: scale(.6); } 70% { opacity: 1; transform: scale(1.06); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes fxPopB { 0% { opacity: 0; transform: scale(.6); } 70% { opacity: 1; transform: scale(1.06); } 100% { opacity: 1; transform: scale(1); } }
+.pa .fx-fadeup { animation: fxFadeUp .45s cubic-bezier(.22, 1, .36, 1) backwards; }
+.pa .fx-fadeupA { animation: fxFadeUpA .45s cubic-bezier(.22, 1, .36, 1) backwards; }
+.pa .fx-fadeupB { animation: fxFadeUpB .45s cubic-bezier(.22, 1, .36, 1) backwards; }
+@keyframes fxFadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes fxFadeUpA { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes fxFadeUpB { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.pa .fx-slideup { animation: fxSlideUp .32s cubic-bezier(.22, 1, .36, 1) backwards; }
+@keyframes fxSlideUp { from { transform: translateY(100%); } to { transform: none; } }
+.pa .fx-bob { animation: fxBob 2.4s ease-in-out infinite; }
+@keyframes fxBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.pa .fx-flicker { animation: fxFlicker 1.8s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes fxFlicker { 0%, 100% { transform: scale(1) rotate(0); } 30% { transform: scale(1.08, 1.12) rotate(-3deg); } 60% { transform: scale(.97, 1.03) rotate(2deg); } }
+.pa .fx-ring { position: relative; }
+.pa .fx-ring::after { content: ""; position: absolute; inset: -7px; border-radius: inherit; border: 3px solid var(--accent); animation: fxRing 1.6s ease-out infinite; pointer-events: none; }
+@keyframes fxRing { from { opacity: .75; transform: scale(.92); } to { opacity: 0; transform: scale(1.25); } }
+.pa .fx-pulse { animation: fxPulse 1.8s ease-in-out 3; }   /* three pulses, then still */
+@keyframes fxPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+.pa .fx-shakeA { animation: fxShakeA .42s ease both; }
+.pa .fx-shakeB { animation: fxShakeB .42s ease both; }
+@keyframes fxShakeA { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(4px); } }
+@keyframes fxShakeB { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(4px); } }
+.pa .fx-hopA { animation: fxHopA .5s cubic-bezier(.34, 1.56, .64, 1); }
+.pa .fx-hopB { animation: fxHopB .5s cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes fxHopA { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-14px) rotate(-4deg); } }
+@keyframes fxHopB { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-14px) rotate(-4deg); } }
+.pa .fx-wiggle { animation: fxWiggle .5s ease; }
+.pa .fx-wiggleB { animation: fxWiggleB .5s ease; }
+@keyframes fxWiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
+@keyframes fxWiggleB { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
+.pa .fx-float { animation: fxFloat .95s cubic-bezier(.22, 1, .36, 1) forwards; pointer-events: none; }
+@keyframes fxFloat { 0% { opacity: 0; transform: translateY(6px) scale(.8); } 20% { opacity: 1; transform: translateY(0) scale(1.1); } 100% { opacity: 0; transform: translateY(-44px) scale(1); } }
+.pa .fx-fill { animation: fxFill .6s cubic-bezier(.22, 1, .36, 1) backwards; transform-origin: left center; }
+.pa .fx-fillA { animation: fxFillA .6s cubic-bezier(.22, 1, .36, 1) backwards; transform-origin: left center; }
+.pa .fx-fillB { animation: fxFillB .6s cubic-bezier(.22, 1, .36, 1) backwards; transform-origin: left center; }
+@keyframes fxFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes fxFillA { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes fxFillB { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* motion off (Me > Settings) and reduced motion */
+.pa.still *, .pa.still *::before, .pa.still *::after { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .pa *, .pa *::before, .pa *::after { animation: none !important; transition: none !important; }
+}
+
+/* HUD (ui.tsx Hud) */
+.pa-hud { position: relative; display: flex; align-items: center; gap: 6px; }
+.pa-hud-btn { min-height: 44px; border-radius: 12px; display: flex; align-items: center; }
+.pa-hud-badge {
+  min-height: 36px; padding: 0 10px; display: flex; align-items: center; gap: 4px; border: 2px solid var(--line); border-radius: 12px;
+  background: #FFFFFF; box-shadow: 0 3px 0 var(--line); font-weight: 700; font-size: 16px; transition: transform .08s ease;
+}
+.pa-hud-badge.streak { color: var(--accent-ink); }
+.pa-hud-badge.xp { color: var(--primary); }
+.pa-hud-btn:active .pa-hud-badge { transform: translateY(2px); }
+.pa-hud-tip {
+  position: absolute; right: 0; top: calc(100% + 10px); z-index: 30; width: max-content; max-width: 206px; padding: 9px 12px;
+  background: #FFFFFF; border: 2px solid var(--line); border-radius: 14px; box-shadow: 0 3px 0 var(--line);
+  font-size: 15px; line-height: 1.4; color: var(--ink);
+}
+.pa-hud-tip .caret { position: absolute; top: -10px; }
+.pa-hud-tip.at-streak { transform-origin: calc(100% - 109px) 0; }
+.pa-hud-tip.at-streak .caret { right: 96px; }
+.pa-hud-tip.at-xp { transform-origin: calc(100% - 37px) 0; }
+.pa-hud-tip.at-xp .caret { right: 24px; }
+
+/* Sheet parts (ui.tsx Sheet, TestDaySheet) */
+.pa-sheet-x { position: absolute; right: 12px; top: 12px; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+.pa-sheet-title { font-size: 22px; line-height: 28px; padding-right: 44px; }
+.pa-sheet-sub { margin-top: 4px; font-size: 15px; line-height: 20px; color: var(--muted); }
+.pa-testdays { display: grid; gap: 8px; margin-top: 14px; }
+.pa-testday {
+  min-height: 56px; padding: 8px 14px; border: 2px solid var(--line-2); border-radius: 16px; background: #FFFFFF; box-shadow: 0 3px 0 var(--line-2);
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center; text-align: left;
+}
+.pa-testday .d { font-weight: 700; font-size: 17px; line-height: 22px; }
+.pa-testday .w { font-size: 14px; line-height: 18px; color: var(--muted); }
+.pa-testday.on { border-color: var(--primary); background: var(--ok-tint); box-shadow: 0 3px 0 var(--primary); }
+.pa-linkbtn { margin-top: 12px; min-height: 44px; font-weight: 700; color: var(--primary); text-decoration: underline; }
+
+/* Error fallback (PracticeApp Boundary) */
+.pa-crash { display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: 24px; text-align: center; }
+.pa-crash h1 { font-size: 26px; line-height: 32px; }
+.pa-crash p { font-size: 16px; color: var(--muted); }
+
+/* Problem reports (report.tsx) */
+.pa .pa-flag { width: 44px; height: 44px; margin-left: auto; flex: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+.pa .pa-flag:active { transform: translateY(2px); }
+.pa-rp-set { border: 0; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
+.pa-rp-set legend { font-weight: 700; font-size: 16px; margin-bottom: 6px; padding: 0; }
+.pa-rp-opt {
+  min-height: 46px; padding: 8px 12px; border: 2px solid var(--line-2); border-radius: 14px; background: #FFFFFF;
+  display: flex; align-items: center; gap: 10px; font-size: 15px; line-height: 20px; cursor: pointer;
+}
+.pa-rp-opt input { width: 20px; height: 20px; flex: none; accent-color: var(--primary); margin: 0; }
+.pa-rp-opt.on { border-color: var(--primary); background: var(--ok-tint); }
+.pa-rp-where { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; font-weight: 700; font-size: 15px; }
+.pa-rp-where select { min-height: 44px; padding: 0 10px; border: 2px solid var(--line-2); border-radius: 12px; background: #FFFFFF; font: inherit; font-weight: 400; color: var(--ink); }
+.pa-rp-fine { margin-top: 10px; font-size: 13px; line-height: 18px; color: var(--muted); }
+.pa-rp-msg { min-height: 20px; margin: 6px 0; font-size: 15px; font-weight: 700; color: var(--accent-ink); }
+.pa-rp-msg.ok { color: var(--primary); }
+.pa-report { max-height: 92%; overflow-y: auto; }
+.pa-report .pa-btn { width: 100%; }
+.pa .pa-flag.with-label { width: auto; padding: 0 12px 0 10px; gap: 6px; border: 2px solid var(--line-2); background: #FFFFFF; box-shadow: 0 2px 0 var(--line-2); font-weight: 700; font-size: 14px; color: var(--ink); }
+.pa .pa-flag.ls-flag-top { margin-left: 0; }
+.pa .pa-rp-switch { display: block; margin-top: 6px; font-size: 15px; text-align: left; }
+.pa-nav-ic { position: relative; display: block; width: 24px; height: 24px; }
+.pa-nav-count {
+  position: absolute; left: 15px; top: -6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+  background: var(--accent-btn); color: #FFFFFF; font-size: 11px; line-height: 18px; font-weight: 700; text-align: center; box-shadow: 0 0 0 2px var(--bg);
+}
+
+/* Add to the Home Screen steps, iPhone and iPad (install.tsx IosInstallSheet) */
+.pa-inst-step {
+  display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 12px 14px;
+  border: 2px solid var(--line-2); border-radius: 16px; background: #FFFFFF; font-size: 16px; line-height: 22px;
+}
+.pa-inst-ic {
+  flex: none; width: 44px; height: 44px; border-radius: 12px; background: var(--ok-tint); color: #0A64D6;
+  display: flex; align-items: center; justify-content: center;
+}
+.pa-inst-why { margin-top: 12px; font-size: 15px; line-height: 21px; }
+.pa-inst-fine { margin-top: 8px; font-size: 13px; line-height: 18px; color: var(--muted); }
+.pa-inst .pa-btn { width: 100%; margin-top: 16px; }
+
+/* Accessibility (E4, P6): skip link to the menu (the menu follows the content in the page order). */
+.pa .pa-skip:not(:focus) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.pa .pa-skip:focus { position: absolute; left: 12px; top: 12px; z-index: 90; padding: 10px 16px; border-radius: 12px; background: var(--primary); color: #FFFFFF; font-weight: 700; outline-color: #FFFFFF; outline-offset: -5px; }
+.pa [tabindex="-1"]:focus { outline: none; }   /* headings and screens that take the focus programmatically */
+
+/* The pack's logo in the sidebar brand (Nav.tsx): an inline SVG, sized like the old favicon image */
+.pa .pa-nav-logo { flex: none; width: 32px; height: 32px; display: inline-flex; }
+.pa .pa-nav-logo svg { width: 100%; height: 100%; }

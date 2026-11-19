@@ -1,0 +1,32 @@
+/* "Your plan" on Home (TutorPlan.tsx). */
+.pa .tp-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.pa .tp-row {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 20px; text-decoration: none; color: var(--ink);
+  background: #FFFFFF; border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line);
+}
+.pa a.tp-row:hover { color: var(--ink); border-color: var(--sage); }
+.pa .tp-ic { flex: none; width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+.pa .tp-goal .tp-ic { background: #FFF3D9; color: #8A5A0B; }
+.pa .tp-place .tp-ic { background: var(--ok-tint); color: var(--primary); }
+.pa .tp-gap .tp-ic { background: var(--accent-tint); color: var(--accent-ink); }
+.pa .tp-due .tp-ic { background: var(--surface); color: var(--primary); }
+.pa .tp-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pa .tp-text b { font-size: 17px; line-height: 22px; }
+.pa .tp-text span { font-size: 14px; line-height: 19px; color: var(--muted); }
+.pa .tp-go {
+  flex: none; min-height: 40px; padding: 0 14px; border-radius: 12px; display: flex; align-items: center;
+  background: var(--primary); color: #FFFFFF; font-weight: 700; font-size: 15px; box-shadow: 0 3px 0 var(--primary-edge);
+}
+.pa .tp-gap .tp-go { background: var(--accent-btn); box-shadow: 0 3px 0 var(--accent-btn-edge); }
+.pa .tp-calm { margin: 0; padding: 12px 14px; border-radius: 16px; background: var(--ok-tint); color: var(--primary); font-size: 15px; }
+@media (max-width: 360px) { .pa .tp-go { display: none; } }
+/* phones: one line for the title, one for the reason, so three rows fit without scrolling Home */
+@container pa (max-width: 599px) {
+  .pa .tp-list { gap: 8px; }
+  .pa .tp-row { padding: 8px 10px; gap: 10px; border-radius: 18px; }
+  .pa .tp-ic { width: 36px; height: 36px; border-radius: 12px; }
+  .pa .tp-text b, .pa .tp-text span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pa .tp-text b { font-size: 16px; line-height: 20px; }
+  .pa .tp-text span { font-size: 13px; line-height: 17px; }
+  .pa .tp-go { min-height: 36px; padding: 0 12px; font-size: 14px; }
+}

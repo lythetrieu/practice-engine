@@ -1,0 +1,2 @@
+- { id: m.add, name: Adding, section: math }
+- { id: m.times, name: Multiplying, section: math, requires: [m.add] }

@@ -1,0 +1,51 @@
+// Cloudflare Workers config for the engine. The pack does not change this file: one Worker serves one pack,
+// chosen when you build (npm run build -- --pack <name>). Rename the Worker and the database for your site.
+//
+// The Astro Cloudflare adapter copies this file into dist/server/wrangler.json at build time, and
+// `wrangler deploy` uses that copy. So an edit here needs a new build before it reaches a deploy.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "practice-engine",
+  "main": "./src/worker.ts",
+  "compatibility_date": "2026-03-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "workers_dev": true,
+  // Uncomment to serve the app on your own domain:
+  // "routes": [{ "pattern": "practice.example.com", "custom_domain": true }],
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "run_worker_first": ["/app", "/app/", "/app/index.html"]
+  },
+  // Accounts, children's logins and synced progress. Create it once with:
+  //   npx wrangler d1 create practice-engine
+  // then paste the database_id it prints here, and run `npm run db:migrate:remote`.
+  // Local dev (`npm run dev`, `npm run db:migrate:local`) uses a local copy and needs no id.
+  "d1_databases": [
+    { "binding": "DB", "database_name": "practice-engine", "database_id": "00000000-0000-0000-0000-000000000000", "migrations_dir": "migrations" }
+  ],
+  "ratelimits": [
+    { "name": "API_RL", "namespace_id": "1001", "simple": { "limit": 60, "period": 60 } },
+    { "name": "AUTH_RL", "namespace_id": "1002", "simple": { "limit": 10, "period": 60 } },
+    { "name": "STUDENT_RL", "namespace_id": "1003", "simple": { "limit": 30, "period": 60 } }
+  ],
+  // Sign-in codes go out through Cloudflare Email Service. Without it (and always under `npm run dev`)
+  // the code is printed in the terminal instead.
+  "send_email": [{ "name": "EMAIL" }],
+  "vars": {
+    "MAIL_FROM": "login@example.com",
+    "TURNSTILE_SITE_KEY": "",
+    "TURNSTILE_HOSTNAMES": "",
+    "ALERT_EMAIL": "",
+    "PASSWORD_ITERATIONS": "5000",
+    // Parent-account emails (comma-separated) that may open /admin/: problem reports, app errors, question stats.
+    "ADMIN_EMAILS": "",
+    // The optional AI tutor (docs/pip.md): "1" turns it on; it also needs the OPENROUTER_API_KEY secret.
+    "PIP_ENABLED": "",
+    "PIP_DAILY_CAP": "3000"
+  },
+  // Daily: delete server rows older than 12 months (src/lib/server/retention.ts).
+  "triggers": { "crons": ["17 8 * * *"] },
+  "observability": { "enabled": true }
+}

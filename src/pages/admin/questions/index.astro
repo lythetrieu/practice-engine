@@ -1,0 +1,126 @@
+---
+// /admin/questions/ — how each question of the pack is doing, from the answer log (item_answers): tries, % right, hints,
+// the most-picked wrong choice. Aggregates only; the page never selects which learner answered. Read it with the flags
+// (docs/data-and-admin.md): a few answers say nothing, so flags need MIN_TRIES answers.
+import Shell from '../_AdminShell.astro';
+import { EASY_AT, FLAG_LABEL, HARD_AT, MIN_TRIES, SORTS, adminGate, packBank, questionTable, sortQuestions, type QFlag, type QSort } from '../../../lib/server/admin';
+import { db } from '../../../lib/server/env';
+import { SECTIONS } from '../../../pack';
+export const prerender = false;
+
+const gate = await adminGate(Astro);
+if (gate instanceof Response) return gate;
+const sp = Astro.url.searchParams;
+const pick = <T extends string>(v: string | null, ok: readonly T[], fallback: T): T => ok.find((o) => o === v) ?? fallback;
+const days = [30, 90, 365].includes(Number(sp.get('days'))) ? Number(sp.get('days')) : 90;
+const section = SECTIONS.some((s) => s.id === sp.get('section')) ? (sp.get('section') as string) : '';
+const flag = pick(sp.get('flag'), ['all', 'any', 'easy', 'hard', 'check'] as const, 'all');
+const show = pick(sp.get('show'), ['answered', 'never', 'all'] as const, 'answered');
+const sort: QSort = pick(sp.get('sort'), SORTS, 'flag');
+const desc = sp.get('dir') === 'desc';
+const page = Math.min(Math.max(0, Math.floor(Number(sp.get('page')) || 0)), 1000);
+const PER = 50;
+
+const t = await questionTable(db(), await packBank(), days);
+let rows = t.rows.filter((r) =>
+  (!section || r.section === section) &&
+  (show === 'all' || (show === 'never' ? r.tries === 0 : r.tries > 0)) &&
+  (flag === 'all' || (flag === 'any' ? r.flags.length > 0 : r.flags.includes(flag as QFlag))));
+rows = sortQuestions(rows, sort, desc);
+const shown = rows.slice(page * PER, page * PER + PER);
+
+const qs = (over: Record<string, string | number | null>) => {
+  const base: Record<string, string | number> = { days, section, flag, show, sort, dir: desc ? 'desc' : 'asc', page };
+  const u = new URLSearchParams();
+  for (const [k, v] of Object.entries({ ...base, ...over })) if (v !== null && v !== '' && v !== 0 && !(k === 'dir' && v === 'asc') && !(k === 'flag' && v === 'all') && !(k === 'show' && v === 'answered') && !(k === 'sort' && v === 'flag') && !(k === 'days' && v === 90)) u.set(k, String(v));
+  const s = u.toString();
+  return `/admin/questions/${s ? `?${s}` : ''}`;
+};
+// A header link: the first click sorts one way, the next the other way.
+const sortHref = (col: QSort) => qs({ sort: col, dir: sort === col && !desc ? 'desc' : 'asc', page: 0 });
+const aria = (col: QSort) => (sort === col ? 'true' : undefined);
+const pct = (p: number | null) => (p == null ? '–' : `${Math.round(p * 100)}%`);
+const letter = (i: number) => String.fromCharCode(65 + i);
+---
+<Shell title="Questions" active="questions" lede={`How each question is doing, from the answers of the last ${days} days. No names, only counts.`}>
+  <div class="adm-stats">
+    <div class="card adm-stat"><b>{t.bankSize}</b><span>Questions in the pack</span><small>{t.answered} answered, {t.never} never answered in this period</small></div>
+    <div class="card adm-stat"><b>{t.tries.toLocaleString('en-US')}</b><span>Answers in this period</span><small>{t.unknown ? `${t.unknown} ids are no longer in the pack` : 'every id is in the pack'}</small></div>
+    <div class="card adm-stat"><b>{t.flagged}</b><span>Flagged</span><small>with at least {MIN_TRIES} answers</small></div>
+  </div>
+
+  <form class="adm-bar" method="get" action="/admin/questions/">
+    <label>Period
+      <select name="days">{[30, 90, 365].map((d) => <option value={d} selected={d === days}>{d === 365 ? 'Last year' : `Last ${d} days`}</option>)}</select></label>
+    <label>Section
+      <select name="section"><option value="">All</option>{SECTIONS.map((s) => <option value={s.id} selected={s.id === section}>{s.name}</option>)}</select></label>
+    <label>Flag
+      <select name="flag">
+        <option value="all" selected={flag === 'all'}>All</option>
+        <option value="any" selected={flag === 'any'}>Any flag</option>
+        {(['check', 'hard', 'easy'] as QFlag[]).map((f) => <option value={f} selected={flag === f}>{FLAG_LABEL[f]}</option>)}
+      </select></label>
+    <label>Show
+      <select name="show">
+        <option value="answered" selected={show === 'answered'}>Answered</option>
+        <option value="never" selected={show === 'never'}>Never answered</option>
+        <option value="all" selected={show === 'all'}>All</option>
+      </select></label>
+    <label>Sort
+      <select name="sort">
+        {SORTS.map((s) => <option value={s} selected={s === sort}>{({ flag: 'Flags first', section: 'Section and skill', skill: 'Skill', right: '% right', tries: 'Tries', hints: 'Hints', d: 'Difficulty' } as Record<string, string>)[s]}</option>)}
+      </select></label>
+    <input type="hidden" name="dir" value={desc ? 'desc' : 'asc'} />
+    <button class="btn sm primary" type="submit">Apply</button>
+  </form>
+
+  {shown.length === 0 && <p class="adm-empty">No questions match.</p>}
+  {shown.length > 0 && (
+    <table class="adm-table">
+      <thead>
+        <tr>
+          <th>Question</th>
+          <th><a href={sortHref('section')} aria-current={aria('section')}>Section</a> / <a href={sortHref('skill')} aria-current={aria('skill')}>skill</a></th>
+          <th><a href={sortHref('d')} aria-current={aria('d')}>Diff.</a></th>
+          <th><a href={sortHref('tries')} aria-current={aria('tries')}>Tries</a></th>
+          <th><a href={sortHref('right')} aria-current={aria('right')}>% right</a></th>
+          <th><a href={sortHref('hints')} aria-current={aria('hints')}>Hints</a></th>
+          <th>Most-picked wrong choice</th>
+          <th>Flag</th>
+        </tr>
+      </thead>
+      <tbody>
+        {shown.map((r) => (
+          <tr>
+            <td class="p" data-label="Question"><code>{r.id}</code><div>{r.prompt}</div></td>
+            <td data-label="Section">{r.sectionName}<div class="sub">{r.skillName}</div></td>
+            <td class="num" data-label="Difficulty">{r.d ?? '–'}</td>
+            <td class="num" data-label="Tries">{r.tries}</td>
+            <td class="num" data-label="% right">{pct(r.pct)}</td>
+            <td class="num" data-label="Hints">{r.hints == null ? '–' : r.hints.toFixed(2)}</td>
+            <td data-label="Wrong choice">{r.wrong
+              ? <>{letter(r.wrong.idx)}{r.wrong.text ? `: ${r.wrong.text}` : ''}<div class="sub">{Math.round(r.wrong.share * 100)}% of tries{r.key != null ? ` · key is ${letter(r.key)}` : ''}</div></>
+              : '–'}</td>
+            <td data-label="Flag">{r.flags.length ? r.flags.map((f) => <><span class={`adm-pill f-${f}`}>{FLAG_LABEL[f]}</span>{' '}</>) : '–'}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+
+  {(page > 0 || rows.length > (page + 1) * PER) && (
+    <div class="adm-pager">
+      {page > 0 && <a class="btn sm" href={qs({ page: page - 1 })}>Previous</a>}
+      {rows.length > (page + 1) * PER && <a class="btn sm" href={qs({ page: page + 1 })}>Next</a>}
+      <span class="note">{page * PER + 1}–{Math.min(rows.length, (page + 1) * PER)} of {rows.length}</span>
+    </div>
+  )}
+
+  <h2>How to read the flags</h2>
+  <ul>
+    <li><b>Too easy</b>: {Math.round(EASY_AT * 100)}% or more right, with at least {MIN_TRIES} tries.</li>
+    <li><b>Too hard</b>: {Math.round(HARD_AT * 100)}% or less right, with at least {MIN_TRIES} tries.</li>
+    <li><b>Check this</b>: with at least {MIN_TRIES} tries, one wrong choice was picked more often than the right one. Look at the answer key and the wording first.</li>
+  </ul>
+  <p class="note">Questions that are not multiple choice have no wrong-choice column. “Hints” is the average number used per try.</p>
+</Shell>

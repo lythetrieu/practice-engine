@@ -1,0 +1,42 @@
+---
+// The practice app: one React island, full screen, without the site's nav and footer. Its name, colors and logo come
+// from the pack. After one online visit it opens and works with no connection (the service worker /app/sw.js, made at
+// build time by scripts/build-sw.mjs and registered by the app, src/practice/offline.ts), and it can be installed
+// (its own manifest, /app/manifest.webmanifest, scope /app/).
+// The page is static; the Worker checks the session before serving it (src/worker.ts): a visitor with no parent or
+// student session goes to /account/ first (a guest is let through under `astro dev`).
+import '../../styles/global.css';
+import PracticeApp from '../../practice/PracticeApp';
+import { config, brandStyle } from '../../pack';
+const bg = config.brand.colors.background ?? '#FBF8F3';
+---
+<!doctype html>
+<html lang="en" style={brandStyle()}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Practice | {config.name}</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content={bg} />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="/app/manifest.webmanifest" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content={config.name} />
+  <!-- Android, Chromebook: keep the browser's install prompt for the app's own "Install the app" button
+       (src/practice/offline.ts), instead of Chrome's mini-infobar, which could pop up during a lesson. -->
+  <script is:inline>addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window.__installPrompt = e; });</script>
+</head>
+<body class="pa-page">
+  <PracticeApp client:only="react">
+    <div slot="fallback" class="pa-loading" role="status">Loading your practice…</div>
+  </PracticeApp>
+  <!-- Back from the browser's back/forward cache: load fresh, so a signed-out student's name doesn't come back. -->
+  <script is:inline>addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });</script>
+  <noscript><p style="padding:24px">The practice app needs JavaScript. <a href="/">Back to {config.name}</a></p></noscript>
+  <style is:global>
+    html, body.pa-page { margin: 0; height: 100%; background: var(--frame); overscroll-behavior: none; }
+    .pa-loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font: 700 17px/1.4 'Andika', system-ui, sans-serif; color: var(--primary); }
+  </style>
+</body>
+</html>

@@ -1,0 +1,3 @@
+/* A pack's own mascot drawing (pack.yaml mascot.image), inline in a box of the size the screen asks for (Mascot.tsx). */
+.pa .mascot-img { display: inline-block; flex: none; line-height: 0; overflow: hidden; }
+.pa .mascot-img > svg { display: block; width: 100%; height: 100%; }

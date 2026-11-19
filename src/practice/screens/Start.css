@@ -1,0 +1,41 @@
+/* Goal-based onboarding (Start.tsx). */
+.pa .st { display: flex; flex-direction: column; gap: 18px; padding: 8px 16px 20px; overflow-x: hidden; }
+@media (min-width: 600px) { .pa .st { padding: 24px max(24px, calc((100% - 560px) / 2)) 32px; } }
+.pa .st-top { display: flex; align-items: center; gap: 12px; }
+.pa .st-segs { flex: 1; display: flex; gap: 6px; }
+.pa .st-seg { flex: 1; height: 10px; border-radius: 999px; background: var(--locked); transition: background .25s; }
+.pa .st-seg.on { background: var(--sage); }
+.pa .st-body { display: flex; flex-direction: column; gap: 14px; }
+.pa .st-h { font-family: var(--serif); font-size: 28px; line-height: 1.15; color: var(--primary); margin: 0; }
+.pa .st-h2 { font-size: 19px; margin: 6px 0 0; }
+.pa .st-sub { margin: 0; font-size: 16px; line-height: 1.45; color: var(--muted); }
+.pa .st-label { margin: 6px 0 0; font-size: 14px; font-weight: 700; color: var(--muted); }
+.pa .st-choices { display: flex; flex-direction: column; gap: 10px; }
+.pa .st-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pa .st-choice {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; padding: 14px 16px; border-radius: 18px;
+  background: #FFFFFF; border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); color: var(--ink); font: inherit; cursor: pointer;
+}
+.pa .st-row .st-choice { align-items: center; text-align: center; }
+.pa .st-choice.on { border-color: var(--primary); background: var(--ok-tint); box-shadow: 0 4px 0 var(--sage-edge); }
+.pa .st-choice-t { font-size: 17px; font-weight: 700; }
+.pa .st-row .st-choice-t { font-size: 24px; }
+.pa .st-choice-s { font-size: 14px; color: var(--muted); }
+.pa .st-go { border-color: var(--sage); }
+.pa .st-go .st-choice-t { color: var(--primary); }
+.pa .st-tips { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.pa .st-tips li { padding: 12px 14px; border-radius: 16px; background: #FFFFFF; border: 2px solid var(--line); font-size: 15px; line-height: 1.45; }
+.pa .st-summary { padding: 14px 16px; border-radius: 18px; background: var(--ok-tint); color: var(--primary); display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.45; }
+.pa .st-summary p { margin: 0; }
+.pa .st-foot { margin-top: auto; }
+.pa .st-foot .ls-cta { width: 100%; }
+/* "Here's how it works": three cards that come in one after another */
+.pa .st-how { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.pa .st-how-card { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 18px; background: #FFFFFF; border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
+.pa .st-how-card > span:last-child { display: flex; flex-direction: column; gap: 2px; font-size: 14px; line-height: 1.35; color: var(--muted); }
+.pa .st-how-card b { font-size: 16px; color: var(--ink); }
+.pa .st-how-ic { flex: none; width: 42px; height: 42px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: var(--ok-tint); color: var(--primary); }
+.pa .st-how-card:nth-child(2) .st-how-ic { background: #FFF3D9; color: #8A5A0B; }
+.pa .st-how-card:nth-child(3) .st-how-ic { background: var(--accent-tint); color: var(--accent-ink); }
+.pa .st-skip { align-self: center; min-height: 44px; border: 0; background: none; color: var(--muted); font: 700 15px var(--sans); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+

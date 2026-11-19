@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="ISEE Prep Demo">
+  <rect width="64" height="64" rx="16" fill="#2E3F8F"/>
+  <rect x="14" y="36" width="8" height="14" rx="2" fill="#F7F8FC"/>
+  <rect x="28" y="26" width="8" height="24" rx="2" fill="#F7F8FC"/>
+  <rect x="42" y="14" width="8" height="36" rx="2" fill="#F0A202"/>
+</svg>

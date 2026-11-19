@@ -1,0 +1,25 @@
+- id: t-add-1
+  skill: m.add
+  difficulty: 1
+  type: mc
+  prompt: What is 3 + 4?
+  choices: ["6", "7", "8"]
+  answer: B
+  whyWrong: ["That is 3 + 3.", null, "That is 4 + 4."]
+  explanation: Three and four make seven.
+
+- id: t-add-2
+  skill: m.add
+  difficulty: 2
+  type: typed
+  prompt: What is 10 + 15?
+  answer: 25
+  explanation: Ten and fifteen make twenty-five.
+
+- id: t-times-1
+  skill: m.times
+  difficulty: 2
+  type: inline
+  prompt: Choose the right number.
+  text: "3 × 4 = [[10|*12|14]]"
+  explanation: Three fours make twelve.

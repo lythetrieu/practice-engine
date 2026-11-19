@@ -1,0 +1,48 @@
+/* Tutor round results (TutorResult.tsx), inside the round-complete screen's cards. */
+.pa .tr-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pa .tr-rows li { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 15px; line-height: 1.3; }
+.pa .tr-name { min-width: 0; }
+.pa .tr-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex: none; }
+.pa .tr-right small { font-size: 12px; color: var(--muted); }
+.pa .tr-probed li { color: var(--muted); }
+.pa .tr-dots { display: inline-flex; gap: 5px; flex: none; }
+.pa .tr-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--accent-tint); border: 2px solid #F3CDBF; }
+.pa .tr-dot.ok { background: var(--sage); border-color: var(--sage-edge); }
+.pa .tr-sub { margin: 4px 0 0; font-size: 13px; font-weight: 700; letter-spacing: .02em; color: var(--muted); }
+.pa .tr-note { margin: 0; font-size: 15px; line-height: 1.45; color: var(--ink); }
+
+.pa .tr-added { border-radius: 14px; background: var(--bg); border: 2px dashed var(--line); padding: 10px 12px; }
+.pa .tr-added-h { margin: 0 0 6px; font-size: 13px; font-weight: 700; color: var(--accent-ink); }
+.pa .tr-added ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.pa .tr-added li { display: flex; flex-direction: column; font-size: 14px; line-height: 1.35; color: var(--muted); }
+.pa .tr-added a { color: var(--primary); text-decoration: none; font-size: 15px; }
+.pa .tr-added a:hover b { text-decoration: underline; }
+
+.pa .tr-start { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-radius: 14px; background: var(--primary); color: #FFFFFF; text-decoration: none;
+  box-shadow: 0 4px 0 var(--primary-edge); }
+.pa .tr-start-w { font-size: 13px; opacity: .85; }
+.pa .tr-start-t { font-size: 19px; font-weight: 700; }
+.pa .tr-tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.pa .tr-tags li { padding: 4px 10px; border-radius: 999px; font-size: 13px; background: var(--accent-tint); color: var(--accent-ink); }
+.pa .tr-tags li.ok { background: var(--ok-tint); color: var(--primary); }
+
+.pa .tr-move { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 18px; color: var(--muted); }
+.pa .tr-chip { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.pa .tr-new { background: var(--surface); color: var(--muted); }
+.pa .tr-gap { background: var(--accent-tint); color: var(--accent-ink); }
+.pa .tr-learning { background: #FFF3D9; color: #8A5A0B; }
+.pa .tr-solid { background: var(--ok-tint); color: var(--primary); }
+.pa .tr-mastered { background: var(--primary); color: #FFFFFF; }
+
+/* streak saves on the streak card */
+.pa .tr-saves { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: var(--muted); }
+.pa .tr-shield { width: 18px; height: 20px; }
+.pa .tr-earned { margin: 0; font-size: 14px; color: var(--primary); font-weight: 700; }
+
+/* more than one button under a round */
+.pa .tr-actions { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+/* skill check score: one dot per question, then the count */
+.pa .tr-score { margin: 0; display: flex; align-items: center; gap: 8px; }
+.pa .tr-dot.big { width: 22px; height: 22px; border-width: 3px; }
+.pa .tr-score b { margin-left: 6px; font-family: var(--serif); font-size: 30px; line-height: 1; color: var(--ink); }
+.pa .tr-score small { font-size: 18px; color: var(--muted); }

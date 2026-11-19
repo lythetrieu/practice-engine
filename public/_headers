@@ -1,0 +1,56 @@
+# Headers for responses served from static assets (Workers static assets).
+# Worker responses (/api/*) set their own headers in code.
+# No Cache-Control here for pages: the Astro adapter adds its own /_astro/* immutable rule at build, and Cloudflare
+# joins duplicate headers from matching rules with a comma. The exceptions are the signed-in pages and /app/ below
+# (no-store), and /app/sw.js (no-cache, so service worker updates arrive).
+# HSTS lives here only; don't also turn it on in the zone settings.
+
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Cross-Origin-Opener-Policy: same-origin
+
+# Unhashed static files: fonts and images change rarely and keep their names, so a long but not immutable life.
+/fonts/*
+  Cache-Control: public, max-age=2592000
+/brand/*
+  Cache-Control: public, max-age=604800
+
+/404
+  X-Robots-Tag: noindex
+
+/404.html
+  X-Robots-Tag: noindex
+
+# The pages that show a family's or a child's data once signed in. Each is one URL: the generated
+# _redirects answer /account and /account/index.html first, and query strings don't count.
+# - no-store: no copy kept, so Back after signing out can't show a child's report again (the pages
+#   also reload when the back/forward cache restores them).
+# - CSP: a second line of defense behind the escaping these pages do when they build HTML. Scripts, styles, fonts and
+#   images are all our own, and fetches go to /api/ only. 'unsafe-inline' scripts: the pages' inline scripts and Astro's
+#   island scripts. challenges.cloudflare.com: the Turnstile bot check, which src/lib/client/human.ts loads only when the
+#   server asks (a script, then a frame). Inline styles: style attributes, and Turnstile's.
+/account/
+  Cache-Control: no-store
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'
+
+/student/
+  Cache-Control: no-store
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'
+
+/app/
+  Cache-Control: no-store
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'
+
+# The practice app offline (src/practice/offline.ts). Its service worker is checked for a new version on every visit
+# (no-cache: the browser always asks), so a deploy reaches installed apps on their next online open. Generated at
+# build by scripts/build-sw.mjs. The /app/ policy above covers it.
+/app/sw.js
+  Cache-Control: no-cache
+
+# The workers.dev address and preview URLs are never search results.
+https://:version.:subdomain.workers.dev/*
+  X-Robots-Tag: noindex

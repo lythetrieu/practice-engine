@@ -1,0 +1,460 @@
+---
+import Site from '../../layouts/Site.astro';
+import { config } from '../../pack';
+// Accounts. One page, five views, chosen from /api/me/:
+// - signed out: "Parent" (an emailed 6-digit code) or "Student" (the username and password a parent made);
+// - consent: a new parent confirms they are a parent or guardian, 18 or older;
+// - parent: the children (each with a student login) and a summary of each child's practice, then the account;
+// - student: a child signed in with their own login; only their own practice.
+// Account changes (children, logins, deleting the account) need a sign-in from the last few minutes: on a shared
+// computer, the "Confirm it's you" dialog asks the parent for a new code again (change() below).
+// The page also leaves a hint for the header (who is signed in) and the app (profiles.ts). Static, noindex.
+const grades = config.audience?.options ?? [];
+---
+<Site title={`Account | ${config.name}`} description={`Parents: sign in, add your children and follow their practice. Students: sign in with the login your parent made.`} path="/account/" noindex>
+<div class="eyebrow" id="eyebrow">Account</div>
+<h1 id="title">Sign in</h1>
+<p class="callout" id="msg" role="status" hidden></p>
+
+<section id="v-load"><p class="note">Loading…</p></section>
+
+<!-- Signed out: parent or student -->
+<section id="v-out" hidden>
+  <div class="tabs" role="tablist" aria-label="Who is signing in">
+    <button role="tab" id="t-parent" aria-selected="true" aria-controls="p-parent" type="button">Parent or guardian</button>
+    <button role="tab" id="t-student" aria-selected="false" aria-controls="p-student" type="button">Student</button>
+  </div>
+  <div id="p-parent" role="tabpanel" aria-labelledby="t-parent" class="card acct-box">
+    <p style="margin:0">Create your family account, give each child a login, and follow their practice. There is no password to remember: we email you a code.</p>
+    <form id="f-email" class="stack">
+      <label for="email">Email address</label>
+      <input id="email" type="email" autocomplete="email" maxlength="254" required>
+      <button class="btn primary" type="submit">Email me a sign-in code</button>
+    </form>
+    <form id="f-code" class="stack" hidden>
+      <p style="margin:0">We sent a 6-digit code to <b id="sent-to"></b>. It works for 10 minutes.</p>
+      <label for="code">Code</label>
+      <input id="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+      <div class="row"><button class="btn primary" type="submit">Sign in</button><button class="btn" type="button" id="other-email">Use another email</button></div>
+    </form>
+    <p class="note" style="margin:0">New here? The same steps create your account.</p>
+  </div>
+  <div id="p-student" role="tabpanel" aria-labelledby="t-student" class="card acct-box" hidden>
+    <p style="margin:0">Sign in with the username and password your parent made for you.</p>
+    <form id="f-student" class="stack">
+      <label for="s-user">Username</label>
+      <input id="s-user" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="24" required>
+      <label for="s-pass">Password</label>
+      <input id="s-pass" type="password" autocomplete="current-password" maxlength="72" required>
+      <button class="btn primary" type="submit">Sign in</button>
+    </form>
+    <p class="note" style="margin:0">No login yet? Ask your parent to add you. Forgot your password? Your parent can make a new one.</p>
+  </div>
+</section>
+
+<!-- New parent: confirm -->
+<section id="v-consent" hidden>
+  <div class="card acct-box wide">
+    <h2 style="margin-top:0">Create your parent account</h2>
+    <p>For <b id="c-email"></b>.</p>
+    <ul>
+      <li>You add each child with a <b>nickname</b>{grades.length ? ` and ${config.audience?.label.toLowerCase() ?? 'grade'}` : ''}, and give them a username and password. We never ask a child for a name or an email.</li>
+      <li>Your children’s practice progress is saved to your account so you can follow it. Children only tap and choose answers: nothing they type is stored.</li>
+      <li>You can delete a child’s profile, or your whole account, at any time on this page.</li>
+      <li>Read our <a href="/privacy/" target="_blank" rel="noopener">privacy notice</a> (what we collect, who sees it, how long we keep it) and <a href="/terms/" target="_blank" rel="noopener">terms of use</a>.</li>
+    </ul>
+    <label class="check"><input type="checkbox" id="parent"><span>I am a parent or legal guardian, 18 or older, and I agree to my child’s practice progress being saved to this account as described above.</span></label>
+    <div class="row"><button class="btn primary" id="create" type="button">Create account</button><a class="btn" href="/account/">Cancel</a></div>
+  </div>
+</section>
+
+<!-- Parent: the family at a glance (src/components/parent/cards.ts fills each card's numbers), then the account. -->
+<section id="v-parent" hidden>
+  <p class="lede fam-who"><span id="who"></span></p>
+
+  <div class="fam-h"><h2>Children <span class="note" id="kid-count"></span></h2><button class="btn primary" id="add-open" type="button">+ Add a child</button></div>
+  <p class="note fam-how">Each child signs in with their own login at <b><span data-host></span>/student</b>, or scans a sign-in code from your screen, and sees only their own practice.</p>
+  <form id="f-kid" class="card add-kid" hidden>
+    <div class="stack"><label for="nick">Child’s nickname</label><input id="nick" maxlength="24" required placeholder="e.g. Mia (not a full name)"></div>
+    {grades.length > 0 && (
+      <div class="stack"><label for="grade">{config.audience?.label}</label>
+        <select id="grade"><option value="">—</option>{grades.map((g) => <option value={g.value}>{g.label}</option>)}</select></div>
+    )}
+    <div class="row"><button class="btn primary" type="submit">Add child and make a login</button><button class="btn" type="button" id="add-cancel">Cancel</button></div>
+  </form>
+  <div class="kids" id="kids"></div>
+  <p class="note fam-how" id="kid-sc" style="margin-top:14px" hidden>Practicing on your child’s own phone or tablet? If a parental-controls app such as Screen Time or Family Link blocks this site, approve <b data-host></b> when your child asks.</p>
+
+  <div class="row fam-acct"><button class="btn" id="out" type="button">Sign out</button><button class="btn" id="del" type="button">Delete account</button></div>
+  <div id="del-box" class="card acct-box wide" hidden style="margin-top:12px">
+    <p style="margin-top:0"><b>Delete your account?</b> This deletes every child’s profile and login with all their saved progress, and signs you out. This cannot be undone.</p>
+    <label for="del-confirm">Type DELETE to confirm</label>
+    <div class="row"><input id="del-confirm" autocomplete="off"><button class="btn danger" id="del-yes" type="button">Delete everything</button></div>
+  </div>
+</section>
+
+<dialog id="card" aria-labelledby="card-h">
+  <div id="card-body"></div>
+  <div class="row no-print" style="margin-top:14px"><button class="btn" type="button" id="card-print">Print card</button><button class="btn primary" type="button" id="card-close">Done</button></div>
+</dialog>
+
+<!-- A child's report (src/components/parent/report.ts). -->
+<dialog id="report" aria-labelledby="report-h">
+  <div id="report-body"></div>
+  <div class="row no-print" style="margin-top:14px"><button class="btn" type="button" id="report-print" onclick="print()">Print</button><button class="btn primary" type="button" id="report-close" onclick="this.closest('dialog').close()">Done</button></div>
+</dialog>
+
+<!-- Confirm it's you: opened by change() when the server wants a recent sign-in before an account change. -->
+<dialog id="reauth" aria-labelledby="ra-h" aria-describedby="ra-why">
+  <h2 id="ra-h">Confirm it’s you</h2>
+  <p id="ra-why" style="margin:0 0 12px">This keeps your children’s logins safe on a shared computer.</p>
+  <div class="ra-box">
+    <p class="callout" id="ra-msg" role="status" hidden></p>
+    <form id="ra-send" class="stack">
+      <p style="margin:0">We’ll email a 6-digit code to <b class="ra-email"></b>.</p>
+      <button class="btn primary" type="submit">Email me a code</button>
+    </form>
+    <form id="ra-code" class="stack" hidden>
+      <p style="margin:0">We sent a 6-digit code to <b class="ra-email"></b>. It works for 10 minutes.</p>
+      <label for="ra-in">Code</label>
+      <input id="ra-in" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+      <div class="row"><button class="btn primary" type="submit">Confirm</button><button class="btn" type="button" id="ra-again">Send a new code</button></div>
+    </form>
+    <div class="row"><button class="btn" type="button" id="ra-cancel">Cancel</button></div>
+  </div>
+</dialog>
+
+<!-- Student -->
+<section id="v-student" hidden>
+  <p class="lede">Hi, <b id="st-name"></b>. You’re signed in as <span class="mono" id="st-user"></span>.</p>
+  <div class="row"><a class="btn primary" href="/app/#home">Start practicing</a><button class="btn" id="st-out" type="button">Sign out</button></div>
+  <p class="note">Your progress is saved to your account, so it is here on every device you sign in on.</p>
+</section>
+
+<!-- Global (this page only): the child cards and the login card are built in the browser, so they never get
+     Astro's scoping attribute and scoped rules would not reach them. -->
+<style is:global>
+  .fam-who{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin:0 0 18px}
+  .fam-h{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .fam-h h2{margin:0}
+  .fam-h h2 .note{font-family:var(--font-body);font-size:.95rem;font-weight:400;margin-left:6px}
+  .fam-how{margin:6px 0 16px;max-width:70ch}
+  .kids{display:grid;gap:16px}
+  .kid{display:grid;gap:14px;padding:22px 24px}
+  .kid-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .kid-h h3{margin:0;font-size:1.5rem}
+  .kid-meta{font-size:.88rem;color:var(--muted)}
+  .kid-meta .g + [data-when]:not(:empty)::before{content:' · '}
+  .kid-st{display:inline-block;padding:4px 12px;border-radius:999px;font-size:.8rem;font-weight:700;white-space:nowrap;background:var(--surface)}
+  .kid-st::before{content:'●';margin-right:6px;color:var(--c)}
+  .st-strong{--c:var(--green)}.st-developing{--c:#a86b12}.st-needs{--c:var(--red)}.st-few{--c:#8a928c}
+  .kid-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+  .kid-kpis>div,.kid-skills>div{background:var(--surface);border-radius:14px;padding:12px 14px;display:grid;gap:2px;align-content:start}
+  .kid-kpis span,.kid-skills span,.kid-tonight span{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .kid-kpis b{font:700 1.9rem/1.1 var(--display);color:var(--primary);font-variant-numeric:tabular-nums}
+  .kid-kpis b small{font:400 .9rem var(--body);color:var(--muted)}
+  .kid-kpis em,.kid-skills em{font-style:normal;font-size:.82rem;color:var(--muted)}
+  .kid-kpis .up{color:var(--green);font-weight:700}.kid-kpis .down{color:var(--red);font-weight:700}
+  .kid-dots{display:flex;gap:4px;margin-top:4px}
+  .kid-dots i{width:14px;height:14px;border-radius:4px;background:var(--line)}
+  .kid-dots i.on{background:var(--primary)}
+  .kid-skills{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .kid-skills p{margin:0;display:flex;flex-wrap:wrap;gap:4px 12px}
+  .kid-skills .sk{font-weight:700;color:var(--primary)}.kid-skills .sk small{font-weight:400;color:var(--muted)}
+  .kid-cta{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:4px}
+  .kid-empty{margin:0;padding:12px 14px;border-radius:14px;background:var(--surface)}
+  .kid-tonight{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;background:color-mix(in srgb,var(--accent) 10%,var(--bg));border-radius:14px;padding:12px 16px}
+  .kid-tonight p{margin:2px 0 0}
+  .kid-login{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:12px}
+  .kid-login .acts{display:flex;flex-wrap:wrap;gap:6px}
+  .kid-login .btn{padding:7px 14px;font-size:.88rem;min-height:44px}
+  .kid-more{display:flex;flex-wrap:wrap;gap:6px;width:100%;justify-content:flex-end}
+  .kid form{display:grid;gap:6px;width:100%;border-top:1px solid var(--line);padding-top:10px}
+  .kid label{display:grid;gap:4px}
+  .add-kid{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin:0 0 16px;max-width:720px}
+  .fam-acct{margin-top:20px}
+  @media (max-width:760px){.kid-kpis{grid-template-columns:1fr 1fr}.kid-skills{grid-template-columns:1fr}.kid{padding:18px}.kid-h h3{font-size:1.3rem}.kid-login{justify-content:flex-start}}
+  #card,#reauth,#report{position:fixed;inset:0;margin:auto;height:fit-content;max-height:calc(100dvh - 32px);overflow:auto;border:0;border-radius:18px;padding:24px;width:min(460px,calc(100vw - 32px));box-shadow:0 20px 60px #0004;background:#fff;color:var(--ink)}
+  #report{width:min(600px,calc(100vw - 32px))}
+  #card::backdrop,#reauth::backdrop,#report::backdrop{background:color-mix(in srgb,var(--primary) 35%,transparent)}
+  #card h2,#reauth h2,#report h2{margin:0 0 6px;font-size:1.4rem}
+  #report .aw-list{padding-left:1.2rem}#report .aw-list li{margin:.4rem 0}#report .aw-tonight{background:var(--surface);border-radius:12px;padding:10px 14px}
+  #report .aw-lang{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+  .ra-box{display:grid;gap:14px}
+  .ra-box .callout{margin:0;padding:12px 16px}
+  .ra-email{overflow-wrap:anywhere}
+  @media (max-width:380px){#card,#reauth,#report{padding:18px}}
+  .cred{display:flex;align-items:center;gap:10px;justify-content:space-between;background:var(--surface);border-radius:10px;padding:10px 12px;margin:6px 0}
+  .cred b{font-size:1.15rem;word-break:break-all}
+  .qr{display:grid;justify-items:center;gap:6px;margin-top:10px}
+  .qr svg{width:200px;height:200px}
+  @media print{
+    body *{visibility:hidden}
+    #card,#card *,#report,#report *{visibility:visible}
+    #report,#card{position:absolute;inset:0 auto auto 0;box-shadow:none;max-width:none}
+    .no-print,.no-print *{display:none!important}
+  }
+</style>
+
+<script>
+  import { initParentCards } from '../../components/parent/cards';
+  import { postChecked } from '../../lib/client/human';
+  import { config } from '../../pack';
+  import { leaveAccount, profile, useProfile, WHO_KEY } from '../../lib/client/profiles';
+
+  initParentCards();
+
+  const $ = (s: string) => document.querySelector(s) as any;
+  const esc = (v: unknown) => String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c] as string);
+  const views = ['load', 'out', 'consent', 'parent', 'student'];
+  const show = (v: string) => views.forEach((x) => { $('#v-' + x).hidden = x !== v; });
+  const say = (t?: string, bad?: boolean) => { const m = $('#msg'); m.hidden = !t; m.textContent = t || ''; m.style.borderColor = bad ? 'var(--red)' : ''; };
+  const head = (eyebrow: string, title: string) => { $('#eyebrow').textContent = eyebrow; $('#title').textContent = title; };
+  document.querySelectorAll('[data-host]').forEach((el) => { el.textContent = location.host; });
+  // The header reads this hint (no network): who is signed in on this browser. Its link is relabeled now too, so
+  // signing in or out here doesn't leave the previous person's name there until the next page.
+  const hint = (v: unknown) => {
+    try { v ? localStorage.setItem(WHO_KEY, JSON.stringify(v)) : localStorage.removeItem(WHO_KEY); } catch { /* storage blocked */ }
+    const w = v as { role?: string; name?: string } | null;
+    const label = !w ? 'Sign in' : w.role === 'parent' ? 'Account' : String(w.name || 'Account');
+    document.querySelectorAll('[data-acct]').forEach((a: any) => { a.textContent = label; a.title = label; });
+  };
+  async function api(path: string, body?: unknown, headers?: Record<string, string>): Promise<any> {
+    try {
+      const r = await fetch(path, { method: 'POST', headers: { 'content-type': 'application/json', ...headers }, body: JSON.stringify(body || {}), credentials: 'same-origin' });
+      return await r.json().catch(() => ({ ok: false, error: 'HTTP ' + r.status }));
+    } catch { return { ok: false, error: 'Could not reach the site. Check your connection and try again.' }; }
+  }
+
+  const ERR: Record<string, string> = { busy: 'Too many tries. Wait a minute and try again.', unavailable: 'Accounts are not available right now. Try again later.' };
+  const q = new URLSearchParams(location.search);
+  // Sent here by the practice app (accounts only; src/lib/server/appAccess.ts): once signed in, go back.
+  const toApp = q.get('next') === 'app';
+  if (q.get('error')) say(ERR[q.get('error') as string] || 'Something went wrong. Try again.', true);
+  let ME: any = null;
+
+  async function load() {
+    let d: any;
+    try { d = await (await fetch('/api/me/', { credentials: 'same-origin' })).json(); } catch { d = { ok: false, error: 'Could not reach the site. Check your connection and try again.' }; }
+    if (!d.ok) { show('out'); say(d.error, true); return; }
+    ME = d;
+    // A child's profile left on this browser after their session ended some other way than Sign out (a new password,
+    // the child removed, 120 days, another parent signing in here): back to the browser's own ID, so nothing more is
+    // saved or shown under that child. One of this parent's own children stays: the practice app's "Who's practicing?"
+    // picked them on this shared device.
+    const pr = profile();
+    if (pr && (!d.signedIn || (d.role === 'parent' && !(d.children || []).some((c: any) => c && c.id === pr.id)))) leaveAccount(false);
+    if (!d.signedIn) {
+      hint(null);
+      if (d.pending) { head('Parent account', 'Almost there'); $('#c-email').textContent = d.pending; show('consent'); return; }
+      head('Account', 'Sign in'); show('out');
+      if (toApp) say('The practice app is for families with an account. Parents: create an account (no password), then add your child. Students: sign in with the login your parent made.');
+      return;
+    }
+    if (toApp && d.role === 'student') { location.replace('/app/'); return; }
+    if (toApp && d.role === 'parent' && (d.children || []).length) { location.replace('/app/'); return; }
+    if (toApp && d.role === 'parent') say('Add your child below, then open the practice app as them.');
+    if (d.role === 'student') return renderStudent(d);
+    renderParent(d);
+  }
+
+  // ---------------------------------------------------------------- confirm it's you
+  // Every account change needs a sign-in from the last few minutes (src/pages/api/me/index.ts), so a child who finds the
+  // parent still signed in on the family computer can't change logins or delete the account. The server answers 403
+  // {reauth: true} and changes nothing; the parent confirms it's them with an emailed code, and the same change goes
+  // again, once, so nothing they typed is lost.
+  async function change(body?: unknown, path = '/api/me/') {
+    const r = await api(path, body);
+    return r.reauth && await reauth() ? api(path, body) : r;
+  }
+  let raWait: Promise<boolean> | null = null, raOk = false, lastFocus: any = null;
+  const raSay = (t?: string, bad?: boolean) => { const m = $('#ra-msg'); m.hidden = !t; m.textContent = t || ''; m.style.borderColor = bad ? 'var(--red)' : ''; };
+  // The control the parent used last, for focus to go back to: a button the page disables while it waits has already
+  // lost focus when the dialog opens.
+  document.addEventListener('focusin', (e) => { if (!$('#reauth').contains(e.target)) lastFocus = e.target; });
+  /** Opens the dialog; true once the parent has confirmed, false when they close it. One at a time. */
+  function reauth(): Promise<boolean> {
+    if (raWait) return raWait;
+    return raWait = new Promise((done) => {
+      const d = $('#reauth'), a: any = document.activeElement, back = a && a !== document.body ? a : lastFocus; raOk = false;
+      document.querySelectorAll('.ra-email').forEach((b) => { b.textContent = ME ? ME.email : ''; });
+      $('#ra-send').hidden = false; $('#ra-code').hidden = true; $('#ra-in').value = ''; raSay('');
+      d.addEventListener('close', () => {
+        raWait = null; done(raOk);
+        setTimeout(() => {
+          const f = document.activeElement as any, dlg = f && f.closest ? f.closest('dialog[open]') : null;
+          if (back && back.isConnected && (!dlg || dlg.contains(back))) back.focus();
+        });
+      }, { once: true });
+      d.showModal(); $('#ra-send button').focus();
+    });
+  }
+  async function raSend() {
+    const b = $('#ra-send button'), a = $('#ra-again'); b.disabled = a.disabled = true; raSay('Sending your code…');
+    const r = await postChecked('/api/auth/reauth/', { step: 'send' }, 'signin'); b.disabled = a.disabled = false;
+    if (!r.ok) { raSay(r.error, true); return; }
+    raSay(r.devCode ? `Local test site: emails are not really sent. Your code is ${r.devCode}.` : ''); if (r.devCode) $('#ra-in').value = r.devCode;
+    $('#ra-send').hidden = true; $('#ra-code').hidden = false; $('#ra-in').focus();
+  }
+  $('#ra-send').onsubmit = (e: Event) => { e.preventDefault(); raSend(); };
+  $('#ra-again').onclick = raSend;
+  $('#ra-code').onsubmit = async (e: Event) => {
+    e.preventDefault(); const b = $('#ra-code button[type=submit]'); b.disabled = true; raSay('Checking…');
+    const r = await api('/api/auth/reauth/', { step: 'verify', code: $('#ra-in').value.trim() }); b.disabled = false;
+    if (!r.ok) { raSay(r.error, true); return; }
+    raOk = true; $('#reauth').close();
+  };
+  $('#ra-cancel').onclick = () => $('#reauth').close();
+
+  // ---------------------------------------------------------------- student
+  function renderStudent(d: any) {
+    const c = d.child; hint({ role: 'student', name: c.nickname }); head('Student', 'Your practice');
+    if (!(profile() && profile()!.id === c.id)) useProfile(c);
+    $('#st-name').textContent = c.nickname; $('#st-user').textContent = c.username;
+    show('student');
+  }
+  // ---------------------------------------------------------------- parent
+  function renderParent(d: any) {
+    hint({ role: 'parent', name: 'Parent' }); head('Parent account', 'Your family');
+    $('#who').textContent = d.email;
+    renderKids(d);
+    show('parent');
+  }
+  const MAX_KIDS = 3; // same as MAX_CHILDREN on the server
+  const gradeLabels: Record<string, string> = Object.fromEntries([...(document.querySelectorAll('#grade option') as any)].filter((o: any) => o.value).map((o: any) => [o.value, o.textContent]));
+  function renderKids(d: any) {
+    const kids = d.children, box = $('#kids');
+    $('#kid-count').textContent = kids.length ? `${kids.length} of ${MAX_KIDS}` : '';
+    $('#add-open').hidden = kids.length >= MAX_KIDS;
+    $('#kid-sc').hidden = !kids.length;
+    if (!kids.length && $('#f-kid').hidden) openAdd();
+    box.innerHTML = kids.map((k: any) => `<article class="card kid" data-kid="${esc(k.id)}" data-learner="${esc(k.learner)}" data-name="${esc(k.nickname)}" data-grade="${esc(k.grade ?? '')}">
+      <header class="kid-h"><div><h3>${esc(k.nickname)}</h3><span class="kid-meta">${k.grade != null && gradeLabels[k.grade] ? `<span class="g">${esc(gradeLabels[k.grade])}</span>` : ''}<span data-when></span></span></div><span data-status></span></header>
+      <div data-sum></div>
+      <footer class="kid-login">
+        <span>${k.username ? `Student login <b class="mono">${esc(k.username)}</b>` : '<span class="note">No student login yet</span>'}</span>
+        <div class="acts">
+          <button class="btn" type="button" data-qr>Sign-in code</button>
+          <button class="btn" type="button" data-newpw>${k.username ? 'New password' : 'Make a login'}</button>
+          <button class="btn" type="button" data-more-btn aria-expanded="false">More</button>
+        </div>
+        <div class="kid-more" data-more hidden>
+          <button class="btn" type="button" data-login>Choose username and password</button>
+          <button class="btn danger" type="button" data-rm>Remove ${esc(k.nickname)}</button>
+        </div>
+        <form data-loginform hidden>
+          <label>Username<input name="u" autocapitalize="none" spellcheck="false" maxlength="24" value="${esc(k.username || '')}" placeholder="e.g. mia.k7 (not a real name)" required></label>
+          <label>Password<input name="p" type="text" autocomplete="off" maxlength="72" minlength="8" required></label>
+          <p class="note" style="margin:0">At least 8 characters. Saving signs ${esc(k.nickname)} out of every device.</p>
+          <div class="row"><button class="btn primary" type="submit">Save login</button><button class="btn" type="button" data-cancel>Cancel</button></div>
+        </form>
+      </footer>
+    </article>`).join('');
+    box.querySelectorAll('[data-kid]').forEach((card: any) => {
+      const k = kids.find((x: any) => x.id === card.dataset.kid), form = card.querySelector('[data-loginform]'), more = card.querySelector('[data-more]'), mb = card.querySelector('[data-more-btn]');
+      card.querySelector('[data-qr]').onclick = () => qrFor(k);
+      mb.onclick = () => { more.hidden = !more.hidden; mb.setAttribute('aria-expanded', String(!more.hidden)); };
+      card.querySelector('[data-newpw]').onclick = async () => {
+        if (k.username && !confirm(`Make a new password for ${k.nickname}? ${k.nickname} will be signed out on every device and will need the new one.`)) return;
+        const r = await change({ action: 'new_password', child: k.id }); if (!r.ok) { say(r.error, true); return; }
+        k.username = r.login.username; renderKids(ME); loginCard(k, r.login);
+      };
+      card.querySelector('[data-login]').onclick = () => { form.hidden = false; form.p.value = suggest(); form.u.focus(); };
+      card.querySelector('[data-cancel]').onclick = () => { form.hidden = true; };
+      form.onsubmit = async (e: Event) => {
+        e.preventDefault(); const r = await change({ action: 'set_login', child: k.id, username: form.u.value, password: form.p.value });
+        if (!r.ok) { say(r.error, true); return; } k.username = r.username; renderKids(ME); loginCard(k, { username: r.username, password: form.p.value });
+      };
+      card.querySelector('[data-rm]').onclick = async () => {
+        if (!confirm(`Remove ${k.nickname}? This deletes ${k.nickname}’s login and all of their saved progress. It cannot be undone.`)) return;
+        const r = await change({ action: 'remove_child', child: k.id }); if (!r.ok) { say(r.error, true); return; }
+        const cur = profile(); if (cur && cur.id === k.id) leaveAccount(false);
+        try { localStorage.removeItem(`pe.${config.id}.stash.v1.${k.id}`); } catch { /* storage blocked */ }
+        say(`${k.nickname}’s profile was deleted.`); load();
+      };
+    });
+    // Each card's numbers and status come from src/components/parent/cards.ts.
+    document.dispatchEvent(new CustomEvent('family:render'));
+  }
+  function openAdd() { $('#f-kid').hidden = false; $('#nick').focus(); }
+  $('#add-open').onclick = openAdd;
+  $('#add-cancel').onclick = () => { $('#f-kid').hidden = true; };
+  // A readable password when the parent types their own: three short words and two digits, from the same
+  // 128 words as the server's own (src/lib/server/student.ts WORDS, newPassword), so it is as hard to guess.
+  const WORDS = ('apple amber anchor arrow atlas badge bagel banjo basil beach beacon berry bison blaze bloom boat bolt brick brook cabin cactus camel candle canoe '
+    + 'canyon cargo cedar cello chalk cheetah cherry chess cider cliff clover cobalt comet coral cotton crane crater crow cube daisy delta denim dingo dolphin '
+    + 'dragon drum eagle echo ember falcon fern fiddle flint forest fossil fox galaxy garnet gecko glacier globe grape gravel harbor hazel heron hiking honey '
+    + 'iceberg igloo indigo island ivory jade jaguar jelly jungle kayak kettle kiwi koala lagoon lantern lemon lilac lime llama lotus magnet mango maple marble '
+    + 'meadow melon meteor mint moose nectar nova oasis ocean olive onyx orbit otter owl panda pebble pepper piano pixel planet plum pocket pony prism puffin quartz rabbit radar raven reef rocket saturn').split(' ');
+  function suggest() { const r = (n: number) => crypto.getRandomValues(new Uint32Array(1))[0] % n; return `${WORDS[r(128)]}-${WORDS[r(128)]}-${WORDS[r(128)]}${10 + r(90)}`; }
+
+  // The login card: where to go, the username, the password (only right after it is made), and a one-time QR code
+  // the child's phone can scan to sign in. Printable.
+  function loginCard(k: any, login: any, qr?: string) {
+    const copy = (v: string, l: string) => `<button class="btn no-print" type="button" data-copy="${esc(v)}">Copy ${l}</button>`;
+    $('#card-body').innerHTML = `<h2 id="card-h">${esc(k.nickname)}’s student login</h2>
+      <p class="note" style="margin:0 0 8px">Go to</p><div class="cred"><b>${esc(location.host)}/student</b></div>
+      <p class="note" style="margin:8px 0 0">Username</p><div class="cred"><b class="mono">${esc(login ? login.username : k.username)}</b>${copy(login ? login.username : k.username, '')}</div>
+      ${login && login.password ? `<p class="note" style="margin:8px 0 0">Password</p><div class="cred"><b class="mono">${esc(login.password)}</b>${copy(login.password, '')}</div>
+        <p class="note" style="margin:6px 0 0">We show this password only now. Print this card or write it down for ${esc(k.nickname)}.</p>`
+        : `<p class="note" style="margin:8px 0 0">The password is hidden. “New password” makes a new one.</p>`}
+      <div class="qr" id="card-qr">${qr ? `${qr}<p class="note" style="margin:0;text-align:center">Scan with ${esc(k.nickname)}’s phone camera to sign in.<br>Works once, for 15 minutes.</p>` : `<button class="btn no-print" type="button" id="card-qr-btn">Show a sign-in code to scan</button>`}</div>`;
+    document.querySelectorAll('[data-copy]').forEach((b: any) => b.onclick = async () => { try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'Copied'; } catch { b.textContent = 'Select and copy'; } });
+    const qb = $('#card-qr-btn'); if (qb) qb.onclick = () => qrFor(k, login);
+    const dlg = $('#card'); if (!dlg.open) dlg.showModal();
+  }
+  async function qrFor(k: any, login?: any) {
+    const r = await change({ action: 'sign_in_link', child: k.id }); if (!r.ok) { say(r.error, true); return; }
+    loginCard(k, login || null, r.svg);
+  }
+  $('#card-close').onclick = () => $('#card').close();
+  // Closed (Done, Esc): empty the card, so a password shown once doesn't stay in the page.
+  $('#card').addEventListener('close', () => { $('#card-body').innerHTML = ''; });
+  $('#card-print').onclick = () => print();
+
+  const tab = (w: string) => ['parent', 'student'].forEach((x) => { $('#t-' + x).setAttribute('aria-selected', String(x === w)); $('#p-' + x).hidden = x !== w; });
+  $('#t-parent').onclick = () => tab('parent'); $('#t-student').onclick = () => tab('student');
+  if (q.get('as') === 'student') tab('student');
+
+  $('#f-email').onsubmit = async (e: Event) => {
+    e.preventDefault(); const email = $('#email').value.trim(), btn = $('#f-email button'); btn.disabled = true; say('Sending your code…');
+    const r = await postChecked('/api/auth/code/', { email }, 'signin'); btn.disabled = false;
+    if (!r.ok) { say(r.error, true); return; }
+    say(r.devCode ? `Local test site: emails are not really sent. Your code is ${r.devCode}.` : ''); if (r.devCode) $('#code').value = r.devCode;
+    $('#sent-to').textContent = email; $('#f-email').hidden = true; $('#f-code').hidden = false; $('#code').focus();
+  };
+  $('#other-email').onclick = () => { $('#f-code').hidden = true; $('#f-email').hidden = false; $('#email').focus(); };
+  $('#f-code').onsubmit = async (e: Event) => {
+    e.preventDefault(); const btn = $('#f-code button[type=submit]'); btn.disabled = true; say('Checking…');
+    const r = await api('/api/auth/verify/', { email: $('#sent-to').textContent, code: $('#code').value.trim() }); btn.disabled = false;
+    if (!r.ok) { say(r.error, true); return; } say(''); load();
+  };
+  $('#f-student').onsubmit = async (e: Event) => {
+    e.preventDefault(); const btn = $('#f-student button'); btn.disabled = true; say('Signing in…');
+    const r = await api('/api/student/login/', { username: $('#s-user').value, password: $('#s-pass').value }); btn.disabled = false; $('#s-pass').value = '';
+    if (!r.ok) { say(r.error, true); return; }
+    useProfile(r.child); say(''); load();
+  };
+  $('#create').onclick = async () => {
+    if (!$('#parent').checked) { say('Please confirm that you are a parent or guardian, 18 or older.', true); return; }
+    const r = await api('/api/auth/consent/', { parent: true }); if (!r.ok) { say(r.error, true); return; }
+    say('Your account is ready. Add your first child below.'); load();
+  };
+  $('#f-kid').onsubmit = async (e: Event) => {
+    e.preventDefault(); const b = $('#f-kid button'); b.disabled = true;
+    const r = await change({ action: 'add_child', nickname: $('#nick').value, grade: $('#grade') ? $('#grade').value : '' }); b.disabled = false;
+    if (!r.ok) { say(r.error, true); return; }
+    $('#nick').value = ''; $('#f-kid').hidden = true; ME.children.push(r.child); say(''); renderKids(ME); loginCard(r.child, r.login);
+  };
+  $('#out').onclick = async () => { await api('/api/auth/signout/'); leaveAccount(false); hint(null); say('You are signed out.'); load(); };
+  $('#st-out').onclick = async () => { await api('/api/student/logout/'); leaveAccount(false); hint(null); say('You are signed out.'); load(); };
+  $('#del').onclick = () => { $('#del-box').hidden = false; $('#del-confirm').focus(); };
+  $('#del-yes').onclick = async () => {
+    const r = await change({ action: 'delete_account', confirm: $('#del-confirm').value.trim() });
+    if (!r.ok) { say(r.error, true); return; } leaveAccount(true); hint(null); say('Your account and all its data were deleted.'); load();
+  };
+  // Back to this page from the browser's back/forward cache (after signing out elsewhere, say): ask again.
+  addEventListener('pageshow', (e) => { if ((e as PageTransitionEvent).persisted) location.reload(); });
+  load();
+</script>
+</Site>

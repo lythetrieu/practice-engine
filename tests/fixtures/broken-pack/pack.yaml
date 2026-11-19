@@ -1,0 +1,39 @@
+# A pack that is wrong on purpose. tests/validate.test.mjs checks that the validator finds each problem.
+# This file itself is valid, so the validator goes on to read the rest.
+id: broken-pack
+name: Broken Pack
+exam: TEST
+tagline: A pack with mistakes, used by the tests.
+
+brand:
+  logo: brand/logo.svg
+  colors:
+    primary: "#1E4D3A"
+    accent: "#E8704F"
+
+sections:
+  - { id: verbal, name: Verbal }
+  - { id: math, name: Math }
+
+# "typed" is not listed, so the typed question in questions/broken.yaml is rejected.
+formats: [mc, inline, fill]
+
+fullTest:
+  title: Practice test
+  timing: total
+  minutes: 20
+  sections:
+    - { section: verbal, questions: 1 }
+    - { section: math, questions: 50 }
+
+scoring:
+  disclaimer: A test fixture. Not a real score.
+  sections:
+    verbal: { type: linear, min: 0, max: 100 }
+    math: { type: linear, min: 0, max: 100 }
+
+site:
+  title: Broken Pack
+  description: A pack with mistakes, used by the tests.
+  heroTitle: Broken
+  heroText: Broken on purpose.

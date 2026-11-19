@@ -1,0 +1,102 @@
+# A sample test pack: the engine's format with about 20 questions written for this pack.
+# A real SHSAT pack would keep this file and add more questions (and set the full test to 57 + 57 in 180 minutes).
+# The questions are original. They follow the style of the test, and no official item is used or reworded.
+id: shsat-sample
+name: SHSAT Practice
+exam: SHSAT
+examFull: Specialized High Schools Admissions Test
+tagline: Daily practice for the NYC SHSAT, one short level at a time.
+
+audience:
+  label: Grade
+  options:
+    - { value: 8, label: 8th grade }
+    - { value: 9, label: 9th grade }
+
+brand:
+  logo: brand/logo.svg
+  colors:
+    primary: "#1E4D3A"      # buttons, links, the map path
+    primaryDark: "#143728"
+    accent: "#E8704F"       # wrong answers, warnings
+    reward: "#E3A72F"       # stars, streaks, XP
+    background: "#FBF8F3"
+    frame: "#E6EFE1"        # around the app on wide screens
+
+# The guide on the map and in celebrations (and the AI tutor's face, when it is on). Leave out for the engine's bird.
+mascot:
+  name: Pip
+
+# Who runs the site, for /privacy/ and /terms/. Replace these placeholders before you go live.
+legal:
+  operator: Example Learning LLC
+  contactEmail: privacy@example.com
+  governingLaw: the State of New York, USA
+  effectiveDate: "2026-10-28"
+
+sections:
+  - { id: ela, name: English Language Arts, short: ELA, description: "Revising and editing, and reading comprehension" }
+  - { id: math, name: Mathematics, short: Math, description: Word problems and computation }
+
+# Question types this exam uses. The validator rejects any other type in this pack.
+formats: [mc, multi, typed, inline, fill, classify, order, hot, numline, plot, mistake, table, estimate]
+
+practice:
+  dailyGoal: 20
+  lessonQuestions: 10
+  reviewRound: 8
+  checkPass: 0.7
+
+fullTest:
+  title: Full-length practice test
+  intro: The same rules as the real test, at sample size (the real SHSAT is 57 + 57 questions in 180 minutes).
+  timing: total             # one clock for the whole test
+  minutes: 36
+  sectionOrder: choose      # the student picks which section comes first
+  sections:
+    - { section: ela, questions: 10, allowBack: true }
+    - { section: math, questions: 10, allowBack: false }
+  timeOptions:
+    - { id: standard, label: Standard, factor: 1 }
+    - { id: extended, label: Extended, note: "ELL, IEP or 504", factor: 2 }
+    - { id: untimed, label: Untimed practice, note: No clock, factor: null }
+  rules:
+    - Answer each question to move on.
+    - In ELA you can go back to earlier questions. Math questions can't be revisited.
+    - Once you submit a section, you can't return to it.
+    - No calculator and no formula sheet. Use scrap paper.
+
+scoring:
+  label: Estimated score
+  disclaimer: Our estimate from this practice test, not an official score. NYC does not publish how raw scores turn into scaled scores.
+  sections:
+    ela: { type: table, table: [[0, 200], [50, 270], [80, 310], [100, 350]] }
+    math: { type: table, table: [[0, 200], [50, 270], [80, 310], [100, 350]] }
+  composite: sum
+  compositeLabel: Composite
+  margin: 40
+  round: 5
+  benchmarks:
+    - { label: Brooklyn Tech, score: 506 }
+    - { label: Bronx Science, score: 525 }
+    - { label: Stuyvesant, score: 561 }
+
+testDates:
+  - { date: "2026-11-14", label: "Sat, Nov 14", who: "8th grade, at a test site" }
+  - { date: "2026-11-15", label: "Sun, Nov 15", who: "8th grade, at a test site" }
+  - { date: "2026-11-18", label: "Wed, Nov 18", who: "8th grade, at my own school" }
+  - { date: "2026-11-21", label: "Sat, Nov 21", who: 9th grade }
+
+site:
+  title: SHSAT Practice — free daily practice for the NYC SHSAT
+  description: Short daily SHSAT practice levels in math and ELA, a full-length practice test with a score estimate, and a progress report for parents.
+  heroTitle: SHSAT practice that fits in 10 minutes a day
+  heroText: Short levels in math and ELA, a timed practice test, and a parent report. Built for 8th and 9th graders.
+  features:
+    - { title: Learn by doing, text: "Each level teaches one skill with a short card, then practice in every question type of the computer test." }
+    - { title: Practice test, text: "A timed test with the real rules: pick your first section, no going back after you submit." }
+    - { title: For parents, text: "See what your child practiced this week, what is strong and what needs work." }
+  faq:
+    - { q: Is this the official SHSAT?, a: "No. These are practice questions written for this site in the style of the test. They are not official test questions." }
+    - { q: Who is it for?, a: "NYC 8th and 9th graders getting ready for the Specialized High Schools Admissions Test." }
+  disclaimer: Not affiliated with or endorsed by the NYC Department of Education.

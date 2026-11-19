@@ -1,0 +1,4 @@
+- { id: v.word, name: Words, section: verbal }
+# a and b need each other: a cycle
+- { id: m.a, name: Skill A, section: math, requires: [m.b] }
+- { id: m.b, name: Skill B, section: math, requires: [m.a] }

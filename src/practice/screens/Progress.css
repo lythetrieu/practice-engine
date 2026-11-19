@@ -1,0 +1,122 @@
+/* Progress tab (v8). Golden-ratio spacing 4 6 10 16 26 42; type 13 16 20 26 33 42; coral only for missed. */
+.pa-body.pg-main { display: grid; gap: 16px; padding: 16px; align-content: start; width: 100%; max-width: 680px; margin: 0 auto; box-sizing: border-box; }
+.pg-head h1 { font-size: 33px; line-height: 42px; margin: 0; }
+.pg-sub { margin: 0; font-size: 13px; line-height: 21px; color: var(--muted); }
+.pg-card { background: #FFFFFF; border: 2px solid var(--line); border-radius: 20px; padding: 16px; display: grid; gap: 10px; }
+.pg-card h2 { font-size: 20px; line-height: 26px; margin: 0; }
+.pg-card h3, .pa-sheet h3 { font-size: 16px; line-height: 26px; margin: 16px 0 6px; }
+.pg-muted { margin: 0; font-size: 13px; line-height: 21px; color: var(--muted); }
+.pa .pg-muted a { font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+.pg-fine { margin: 0; font-size: 13px; line-height: 17px; color: var(--muted); }
+.pg-more { justify-self: start; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 2px solid var(--line-2); background: #FFFFFF;
+  color: var(--primary); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.pg-more:hover { border-color: var(--sage); }
+
+/* score: 61.8 / 38.2 */
+.pg-phi { display: grid; grid-template-columns: 1.618fr 1fr; gap: 10px; align-items: end; }
+.pg-big { margin: 0; font-family: var(--serif); font-size: 42px; line-height: 42px; font-weight: 700; color: var(--primary); }
+.pg-big small { font-size: 16px; color: var(--muted); font-weight: 400; }
+.pg-range, .pg-change { margin: 6px 0 0; font-size: 13px; line-height: 17px; color: var(--muted); }
+.pg-mid { margin: 0; font-size: 20px; line-height: 26px; font-weight: 700; }
+.pg-trend { color: var(--primary); }
+.pg-secs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0; }
+.pg-secs div { background: var(--bg); border-radius: 12px; padding: 6px 10px; }
+.pg-secs dt { font-size: 13px; color: var(--muted); }
+.pg-secs dd { margin: 0; font-size: 16px; line-height: 26px; font-weight: 700; }
+.pg-empty { display: grid; gap: 10px; justify-items: start; }
+.pg-empty p { margin: 0; font-size: 16px; line-height: 26px; }
+
+/* skills */
+.pg-areas, .pg-worlds, .pg-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.pg-areas li, .pg-worlds li { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-size: 13px; line-height: 17px; }
+.pg-aname { font-weight: 700; font-size: 16px; line-height: 20px; }
+.pg-aname i { font-style: normal; font-size: 11px; font-weight: 700; margin-left: 6px; padding: 1px 6px; border-radius: 6px; background: var(--surface); color: var(--muted); vertical-align: 2px; }
+.pg-acount { color: var(--muted); align-self: center; }
+.pg-acount b { color: var(--accent-ink); }
+.pg-bar { grid-column: 1 / -1; display: flex; height: 10px; border-radius: 6px; overflow: hidden; gap: 2px; }
+.pg-bar .ok { background: var(--sage); }
+.pg-bar .miss { background: var(--accent); }
+.pg-wbar { grid-column: 1 / -1; height: 6px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.pg-wbar > span { display: block; height: 100%; background: var(--sage); }
+
+/* practice tiles */
+.pg-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pg-tile { background: var(--bg); border-radius: 12px; padding: 10px; display: grid; gap: 4px; align-content: start; color: var(--primary); }
+.pg-tile b { font-size: 20px; line-height: 26px; color: var(--ink); }
+.pg-tile span { font-size: 13px; line-height: 17px; color: var(--muted); }
+.pg-spark { width: 100%; height: 26px; }
+.pg-dots { display: flex; gap: 4px; }
+.pg-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.pg-dots i.on { background: var(--sage); }
+
+/* awards */
+.pg-badges-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.pg-agrid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; }
+.pg-agrid li { display: grid; justify-items: center; text-align: center; gap: 4px; font-size: 13px; line-height: 17px; }
+.pg-agrid li span { color: var(--muted); }
+.pg-agrid li.todo b { color: var(--muted); }
+
+.pg-list li { display: grid; gap: 2px; font-size: 13px; line-height: 21px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+
+@media (max-width: 420px) {
+  .pg-tiles { grid-template-columns: 1fr 1fr; }
+  .pg-big { font-size: 33px; line-height: 42px; }
+}
+
+/* Additions: target school, labels, skills inside an area */
+.pg-rowa { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.pg-chip { min-height: 44px; padding: 0 10px; border-radius: 16px; border: 2px solid var(--line-2); background: var(--bg); color: var(--primary); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.pg-vs { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; padding: 10px; border-radius: 12px; border: 0; font: inherit; font-size: 13px; line-height: 17px; text-align: left; cursor: pointer; background: var(--surface); color: var(--ink); }
+.pg-vs b { font-size: 16px; white-space: nowrap; }
+.pg-vs.up { background: var(--ok-tint); }
+.pg-vs.up b { color: var(--primary); }
+.pg-vs.mid b { color: var(--reward-edge); }
+.pg-arow { min-height: 44px; display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; width: 100%; padding: 0; border: 0; background: none; font: inherit; text-align: left; cursor: pointer; color: inherit; }
+.pg-arow:hover .pg-aname { text-decoration: underline; }
+.pg-tag { display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 6px; font-size: 11px; font-weight: 700; line-height: 17px; background: var(--surface); color: var(--muted); }
+.pg-tag.weak { background: var(--accent-tint); color: var(--accent-ink); }
+.pg-tag.strong { background: var(--ok-tint); color: var(--primary); }
+.pg-skills { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.pg-skills li { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding-bottom: 10px; border-bottom: 1px solid var(--line); font-size: 13px; line-height: 17px; }
+.pg-skills .pg-acount { grid-column: 1; }
+.pg-go { grid-column: 2; grid-row: 1 / span 2; align-self: center; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 12px; border-radius: 12px; border: 2px solid var(--line-2); text-decoration: none; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.pg-ladder { list-style: none; margin: 10px 0; padding: 0; display: grid; gap: 6px; }
+.pg-school { display: flex; justify-content: space-between; width: 100%; min-height: 44px; padding: 0 16px; border-radius: 12px; border: 2px solid var(--line-2); background: #FFFFFF; font: inherit; font-size: 16px; cursor: pointer; color: var(--ink); align-items: center; }
+.pg-school.on { border-color: var(--primary); background: var(--ok-tint); }
+.pg-marker { display: block; margin: 4px 0; padding: 2px 10px; border-radius: 10px; background: var(--primary); color: #FFFFFF; font-size: 13px; font-weight: 700; justify-self: start; width: max-content; }
+
+/* practice tiles: numbers only */
+.pg-delta { font-style: normal; font-size: 13px; line-height: 17px; color: var(--muted); }
+.pg-days7 { display: flex; gap: 4px; margin-top: 6px; }
+.pg-days7 span { display: grid; justify-items: center; gap: 2px; font-size: 11px; line-height: 13px; color: var(--muted); flex: 1; }
+.pg-days7 i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.pg-days7 i.on { background: var(--sage); }
+.pg-avg { font-style: normal; white-space: nowrap; font-size: 16px; line-height: 26px; font-weight: 700; color: var(--primary); margin-top: 6px; }
+
+/* tap targets of at least 44 px (inline links inside text, the school buttons, the chip) */
+.pg-main .pg-muted a, .pg-main .pg-fine a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 6px; }
+.pg-vs { min-height: 44px; }
+
+/* tutor skills: the Skills card's "To work on" and the Skills sheet */
+.pa .pg-ys-review { justify-self: stretch; text-decoration: none; }
+.pa .pg-ys-place { display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 700; color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
+.pg-ys-world { margin-top: 12px; }
+.pg-ys-whead { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: baseline; margin-bottom: 4px; }
+.pg-ys-whead > span:first-child { font-size: 13px; line-height: 18px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); }
+.pg-ys-list { list-style: none; margin: 0; padding: 0; }
+.pg-ys-list li { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; padding: 4px 0; border-top: 1px solid var(--surface); }
+.pg-ys-name { min-width: 0; display: flex; flex-direction: column; font-size: 15px; line-height: 20px; overflow-wrap: anywhere; }
+.pg-ys-name small { font-size: 13px; line-height: 17px; color: var(--muted); }
+
+/* Your week */
+.pg-wk-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.pg-wk-list li { position: relative; padding-left: 16px; font-size: 15px; line-height: 21px; overflow-wrap: anywhere; }
+.pg-wk-list li::before { content: ''; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--sage); }
+.pg-wk-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.pg-wk-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; background: var(--ok-tint); color: var(--primary); font-size: 13px; line-height: 17px; font-weight: 700; }
+.pg-wk-chip svg { flex: none; }
+.pg-wk-chip b { color: var(--primary); }
+
+
+/* a sheet's first line keeps clear of its close button */
+.pg-main .pa-sheet-x + * { padding-right: 44px; }

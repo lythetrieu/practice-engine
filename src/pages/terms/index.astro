@@ -1,0 +1,76 @@
+---
+/*
+ * TERMS OF USE TEMPLATE. A starting point, NOT legal advice. Filled in from the `legal` block of pack.yaml and the
+ * pack's `site.disclaimer` and `scoring.disclaimer`. Have a lawyer who knows your country read it before you go live,
+ * and change it to fit how you run the site (for example if you charge for anything, or limit who may sign up).
+ */
+import LegalPage from '../privacy/_LegalPage.astro';
+import { config } from '../../pack';
+import { examName, legal, MAX_CHILDREN, siteName } from '../privacy/_legal';
+const missing = config.legal && !config.legal.governingLaw ? ['governingLaw'] : [];
+---
+<LegalPage title={`Terms of use | ${siteName}`} description={`The rules for using ${siteName}: who can use it, accounts, fair use, and what we promise and do not promise.`} path="/terms/" eyebrow="Terms" missing={missing}>
+<!--
+  TERMS OF USE TEMPLATE. A starting point, not legal advice. Have a lawyer read it before you go live.
+  It is filled in from the legal block of pack.yaml. Change it to fit how you really run the site.
+-->
+<p class="lede">These terms are the rules for using {siteName}. By making an account or using the site, you agree to them. If you do not agree, please do not use it.</p>
+
+<h2>Who we are</h2>
+<p>{siteName} is run by {legal.operator} (“we”, “us”).{legal.address ? <> Our address: {legal.address}.</> : null} Questions about these terms: <a href={`mailto:${legal.email}`}>{legal.email}</a>.</p>
+
+<h2>Who may use {siteName}</h2>
+<ul>
+  <li><b>Parents and guardians</b> must be 18 or older to make an account. By making one you say you are a parent or legal guardian of every child you add.</li>
+  <li><b>Children</b> use the site only through a profile and login that their parent or guardian made. A child cannot make an account. A parent can add up to {MAX_CHILDREN} children.</li>
+  <li>You are responsible for how the children on your account use the site.</li>
+</ul>
+
+<h2>Accounts</h2>
+<ul>
+  <li>Use an email address you control. We sign you in with a code we send to it.</li>
+  <li>Keep your children’s logins to your family. Do not share a login with people outside it.</li>
+  <li>Tell us right away if you think someone else got into your account.</li>
+  <li>You can delete a child’s profile or your whole account at any time at <a href="/account/">/account/</a>. See the <a href="/privacy/">privacy notice</a> for what we collect and keep.</li>
+</ul>
+
+<h2>Using the site fairly</h2>
+<p>Please do not:</p>
+<ul>
+  <li>try to get into someone else’s account or into parts of the site that are not meant for you;</li>
+  <li>try to break, overload or probe the site, or use bots, scrapers or scripts on it;</li>
+  <li>copy, resell or republish the questions, lessons or other content, except for a family’s own practice;</li>
+  <li>send false problem reports on purpose, or try to put harmful or personal information into the site.</li>
+</ul>
+
+<h2>About the practice content</h2>
+{config.site.disclaimer && <p>{config.site.disclaimer}</p>}
+<p>The questions and lessons here are practice material written for {siteName}. They are not real {examName} questions, and doing well here does not mean a student will do well on the real test. We try to keep the content correct, but it may have mistakes. If you find one, use the report button in the app.</p>
+
+<h2>Score estimates are estimates</h2>
+<p>Any score we show is our estimate from a student’s practice. It is not an official score, and it can be higher or lower than a real result.{config.scoring.disclaimer ? ` ${config.scoring.disclaimer}` : ''}</p>
+
+<h2>Our content and your use of it</h2>
+<p>The site, its questions, lessons, pictures and design belong to {legal.operator} or the people who license them to us. We give you a personal, non-commercial, non-transferable permission to use them for your family’s practice while you follow these terms. We do not own the progress and answers that your children create; we use them to run the site and improve it, as the privacy notice says.</p>
+
+<h2>Changes and availability</h2>
+<p>We may change, pause or remove parts of the site, including features and content. We try to keep it running, but we do not promise it will always be available or error-free. We will try to give notice of changes that matter.</p>
+
+<h2>No warranty</h2>
+<p>{siteName} is provided “as is” and “as available”. To the extent the law allows, we give no warranties of any kind, express or implied, including that the site will meet your needs, be uninterrupted or error-free, or that practice here will lead to any result on the {examName} or any other test.</p>
+
+<h2>Limit of our responsibility</h2>
+<p>To the extent the law allows, {legal.operator} and the people who work for it are not responsible for indirect or consequential losses, or for lost scores, admissions, placements or opportunities, that come from using or not being able to use the site. Where the law does not allow a limit, the limit is the smallest the law allows. Nothing here limits responsibility that cannot be limited by law.</p>
+
+<h2>Ending your use</h2>
+<p>You can stop using the site and delete your account at any time. We may suspend or end access if these terms are broken, if we need to protect the site or other users, or if we stop running the site. When an account ends, its data is handled as the privacy notice says.</p>
+
+<h2>Governing law</h2>
+<p>{legal.law ? <>These terms are governed by the laws of {legal.law}, without regard to conflict-of-law rules.</> : <>These terms are governed by the laws of <b>[the place whose law applies]</b>, without regard to conflict-of-law rules.</>} Some places give consumers rights that cannot be changed by a contract; these terms do not take those away.</p>
+
+<h2>Changes to these terms</h2>
+<p>We may update these terms. We will change the date at the top. If you keep using the site after a change, you accept the new terms. If a change is significant, we will tell parents in advance.</p>
+
+<h2>Contact</h2>
+<p>{legal.operator}<br />{legal.address ? <>{legal.address}<br /></> : null}<a href={`mailto:${legal.email}`}>{legal.email}</a></p>
+</LegalPage>

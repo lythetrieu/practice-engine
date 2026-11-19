@@ -1,0 +1,49 @@
+---
+// /admin/errors/ — the practice app's crashes and script errors, grouped by message. Technical details only; the
+// server keeps them 30 days. No learner is selected.
+import Shell from '../_AdminShell.astro';
+import { adminGate, errorGroups } from '../../../lib/server/admin';
+import { db } from '../../../lib/server/env';
+export const prerender = false;
+
+const gate = await adminGate(Astro);
+if (gate instanceof Response) return gate;
+const sp = Astro.url.searchParams;
+const days = [1, 7, 30].includes(Number(sp.get('days'))) ? Number(sp.get('days')) : 7;
+const groups = await errorGroups(db(), days);
+const total = groups.reduce((n, g) => n + g.total, 0);
+const when = (iso: string) => iso.replace('T', ' ').slice(0, 16) + ' UTC';
+// A comma-separated DISTINCT list, shortened.
+const list = (s: string | null, max = 4) => { const a = (s ?? '').split(',').filter(Boolean); return a.length > max ? `${a.slice(0, max).join(', ')} +${a.length - max}` : a.join(', ') || '–'; };
+const opts: [number, string][] = [[1, 'Last 24 hours'], [7, 'Last 7 days'], [30, 'Last 30 days']];
+---
+<Shell title="App errors" active="errors" lede="Crashes and script errors the practice app sent by itself, newest first. The same error from one browser within 10 minutes counts up instead of adding a row.">
+  <div class="adm-bar">
+    <div class="adm-pills" role="group" aria-label="Period">
+      {opts.map(([d, label]) => <a href={`/admin/errors/?days=${d}`} aria-current={d === days ? 'true' : undefined}>{label}</a>)}
+    </div>
+    <span class="note">{groups.length} different messages, {total} times in all. Errors are deleted after 30 days.</span>
+  </div>
+
+  {groups.length === 0 && <p class="adm-empty">No app errors in this period.</p>}
+  {groups.length > 0 && (
+    <table class="adm-table">
+      <thead><tr><th>Message</th><th>Times</th><th>Last seen</th><th>Screen</th><th>Browser</th></tr></thead>
+      <tbody>
+        {groups.map((g) => (
+          <tr class="adm-item">
+            <td class="p" data-label="Message">
+              <code>{g.message}</code>
+              <div class="sub">{list(g.kinds)}{g.vers ? ` · app ${list(g.vers, 3)}` : ''}</div>
+              {g.stack && <details><summary>Stack</summary><pre>{g.stack}</pre></details>}
+            </td>
+            <td class="num" data-label="Times">{g.total}<div class="sub">{g.rows === 1 ? '1 report' : `${g.rows} reports`}</div></td>
+            <td data-label="Last seen">{when(g.last_at)}<div class="sub">first {when(g.first_at).slice(0, 10)}</div></td>
+            <td data-label="Screen">{list(g.screens)}</td>
+            <td data-label="Browser">{list(g.browsers, 3)}<div class="sub">{list(g.devices)}</div></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</Shell>

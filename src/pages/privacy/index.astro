@@ -1,0 +1,160 @@
+---
+/*
+ * PRIVACY NOTICE TEMPLATE. A starting point, NOT legal advice. It describes what this engine's code does (as of
+ * the effective date), filled in from the `legal` block of pack.yaml. Have a lawyer who knows your country and your
+ * audience read it before you go live, and keep it true: if you change what the code collects, change this page.
+ * Where the code is the source: migrations/*.sql (what is stored), src/lib/server/retention.ts (how long),
+ * src/lib/server/auth.ts (sign-in and cookies), src/pages/api/ (what the app sends). docs/data-and-admin.md lists them.
+ */
+import LegalPage from './_LegalPage.astro';
+import { config, mascotName } from '../../pack';
+import { examName, gradeLabel, hasGrade, legal, MAX_CHILDREN, siteName } from './_legal';
+---
+<LegalPage title={`Privacy notice | ${siteName}`} description={`What ${siteName} collects, why, who sees it, how long we keep it, and how parents can review or delete it.`} path="/privacy/" eyebrow="Privacy">
+<!--
+  PRIVACY NOTICE TEMPLATE. A starting point, not legal advice. Have a lawyer read it before you go live.
+  It is filled in from the legal block of pack.yaml and matches what the engine's code does. Keep it true.
+-->
+<p class="lede">{siteName} helps students practice for the {examName}. Parents make the accounts and children practice. We collect as little as we can to make that work, and we never sell it.</p>
+
+<div class="short">
+  <h2>The short version</h2>
+  <ul>
+    <li>A parent signs in with an email address and a 6-digit code. There is no parent password.</li>
+    <li>A child is a nickname{hasGrade ? ' and an optional grade level' : ''}, plus a username and password the parent gives them. We never ask a child for an email address or a full name.</li>
+    <li>We save the child’s practice progress and which questions they got right or wrong. Children only tap and choose answers: nothing they type is stored.</li>
+    <li>No ads. No selling or renting information. No analytics or tracking cookies.</li>
+    <li>A parent can look at everything on the account page, and can delete a child’s profile or the whole account at any time.</li>
+  </ul>
+</div>
+
+<h2>Who we are</h2>
+<p>{legal.operator} (“we”, “us”) runs {siteName}.{legal.address ? <> Our address: {legal.address}.</> : null} You can reach us about privacy at <a href={`mailto:${legal.email}`}>{legal.email}</a>.</p>
+
+<h2>What we collect</h2>
+
+<h3>From a parent</h3>
+<ul>
+  <li><b>Email address.</b> To sign you in, and to send the sign-in code and one welcome note when you create the account. We do not send marketing email.</li>
+  <li><b>When you confirmed you are a parent or guardian,</b> and when you last signed in or used the account.</li>
+  <li><b>Sign-in codes.</b> Each 6-digit code is kept only as a scrambled value, for 10 minutes. A code works once.</li>
+  <li><b>A sign-in session.</b> A random token in a cookie. We keep only a scrambled copy of it on our side.</li>
+</ul>
+
+<h3>For each child</h3>
+<ul>
+  <li><b>A nickname</b> of up to 24 characters. We ask parents not to use a full name.</li>
+  {hasGrade && <li><b>A grade level</b> (the “{gradeLabel}” choice), if the parent chooses one.</li>}
+  <li><b>A username and a password</b> that the site makes for the parent to give the child. The password is kept only as a scrambled (hashed) value, so we cannot read it. After 10 wrong tries in a row the login is locked for 15 minutes.</li>
+  <li><b>A random profile ID</b> that the child’s practice records are filed under. It has no name or email in it.</li>
+  <li><b>A sign-in session</b> for each device the child signs in on, and one-time sign-in links (for the “scan to sign in” code) that last 15 minutes.</li>
+</ul>
+
+<h3>Practice records</h3>
+<ul>
+  <li><b>Progress.</b> The lessons and checks the child has finished, finished full practice tests with their scores, points and badges, the days they practiced and about how long, the questions saved for review, the test date and score goal if the family picks them, a few settings such as sound, and the app’s own estimate of how well the child knows each skill. It is saved so it follows the child to any device, and so the parent can see a summary.</li>
+  <li><b>An answer log.</b> For each answer: the question ID, whether it was right, how many hints were used, how long it took, which choice was picked on a multiple-choice question, and when. We use it to find questions that are too easy, too hard or unclear, and to improve them. It contains no words a child typed.</li>
+</ul>
+
+<h3>Problem reports and app errors</h3>
+<ul>
+  <li><b>Problem reports.</b> When a student taps “report a problem”, they choose a reason from a list. We save the reason and the question ID, plus a little technical context: the lesson, the question number, the choice on screen, the device type, the screen size, the browser name and version, and the app version. A report about the app itself may include the screen name and the last app error message. A student cannot type a message, and anything that does not look like a number or a choice is dropped.</li>
+  <li><b>App errors.</b> When the practice app crashes, it sends the error message, the names of the code files involved, the screen, the device type, the screen size, the browser and the app version. Email addresses and long numbers are removed from the message first.</li>
+</ul>
+
+<h3>Technical information</h3>
+<ul>
+  <li><b>IP address.</b> {siteName} runs on Cloudflare, which sees the IP address of every visit in order to deliver and protect the site. Our code uses the address only to apply rate limits (for example, to stop someone guessing sign-in codes). We do not save it in our database or tie it to an account.</li>
+  <li><b>Bot check.</b> If we turn on Cloudflare Turnstile, a short check runs before a student sends a report or a parent asks for a sign-in code. Cloudflare receives the visitor’s IP address and browser details for that check.</li>
+  <li><b>Server logs.</b> Cloudflare keeps short-lived logs of requests and errors for the site, which we use to run and fix it.</li>
+  <li><b>Daily counters.</b> We count things like sign-in emails sent in a day, so the site stays within its limits. They hold numbers, not people.</li>
+</ul>
+
+<h3>What we do not collect</h3>
+<ul>
+  <li>No email address, full name, phone number, photo, voice or location from a child.</li>
+  <li>No free text from a child: a child cannot type a message, a comment or a name into anything we save.</li>
+  <li>No advertising profiles, no analytics and no tracking of what you do on other sites.</li>
+</ul>
+
+<h2>Why we use it</h2>
+<ul>
+  <li>To run the site: sign people in, keep each child’s progress, and show parents a summary.</li>
+  <li>To keep it safe: limit sign-in tries, stop bots, and fix crashes.</li>
+  <li>To make the practice better: find questions that need fixing, using the answer log and the problem reports.</li>
+  <li>To write to a parent about the account (the sign-in code and a welcome note). Nothing else.</li>
+</ul>
+<p>We do not use children’s information for advertising, and we do not build profiles of them for anything but their own practice.</p>
+
+<h2>Who we share it with</h2>
+<p>We do not sell or rent personal information, and we do not share it with advertisers.</p>
+<ul>
+  <li><b>Cloudflare</b> hosts the site, stores our database, sends the sign-in emails, applies rate limits and, if turned on, runs the bot check. It handles information for us as our service provider. Its own <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener">privacy policy</a> covers what it does as the host.</li>
+  <li><b>An optional AI tutor.</b> Some sites turn on a feature where {mascotName}, a friendly tutor, explains a question after a child taps a button such as “Why was my answer wrong?” The feature is optional and is off unless we turn it on. If we do, the question text, its answer choices, the right answer, the choice the child tapped, the pack’s explanation and a few plain lines about the lesson (its title, section and skills) are sent to <b>OpenRouter</b>, which passes them to the AI model that writes the reply. We do not send a name, an email address, a profile ID or a question ID, and the child types nothing: only buttons. We keep each reply in our database, with the question ID and the kind of help asked for, so we can check the quality and count daily limits.</li>
+  <li><b>The law.</b> We may share information if the law requires it, or to protect someone’s safety or the site’s security.</li>
+</ul>
+
+<h2>Cookies and storage on your device</h2>
+<p>We use only what is needed for the site to work. None of it is for advertising or tracking.</p>
+<div class="tablewrap"><table>
+  <thead><tr><th>Name</th><th>What it does</th><th>How long</th></tr></thead>
+  <tbody>
+    <tr><td>Parent sign-in cookie</td><td>Keeps a parent signed in on this browser.</td><td>60 days, renewed when used</td></tr>
+    <tr><td>Sign-up cookie</td><td>Holds a new parent’s place between proving the email and confirming they are a parent or guardian.</td><td>15 minutes</td></tr>
+    <tr><td>Student sign-in cookie</td><td>Keeps a child signed in on this device.</td><td>120 days, renewed when used</td></tr>
+    <tr><td>Saved on the device</td><td>The practice app keeps a copy of progress and answers not yet sent, a language choice and a few settings, so it works offline and does not lose work. A service worker also saves the app’s files for offline use.</td><td>Until you clear the browser’s data or sign out and forget the profile</td></tr>
+  </tbody>
+</table></div>
+<p>The cookies are HttpOnly and are sent only to this site.</p>
+
+<h2>How long we keep it</h2>
+<div class="tablewrap"><table>
+  <thead><tr><th>What</th><th>How long</th></tr></thead>
+  <tbody>
+    <tr><td>A child’s profile and progress</td><td>While the account is used. Deleted at once if the parent removes the child or deletes the account. An account nobody has used for 24 months (no parent sign-in and no child practicing) is deleted with its children.</td></tr>
+    <tr><td>Answer log and finished-test records</td><td>12 months, then deleted</td></tr>
+    <tr><td>Problem reports</td><td>12 months, then deleted</td></tr>
+    <tr><td>App errors</td><td>30 days, then deleted</td></tr>
+    <tr><td>AI tutor replies and “does that make sense” answers (only if the tutor is on)</td><td>12 months, then deleted</td></tr>
+    <tr><td>Browser IDs from visitors who sent a report or an error without a profile</td><td>Deleted after 12 months without use</td></tr>
+    <tr><td>Sign-in codes, sign-up holds and links</td><td>10 to 15 minutes, then cleared</td></tr>
+    <tr><td>Sessions</td><td>Until they expire (60 days for a parent, 120 for a child), then cleared</td></tr>
+    <tr><td>A scrambled marker of a deleted profile’s ID</td><td>400 days, so an old device cannot bring the deleted data back</td></tr>
+  </tbody>
+</table></div>
+<p>Cloudflare may keep database backups for a short period set by Cloudflare, so a deleted record can remain in a backup until it ages out.</p>
+
+<h2>Children under 13 and parental consent</h2>
+<p>{siteName} is for students, and many are under 13. In the United States, the Children’s Online Privacy Protection Act (COPPA) says a site must get a parent’s permission before it collects personal information from a child under 13. This is how we do it:</p>
+<ul>
+  <li>Only a parent or guardian can make an account. They prove they control the email address with a 6-digit code, then confirm in a checkbox that they are a parent or legal guardian, 18 or older, and that they agree to their child’s practice progress being saved to the account as described here. The page they confirm on links to this notice.</li>
+  <li>A parent adds each child ({MAX_CHILDREN} at most) and gives them the login. A child cannot make an account by themselves.</li>
+  <li>We collect from a child only what is listed above, and only what is needed to run the practice. We do not ask a child for more information to take part.</li>
+  <li>We do not let a child post anything, send a message, or share anything with other users. There is no chat and no public profile.</li>
+</ul>
+
+<h2>Your choices as a parent</h2>
+<ul>
+  <li><b>Review.</b> Sign in at <a href="/account/">/account/</a> to see each child’s profile and a summary of their practice. To ask for a full copy of what we hold about your family, email us.</li>
+  <li><b>Delete.</b> On the same page you can remove a child (their login, progress, answers and reports go with it) or delete the whole account. Both take effect at once and cannot be undone. For safety, you will be asked to confirm with a new emailed code first.</li>
+  <li><b>Refuse further collection.</b> You can stop at any time by not letting your child sign in, by resetting their login, or by deleting the profile. You can also email us to ask us to stop collecting.</li>
+  <li><b>Questions or concerns.</b> Email <a href={`mailto:${legal.email}`}>{legal.email}</a>. We will answer in a reasonable time.</li>
+</ul>
+
+<h2>How we keep it safe</h2>
+<ul>
+  <li>All traffic uses HTTPS.</li>
+  <li>Parents have no password to steal: access is by an emailed code that expires, with limits on tries.</li>
+  <li>Children’s passwords and sign-in codes are stored scrambled with a secret key. Sign-in tokens are stored scrambled too.</li>
+  <li>Changes to an account, such as deleting it or making a new login, need a recent sign-in.</li>
+  <li>People who work on the site can see summaries of reports, errors and question statistics. Those views show no names and no email addresses.</li>
+</ul>
+<p>No system is perfectly secure. If we learn of a problem that affects your information, we will tell you as the law requires.</p>
+
+<h2>Changes to this notice</h2>
+<p>If we change what we collect or how we use it, we will update this page and its date. If a change is significant, we will tell parents by email or on the account page before it applies to their children.</p>
+
+<h2>Contact</h2>
+<p>{legal.operator}<br />{legal.address ? <>{legal.address}<br /></> : null}<a href={`mailto:${legal.email}`}>{legal.email}</a></p>
+<p class="note">See also our <a href="/terms/">terms of use</a>.{config.site.disclaimer ? ` ${config.site.disclaimer}` : ''}</p>
+</LegalPage>

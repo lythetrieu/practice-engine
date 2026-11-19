@@ -1,0 +1,95 @@
+# A small ISEE-style demo pack. It shows the engine with a different exam shape: four sections, each with its
+# own clock, a fixed order, multiple choice only, and a 760–940 score scale per section with no total.
+# All questions are written for this pack in the style of the test; no official item is used or reworded.
+id: demo-isee
+name: ISEE Prep Demo
+exam: ISEE
+examFull: Independent School Entrance Exam (Upper Level style)
+tagline: Short daily practice for the ISEE, section by section.
+
+audience:
+  label: Applying for
+  options:
+    - { value: 9, label: Grade 9 }
+    - { value: 10, label: Grade 10 }
+    - { value: 11, label: Grade 11 }
+
+brand:
+  logo: brand/logo.svg
+  colors:
+    primary: "#2E3F8F"
+    primaryDark: "#1F2C6B"
+    accent: "#D9534F"
+    reward: "#F0A202"
+    background: "#F7F8FC"
+    frame: "#E3E7F4"
+
+# The guide on the map and in celebrations (and the AI tutor's face, when it is on). Leave out for the engine's bird.
+mascot:
+  name: Pip
+
+# Who runs the site, for /privacy/ and /terms/. Replace these placeholders before you go live.
+legal:
+  operator: Example Learning LLC
+  contactEmail: privacy@example.com
+  governingLaw: the State of New York, USA
+  effectiveDate: "2026-10-28"
+
+sections:
+  - { id: verbal, name: Verbal Reasoning, short: Verbal, description: Synonyms and sentence completion }
+  - { id: quant, name: Quantitative Reasoning, short: Quant, description: Number sense and comparing quantities }
+  - { id: reading, name: Reading Comprehension, short: Reading, description: Passages with questions }
+  - { id: math, name: Mathematics Achievement, short: Math, description: "Algebra, geometry and data" }
+
+# The ISEE is all multiple choice: any other question type in this pack is an error.
+formats: [mc]
+
+practice:
+  dailyGoal: 15
+  lessonQuestions: 6
+  reviewRound: 6
+  checkPass: 0.6
+
+fullTest:
+  title: Practice test (mini)
+  intro: Four timed sections in a fixed order, like the real test, at demo size.
+  timing: per-section        # each section has its own clock
+  sectionOrder: fixed
+  sections:
+    - { section: verbal, questions: 3, minutes: 3, allowBack: true }
+    - { section: quant, questions: 3, minutes: 5, allowBack: true }
+    - { section: reading, questions: 2, minutes: 5, allowBack: true }
+    - { section: math, questions: 2, minutes: 4, allowBack: true }
+  timeOptions:
+    - { id: standard, label: Standard, factor: 1 }
+    - { id: extended, label: Extended time, note: 1.5× on every section, factor: 1.5 }
+  rules:
+    - Each section has its own clock. When it runs out, the next section starts.
+    - Inside a section you can go back and change answers.
+    - There is no penalty for a wrong answer, so answer every question.
+    - No calculator.
+
+scoring:
+  label: Estimated scaled score
+  disclaimer: Our rough estimate on a 760–940 scale per section. It is not an official ISEE score, percentile or stanine.
+  sections:
+    verbal: { type: linear, min: 760, max: 940 }
+    quant: { type: linear, min: 760, max: 940 }
+    reading: { type: linear, min: 760, max: 940 }
+    math: { type: linear, min: 760, max: 940 }
+  composite: none
+  margin: 15
+  round: 1
+
+site:
+  title: ISEE Prep Demo — a sample pack for the practice engine
+  description: A small ISEE-style practice app built from a test pack. Four sections, timed per section, multiple choice only.
+  heroTitle: ISEE-style practice, one section at a time
+  heroText: Verbal, quantitative, reading and math practice with a timed mini test. A demo of the open-source practice engine.
+  features:
+    - { title: Four sections, text: "Verbal Reasoning, Quantitative Reasoning, Reading Comprehension and Mathematics Achievement." }
+    - { title: Timed by section, text: "Every section of the practice test has its own clock, in a fixed order." }
+    - { title: Parent report, text: "Parents see practice time, strong skills and the skills to work on." }
+  faq:
+    - { q: Is this the official ISEE?, a: "No. It is a demo with original practice questions written in the style of the test." }
+  disclaimer: Not affiliated with or endorsed by ERB, which owns the ISEE.

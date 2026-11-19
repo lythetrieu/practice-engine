@@ -1,0 +1,42 @@
+- id: v-syn-1
+  skill: v.synonym
+  difficulty: 1
+  type: mc
+  prompt: "SCARCE"
+  choices: ["rare", "useful", "heavy", "costly"]
+  answer: A
+  explanation: "Scarce means hard to find or not plentiful, which is what rare means."
+  whyWrong:
+    - null
+    - "Something scarce may be useful, but the word does not mean useful."
+    - "Weight has nothing to do with whether something is scarce."
+    - "Scarce things are often costly, but that is a result, not the meaning of the word."
+  hint: "Think of something that is hard to find because there is very little of it."
+- id: v-syn-2
+  skill: v.synonym
+  difficulty: 5
+  type: mc
+  prompt: "AMELIORATE"
+  choices: ["to excuse", "to delay", "to measure", "to improve"]
+  answer: D
+  explanation: "To ameliorate a situation is to make it better, so improve is the closest meaning."
+  whyWrong:
+    - "To excuse means to forgive or explain away a fault, not to make something better."
+    - "To delay means to put off until later."
+    - "To measure means to find the size or amount of something."
+    - null
+  hint: "The word is often used with problems, such as ameliorating poor conditions."
+- id: v-sen-1
+  skill: v.sentence
+  difficulty: 3
+  type: mc
+  prompt: "Although the scientist's early results looked promising, she remained ______ and repeated the experiment several times before announcing them."
+  choices: ["reckless", "cautious", "boastful", "indifferent"]
+  answer: B
+  explanation: "The word Although signals a contrast: the results looked good, yet she repeated the test. Someone who double-checks before announcing is cautious."
+  whyWrong:
+    - "A reckless person would not stop to repeat an experiment."
+    - null
+    - "A boastful person would announce good results at once."
+    - "An indifferent person would not care enough to repeat the work."
+  hint: "Look at what she did after seeing good results."

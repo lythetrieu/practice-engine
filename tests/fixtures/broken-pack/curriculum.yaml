@@ -1,0 +1,10 @@
+worlds:
+  - section: verbal
+    name: Word Land
+    lessons:
+      - { title: Words, skills: [v.word] }
+  - section: math
+    name: Math Land
+    lessons:
+      - { title: Skill A, skills: [m.a] }
+      - { title: Skill B, skills: [m.b] }

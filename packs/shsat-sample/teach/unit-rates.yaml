@@ -1,0 +1,57 @@
+warmup:
+  type: estimate
+  prompt: A cyclist rides 30 miles in 2 hours. About how many miles is that in one hour?
+  min: 0
+  max: 30
+  step: 1
+  answer: 15
+  close: 1
+  suffix: miles
+  explanation: "30 miles in 2 hours is 15 miles in 1 hour, because 30 ÷ 2 = 15."
+
+learn:
+  title: A unit rate is the amount for 1
+  lines:
+    - "A rate compares two different things, like miles and hours."
+    - "A unit rate tells how much for just 1. If a train goes 120 miles in 3 hours, that is 40 miles for 1 hour."
+    - "To find a unit rate, divide: the total amount ÷ the number of units."
+    - "Then to find any other amount, multiply the unit rate by how many you need."
+
+guided:
+  - type: table
+    prompt: "Pens are sold at a steady price: 4 pens cost $8. Fill in the table."
+    head: ["Pens", "Cost"]
+    rows:
+      - ["4", "$8"]
+      - ["1", { answer: 2, prefix: "$" }]
+      - ["3", { answer: 6, prefix: "$" }]
+      - ["10", { answer: 20, prefix: "$" }]
+    explanation: "$8 ÷ 4 = $2 for one pen. Then 3 pens cost 3 × $2 = $6, and 10 pens cost 10 × $2 = $20."
+    hint: "Find the cost of 1 pen first."
+  - type: mc
+    prompt: A tap fills a 36-liter tub in 9 minutes at a steady rate. How many liters does it pour each minute?
+    choices: ["3", "4", "9", "27"]
+    answer: "B"
+    whyWrong:
+      - "3 would fill only 27 liters in 9 minutes. The tub holds 36."
+      - null
+      - "9 is the number of minutes, not the liters per minute."
+      - "27 comes from subtracting 9 from 36. A rate needs division."
+    explanation: "Divide the liters by the minutes. 36 ÷ 9 = 4, so the tap pours 4 liters each minute."
+    hint: "Liters per minute means liters divided by minutes."
+
+mistake:
+  type: mistake
+  prompt: Find the mistake in this solution.
+  context: "A van drives 150 miles in 3 hours. How far does it drive in 5 hours at the same speed?"
+  lines:
+    - "Find the unit rate: 150 ÷ 3 = 50 miles per hour."
+    - "Use it for 5 hours: 50 + 5 = 55."
+    - "The van drives 55 miles."
+  wrongLine: 2
+  reasons:
+    - "The unit rate should be 3 ÷ 150."
+    - "To find the distance for 5 hours, you multiply: 50 × 5, not 50 + 5."
+    - "The number 150 should be added to 5."
+  reason: "B"
+  explanation: "A unit rate of 50 miles per hour means 50 miles for each hour. For 5 hours, multiply: 50 × 5 = 250 miles."

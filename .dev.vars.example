@@ -1,0 +1,18 @@
+# Copy to .dev.vars for `npm run dev` (it is gitignored). Real values go in with `wrangler secret put <NAME>`.
+# Never commit real keys.
+
+# HMAC key for student passwords and sign-in codes. Any long random string; make a new one per deployment:
+#   node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"
+PASSWORD_PEPPER=replace-with-a-long-random-string
+
+# Optional: bot check on sign-in (Cloudflare Turnstile secret). Leave empty to turn it off.
+TURNSTILE_SECRET=
+
+# Optional: the AI tutor (docs/pip.md). Turn it on with PIP_ENABLED=1 and an OpenRouter key, or try it with no key:
+# AI_TUTOR_MOCK=1 gives a canned reply (local testing only).
+PIP_ENABLED=
+OPENROUTER_API_KEY=replace-with-your-openrouter-key
+AI_TUTOR_MOCK=
+
+# Optional: your parent-account email here makes you an admin locally (/admin/).
+ADMIN_EMAILS=

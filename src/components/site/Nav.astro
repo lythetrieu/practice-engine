@@ -1,0 +1,33 @@
+---
+import { config, pack } from '../../pack';
+// The site header: the pack's logo and name, and three links. The Account link shows "Sign in" until a hint left by
+// the account pages says who is signed in on this browser (src/lib/client/profiles.ts WHO_KEY): no network call.
+const links: [string, string][] = [['Home', '/'], ['Practice', '/app/'], ['Account', '/account/']];
+const here = Astro.url.pathname;
+const current = (h: string) => (h === '/' ? here === '/' : here.startsWith(h) ? 'page' : undefined);
+// The pack's logo is a checked SVG document; take the <svg> element alone and size it with CSS.
+const svg = pack.logo.replace(/<\?xml[^>]*\?>/g, '').replace(/<!--[\s\S]*?-->/g, '').trim();
+---
+<header class="nav">
+  <div class="wrap bar">
+    <a href="/" class="logo" aria-label={`${config.name} home`}>
+      <Fragment set:html={svg} />
+      <span>{config.name}</span>
+    </a>
+    <nav class="links" aria-label="Main">
+      {links.map(([l, h]) => <a href={h} aria-current={current(h) ? 'page' : undefined} class={h === '/account/' ? 'acct' : undefined} data-acct={h === '/account/' ? '' : undefined}>{h === '/account/' ? 'Sign in' : l}</a>)}
+    </nav>
+  </div>
+</header>
+<script>
+  import { WHO_KEY } from '../../lib/client/profiles';
+  // Account link label from the hint /account/ saves: "Account" for a parent, the nickname for a child. textContent only,
+  // since the nickname is user input. A stale hint is fine: /account/ shows the right view.
+  try {
+    const who = JSON.parse(localStorage.getItem(WHO_KEY) || 'null');
+    if (who) {
+      const label = who.role === 'parent' ? 'Account' : String(who.name || 'Account');
+      document.querySelectorAll<HTMLAnchorElement>('[data-acct]').forEach((a) => { a.textContent = label; a.title = label; });
+    }
+  } catch { /* storage blocked */ }
+</script>

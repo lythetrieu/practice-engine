@@ -1,0 +1,45 @@
+# The map: worlds per section, lessons per world. A lesson plays the questions of its skills, easy to hard,
+# with the hardest one last as the "boss". A lesson with `teach` opens with those teaching steps.
+worlds:
+  - section: math
+    name: Ratio Park
+    unit: Ratios, rates and percents
+    lessons:
+      - title: Unit rates
+        skills: [m.ratio]
+        teach: teach/unit-rates.yaml
+      - title: Percents
+        skills: [m.percent]
+  - section: math
+    name: Equation Falls
+    unit: Equations and inequalities
+    lessons:
+      - title: Solving equations
+        skills: [m.equation]
+      - title: Inequalities
+        skills: [m.inequality]
+  - section: math
+    name: Shape Summit
+    unit: Statistics, probability and geometry
+    lessons:
+      - title: Chance and data
+        skills: [m.stats]
+      - title: Shapes and graphs
+        skills: [m.geometry]
+  - section: ela
+    name: Grammar Garden
+    unit: Revising and editing
+    lessons:
+      - title: Grammar and punctuation
+        skills: [e.grammar]
+        teach: teach/commas.yaml
+      - title: Improving a passage
+        skills: [e.revise]
+  - section: ela
+    name: Story Woods
+    unit: Reading comprehension
+    lessons:
+      - title: Informational texts
+        skills: [e.info]
+      - title: Stories
+        skills: [e.story]

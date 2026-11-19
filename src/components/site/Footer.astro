@@ -1,0 +1,20 @@
+---
+import { config } from '../../pack';
+const links: [string, string][] = [['Home', '/'], ['Practice', '/app/'], ['Account', '/account/'], ['Student sign-in', '/student/'], ['Privacy', '/privacy/'], ['Terms', '/terms/']];
+---
+<footer class="ft">
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <b>{config.name}</b>
+        <p>{config.tagline}</p>
+      </div>
+      <nav aria-label="Footer"><ul>{links.map(([l, h]) => <li><a href={h}>{l}</a></li>)}</ul></nav>
+    </div>
+    <div class="fine">
+      <p>&copy; {new Date().getFullYear()} {config.name}</p>
+      <p>{config.site.disclaimer}</p>
+      <p>Score estimates are our estimates from practice, not official scores.</p>
+    </div>
+  </div>
+</footer>

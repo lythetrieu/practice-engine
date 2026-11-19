@@ -1,0 +1,37 @@
+---
+// /admin/ — counts and links. Server-rendered, admins only (anyone else gets the site's 404), never cached or indexed.
+import Shell from './_AdminShell.astro';
+import { adminGate, overview } from '../../lib/server/admin';
+import { db } from '../../lib/server/env';
+export const prerender = false;
+
+const gate = await adminGate(Astro);
+if (gate instanceof Response) return gate;
+const o = await overview(db());
+const nf = (n: number) => n.toLocaleString('en-US');
+const stats: [string, number, string][] = [
+  ['Parent accounts', o.parents, 'adults who signed up'],
+  ['Children', o.children, 'profiles on those accounts'],
+  ['Active, last 7 days', o.active7, 'children who practiced'],
+  ['Active, last 30 days', o.active30, 'children who practiced'],
+  ['Answers logged', o.answers, `${nf(o.answers7)} in the last 7 days`],
+  ['Open reports', o.openReports, 'problem reports not yet resolved'],
+  ['App errors, last 7 days', o.errors7, `${nf(o.errorKinds7)} different messages`],
+];
+const links: [string, string, string][] = [
+  ['Reports', '/admin/reports/', 'Problem reports from students. Mark them resolved.'],
+  ['Errors', '/admin/errors/', 'App errors grouped by message, with how often and where.'],
+  ['Questions', '/admin/questions/', 'Which questions are too easy, too hard or worth a second look.'],
+];
+---
+<Shell title="Overview" active="overview" lede="Counts only. This area shows no names and no email addresses.">
+  <div class="adm-stats">
+    {stats.map(([label, n, note]) => (
+      <div class="card adm-stat"><b>{nf(n)}</b><span>{label}</span><small>{note}</small></div>
+    ))}
+  </div>
+  <div class="adm-links">
+    {links.map(([name, href, text]) => <a class="card" href={href}><b>{name}</b><span>{text}</span></a>)}
+  </div>
+  <p class="note">“Active” means the child practiced and the app saved it. Counts are right now; nothing here is sent anywhere.</p>
+</Shell>
