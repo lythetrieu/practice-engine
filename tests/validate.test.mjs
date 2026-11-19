@@ -257,3 +257,35 @@ test('htmlProblems allows b i u em strong sub sup br only', () => {
   assert.ok(htmlProblems('<a href="x">link</a>').length > 0);
   assert.ok(htmlProblems('<b class="big">x</b>').length > 0);
 });
+
+// ---------------------------------------------------------------- the optional paid plan (docs/payments.md)
+
+test('the shipped packs have no paid plan, so payments stay off', () => {
+  assert.equal(load('shsat-sample').pack.config.plan, undefined);
+  assert.equal(load('demo-isee').pack.config.plan, undefined);
+});
+
+test('a plan block loads with its defaults', () => {
+  const r = mutate((d) => rewrite(d, 'pack.yaml', (s) => s + '\nplan:\n  supportEmail: help@example.com\n  limits: { newLessonsPerDay: 2, fullTests: 1 }\n'));
+  assert.equal(r.ok, true, formatProblems(r.errors));
+  const p = r.pack.config.plan;
+  assert.equal(p.name, 'Pro');
+  assert.equal(p.months, 12);
+  assert.equal(p.refundDays, 14);
+  assert.deepEqual(p.limits, { freeDays: 0, newLessonsPerDay: 2, fullTests: 1 });
+  assert.deepEqual(p.benefits, []);
+});
+
+test('a plan needs a support address (plan.supportEmail or legal.contactEmail)', () => {
+  const r = mutate((d) => rewrite(d, 'pack.yaml', (s) => s.replace(/\nlegal:[\s\S]*?(?=\n\S|$)/, '') + '\nplan:\n  name: Plus\n'));
+  assert.equal(r.ok, false);
+  assert.ok(r.errors.some((e) => /support address/.test(e.message)), formatProblems(r.errors));
+});
+
+test('a plan with a bad freeUntil date or an unknown key is rejected', () => {
+  const bad = mutate((d) => rewrite(d, 'pack.yaml', (s) => s + '\nplan:\n  supportEmail: help@example.com\n  freeUntil: next year\n'));
+  assert.equal(bad.ok, false);
+  const extra = mutate((d) => rewrite(d, 'pack.yaml', (s) => s + '\nplan:\n  supportEmail: help@example.com\n  price: 49\n'));
+  assert.equal(extra.ok, false);
+  assert.ok(extra.errors.some((e) => /Unrecognized key/.test(e.message)), formatProblems(extra.errors));
+});

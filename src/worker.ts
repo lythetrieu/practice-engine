@@ -1,8 +1,10 @@
 /* The Worker (wrangler.jsonc "main"): Astro answers every request. The cron ("triggers"): 08:17 UTC daily deletes
-   server rows past their retention (src/lib/server/retention.ts). */
+   server rows past their retention (src/lib/server/retention.ts), then emails parents whose paid plan ends within two
+   weeks (src/lib/server/planMail.ts; only when payments are on). */
 import astro from '@astrojs/cloudflare/entrypoints/server';
 import type { D1Database } from './lib/server/env';
 import { purgeOld } from './lib/server/retention';
+import { runPlanEnding } from './lib/server/planMail';
 import { appMember, APP_SIGN_IN } from './lib/server/appAccess';
 
 // The practice app's page (static, served from assets) is for accounts only. wrangler.jsonc sends these paths to the
@@ -22,6 +24,10 @@ export default {
   },
   async scheduled(_controller: unknown, env: { DB?: D1Database }, ctx: { waitUntil(p: Promise<unknown>): void }) {
     if (!env.DB) return;
-    ctx.waitUntil(purgeOld(env.DB).then((r) => console.log('retention', JSON.stringify(r))));
+    const D = env.DB;
+    // Retention first, then the paid plan's "ends soon" emails (nothing to do unless payments are on).
+    ctx.waitUntil(purgeOld(D).then((r) => console.log('retention', JSON.stringify(r)))
+      .then(() => runPlanEnding(D)).then((r) => { if (r.sent) console.log('plan ending emails', r.sent); })
+      .catch((e) => console.error('cron', e)));
   },
 };

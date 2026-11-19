@@ -1,4 +1,5 @@
-/* Parent sign-in: a 6-digit code sent by email. There are no passwords. Only parents have accounts; children are
+/* Parent sign-in: a 6-digit code sent by email, or, for a parent who added one, an email and password
+   (src/lib/server/parentPassword.ts; the code always works too). Only parents have accounts; children are
    profiles inside them (src/lib/server/account.ts).
    - A sign-in that proves an email with no account yet becomes a pending sign-up: the account is made
      only after the parent confirms they are a parent or guardian (POST /api/auth/consent/).

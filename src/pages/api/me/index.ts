@@ -6,6 +6,16 @@ import { currentUser, endSession, freshUntil, pendingSignup, requireFreshParent,
 import { addChild, childOf, childrenOf, cleanGrade, cleanNickname, deleteAccount, removeChild } from '../../../lib/server/account';
 import { pipOn, mockOn } from '../../../lib/server/aitutor';
 import { cleanPassword, cleanUsername, createSignInLink, currentStudent, newPassword, newUsername, setLogin } from '../../../lib/server/student';
+import { sendChildLogin } from '../../../lib/server/mail';
+import { hasParentPassword, setParentPassword } from '../../../lib/server/parentPassword';
+import { PLAN, familyPlans, hasPurchases, limitsNow, paymentsOn, planOf } from '../../../lib/server/plan';
+import { offer } from '../../../lib/server/polar';
+
+// The parent hears about every child login made or changed (mail.ts sendChildLogin: the username, never the
+// password); a failed email never undoes the change.
+const tellParent = async (...a: Parameters<typeof sendChildLogin>) => {
+  try { if (a[0]) await sendChildLogin(...a); } catch (e) { console.error('child login mail', e instanceof Error ? e.message : e); }
+};
 
 export const prerender = false;
 
@@ -18,6 +28,12 @@ export const prerender = false;
  *   `fresh`: whether this session may change the account now (see POST), so the page can ask "confirm it's you" first.
  * - signed out, possibly in the middle of a sign-up: { ok, signedIn: false, pending: email | null }
  * `emailCode` says whether sign-in emails are really sent; false means the code is printed in the server console.
+ * The optional paid plan (src/lib/server/plan.ts), only when pack.yaml has a `plan` block:
+ * - student: `plan: {pro, until}` for this child; `limits`: whether the free limits apply to this site now.
+ * - parent: each child's `pro: {pro, until}`, `askedAt`/`askedKind` (the child's last "Ask a parent for more");
+ *   `payments` (checkout works), `price: {amount, currency}` (read from Polar; null keeps checkout closed),
+ *   `receipts` (a purchase to show in Polar's portal), `limits`, `freeUntil`.
+ * `password` (parent): whether the account has a password (parentPassword.ts).
  * `pip` says whether the optional AI tutor is on for this browser (docs/pip.md): true only when PIP_ENABLED=1 and an OpenRouter
  * key are set (or `astro dev` with AI_TUTOR_MOCK=1), and the visitor can use it (signed in, or the dev mock). The app shows
  * no tutor button unless it is true.
@@ -29,7 +45,9 @@ export const GET: APIRoute = async ({ request }) => {
   const D = bindings.DB, ways = { emailCode: !!bindings.EMAIL && !import.meta.env.DEV }, pip = pipOn(bindings);
   const student = await currentStudent(request);
   if (student) {
-    return json({ ok: true, signedIn: true, role: 'student', child: { id: student.child_id, learner: student.learner, nickname: student.nickname, grade: student.grade, username: student.username }, ...ways, pip },
+    const paid = PLAN ? await planOf(D, student.user_id, student.child_id) : null;
+    const planInfo = paid ? { plan: { pro: paid.on, until: paid.until }, limits: await limitsNow() } : {};
+    return json({ ok: true, signedIn: true, role: 'student', child: { id: student.child_id, learner: student.learner, nickname: student.nickname, grade: student.grade, username: student.username }, ...planInfo, ...ways, pip },
       200, { 'set-cookie': student.refresh });
   }
   const user = await currentUser(request);
@@ -37,9 +55,16 @@ export const GET: APIRoute = async ({ request }) => {
     const p = await pendingSignup(request);
     return json({ ok: true, signedIn: false, pending: p ? p.email : null, ...ways, pip: pip && mockOn(bindings) });
   }
-  const children = await childrenOf(D, user.id);
+  const [kids, password] = await Promise.all([childrenOf(D, user.id), hasParentPassword(D, user.id)]);
   const until = freshUntil(user.session_at);
-  return json({ ok: true, signedIn: true, role: 'parent', email: user.email, since: user.created_at, children, fresh: !!until, freshUntil: until, ...ways, pip }, 200, { 'set-cookie': user.refresh });
+  let children: unknown[] = kids, planInfo = {};
+  if (PLAN) {
+    const on = paymentsOn();
+    const [plans, receipts, price] = await Promise.all([familyPlans(D, user.id), on ? hasPurchases(D, user.id) : false, on ? offer().catch(() => null) : null]);
+    children = kids.map((c) => { const p = plans[c.id]; return { ...c, pro: { pro: !!p?.plan.on, until: p?.plan.until ?? null }, askedAt: p?.askedAt ?? null, askedKind: p?.askedKind ?? null }; });
+    planInfo = { payments: on && !!price, price, receipts: on && receipts, limits: on && !!price && (await limitsNow()), freeUntil: PLAN.freeUntil ?? null };
+  }
+  return json({ ok: true, signedIn: true, role: 'parent', email: user.email, since: user.created_at, children, password, ...planInfo, fresh: !!until, freshUntil: until, ...ways, pip }, 200, { 'set-cookie': user.refresh });
 };
 
 /**
@@ -56,12 +81,14 @@ export const POST = postRoute(async ({ request, body, url }) => {
       // One step: the child, and a student login made for them (a username from the nickname, a word
       // password), saved together. The password is shown to the parent this once; a reset makes a new one.
       const { child, login } = await addChild(D, user.id, cleanNickname(body.nickname), cleanGrade(body.grade));
+      await tellParent(user.email, child.nickname, login.username, 'made', url.origin);
       return { child, login };
     }
     case 'new_password': {
       const c = await childOf(D, user.id, body.child);
       const username = c.username || (await newUsername(D, c.nickname)), password = newPassword();
       await setLogin(D, c.id, username, password);
+      await tellParent(user.email, c.nickname, username, c.username ? 'reset' : 'made', url.origin);
       return { login: { username, password } };
     }
     case 'sign_in_link': {
@@ -82,8 +109,13 @@ export const POST = postRoute(async ({ request, body, url }) => {
       const c = await childOf(D, user.id, body.child);
       const username = cleanUsername(body.username);
       await setLogin(D, c.id, username, cleanPassword(body.password, username));
+      await tellParent(user.email, c.nickname, username, c.username ? 'changed' : 'made', url.origin);
       return { username };
     }
+    case 'set_password':
+      // Add or change the parent's own password (parentPassword.ts). Fresh session only (requireFreshParent above);
+      // every other session of the account ends, and the parent gets an email.
+      return await setParentPassword(D, user, body.password, url.origin);
     case 'delete_account': {
       if (body.confirm !== 'DELETE') throw new HttpError(400, 'Type DELETE to confirm.');
       await deleteAccount(D, user.id);

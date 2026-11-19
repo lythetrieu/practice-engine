@@ -10,6 +10,11 @@ export interface PackConfig {
   brand: { logo: string; colors: { primary: string; primaryDark?: string; accent: string; reward?: string; background?: string; frame?: string } };
   mascot: { name: string; image?: string };
   legal?: { operator: string; contactEmail: string; address?: string; governingLaw?: string; effectiveDate: string };
+  plan?: {
+    name: string; priceLabel?: string; months: number; refundDays: number; supportEmail?: string; freeUntil?: string;
+    limits: { freeDays: number; newLessonsPerDay?: number; fullTests?: number };
+    benefits: string[];
+  };
   sections: PackSection[];
   formats: string[];
   practice: { dailyGoal: number; lessonQuestions: number; reviewRound: number; checkPass: number };

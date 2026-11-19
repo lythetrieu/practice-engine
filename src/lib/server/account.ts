@@ -13,6 +13,13 @@ import { currentUser, mailboxKey, randomToken, sha256 } from './auth';
 import { currentStudent, newPassword, newUsername } from './student';
 import { hashSecret } from './password';
 
+/** Whether the paid plan's tables exist (migrations/0004_paid_plan.sql), so deleting an account works before it too. */
+let hasPurchases: boolean | null = null;
+async function purchasesTable(D: D1Database): Promise<boolean> {
+  if (hasPurchases === null) hasPurchases = !!(await D.prepare("SELECT 1 AS x FROM sqlite_master WHERE type = 'table' AND name = 'purchases'").first().catch(() => null));
+  return hasPurchases;
+}
+
 /** Children per parent account. */
 export const MAX_CHILDREN = 3;
 
@@ -122,7 +129,8 @@ export async function guardLearner(D: D1Database, request: Request, learner: str
 
 /**
  * Deletes the account: every child's data (with a tombstone each), sessions, the email's sign-in codes
- * and pending sign-ups. One read, then one batch: all or nothing.
+ * and pending sign-ups, and the link from paid-plan purchases to it (the purchase rows stay for accounting, with no
+ * user and no email). One read, then one batch: all or nothing.
  */
 export async function deleteAccount(D: D1Database, userId: string) {
   const { results } = await D.prepare('SELECT u.email, c.learner_id AS learner FROM users u LEFT JOIN children c ON c.user_id = u.id WHERE u.id = ?1')
@@ -135,6 +143,7 @@ export async function deleteAccount(D: D1Database, userId: string) {
     // Codes are kept under the mailbox key.
     D.prepare('DELETE FROM login_codes WHERE email IN (?1, ?2)').bind(email, mailboxKey(email)),
     D.prepare('DELETE FROM pending_signups WHERE email = ?1').bind(email),
+    ...(await purchasesTable(D) ? [D.prepare('UPDATE purchases SET user_id = NULL, email = NULL, updated_at = ?2 WHERE user_id = ?1').bind(userId, at)] : []),
     D.prepare('DELETE FROM users WHERE id = ?1').bind(userId),
   ]);
 }

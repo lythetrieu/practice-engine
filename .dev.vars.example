@@ -16,3 +16,12 @@ AI_TUTOR_MOCK=
 
 # Optional: your parent-account email here makes you an admin locally (/admin/).
 ADMIN_EMAILS=
+
+# Optional: the paid plan (docs/payments.md). Off while these are empty, and off unless pack.yaml has a `plan` block.
+# Use Polar's sandbox for tests: POLAR_SERVER=sandbox with a sandbox product id and sandbox token.
+# On Cloudflare the two secrets go in with `npx wrangler secret put POLAR_ACCESS_TOKEN` and
+# `npx wrangler secret put POLAR_WEBHOOK_SECRET`; POLAR_PRODUCT_ID and POLAR_SERVER are vars in wrangler.jsonc.
+POLAR_PRODUCT_ID=
+POLAR_SERVER=
+POLAR_ACCESS_TOKEN=
+POLAR_WEBHOOK_SECRET=

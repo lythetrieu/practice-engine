@@ -7,7 +7,8 @@
    Children on parent accounts keep their progress while the account is used: an account nobody has used for
    24 months (no parent sign-in, and no child signed in or practicing) is deleted with them. Expired sessions,
    sign-in codes and pending sign-ups are cleared too, as are the daily counters of sign-in emails and, after
-   400 days, the tombstones of erased child IDs (erased_learners). Each run deletes in chunks within the
+   400 days, the tombstones of erased child IDs (erased_learners); the paid plan's handled webhook ids (90 days)
+   and closed checkouts (30 days). Each run deletes in chunks within the
    Worker's query budget and leaves the rest for the next day; the result goes to meta.retention_last. */
 import type { D1Database } from './env';
 import { deleteAccount } from './account';
@@ -79,6 +80,16 @@ export async function purgeOld(db: D1Database, at = new Date()): Promise<PurgeRe
     const errCut = new Date(at.getTime() - APP_ERROR_DAYS * 86_400_000).toISOString();
     deleted.app_errors = (await db.prepare('DELETE FROM app_errors WHERE id IN (SELECT id FROM app_errors WHERE created_at < ?1 LIMIT 2500)').bind(errCut).run()).meta.changes ?? 0;
     queries += 2;
+    // The paid plan (migrations/0004_paid_plan.sql): handled webhook ids after 90 days, and the checkouts this site
+    // opened 30 days after their page closed. Purchases themselves stay (accounting), unlinked from deleted accounts.
+    try {
+      const [w, k] = await db.batch([
+        db.prepare('DELETE FROM webhook_events WHERE received_at < ?1').bind(new Date(at.getTime() - 90 * 86_400_000).toISOString()),
+        db.prepare('DELETE FROM plan_checkouts WHERE expires_at < ?1').bind(new Date(at.getTime() - 30 * 86_400_000).toISOString()),
+      ]);
+      deleted.plan = (w.meta.changes ?? 0) + (k.meta.changes ?? 0);
+    } catch { deleted.plan = 0; /* before migration 0004 */ }
+    queries += 1;
     // Idle accounts with the queries left, keeping one for the select and one for meta.retention_last
     // below: at most 5 a run, fewer after a heavy purge, none when nothing is left (the next day catches up).
     const room = Math.min(5, Math.floor((LIMIT - queries - 2) / PER_ACCOUNT));

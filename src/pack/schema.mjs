@@ -65,6 +65,23 @@ export const configSchema = z.object({
     governingLaw: z.string().optional(),        // e.g. "the State of New York, USA"
     effectiveDate: day,
   }).strict().optional(),
+  // An optional paid plan, sold to parents through Polar (docs/payments.md). It does nothing until the POLAR_* settings
+  // are set on the server too: without them there is no checkout, no price anywhere and no free limits.
+  plan: z.object({
+    name: text.default('Pro'),                  // "Get Pro for Mia"
+    priceLabel: z.string().optional(),          // e.g. "$49": for the terms page only; the app shows the price Polar charges
+    months: z.number().int().min(1).max(36).default(12),   // one payment, this many months, never renews
+    refundDays: z.number().int().min(0).max(365).default(14),
+    supportEmail: z.string().email().optional(),           // default: legal.contactEmail
+    freeUntil: day.optional(),                  // no free limits before this day (YYYY-MM-DD), for everyone
+    // What the free plan allows while payments are on. Leave out a number for no limit on that.
+    limits: z.object({
+      freeDays: z.number().int().min(0).default(0),        // no lesson limit in a learner's first N days
+      newLessonsPerDay: z.number().int().min(1).optional(),
+      fullTests: z.number().int().min(0).optional(),
+    }).strict().default({}),
+    benefits: z.array(text).max(6).default([]),   // short lines on the parent's plan card
+  }).strict().optional(),
   sections: z.array(section).min(1),
   formats: z.array(z.enum(FORMATS)).min(1),
   practice: z.object({

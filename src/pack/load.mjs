@@ -151,6 +151,7 @@ export function loadPack(dir) {
     else if (mp) { mascot = readFileSync(mp, 'utf8'); svgProblems(mascot).forEach((m) => err(config.mascot.image, '', m)); }
   }
   if (!config.legal) warn('pack.yaml', 'legal', 'no legal block: the privacy notice and terms show placeholders until you add operator, contactEmail and effectiveDate');
+  if (config.plan && !config.plan.supportEmail && !config.legal) err('pack.yaml', 'plan.supportEmail', 'a paid plan needs a support address for refunds: set plan.supportEmail or legal.contactEmail');
   for (const t of config.fullTest.sections) {
     if (!sectionIds.has(t.section)) err('pack.yaml', `fullTest.sections.${t.section}`, `section "${t.section}" is not in sections`);
     if (config.fullTest.timing === 'per-section' && !t.minutes) err('pack.yaml', `fullTest.sections.${t.section}.minutes`, 'per-section timing needs minutes on every section');

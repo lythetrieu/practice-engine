@@ -43,7 +43,14 @@
     "ADMIN_EMAILS": "",
     // The optional AI tutor (docs/pip.md): "1" turns it on; it also needs the OPENROUTER_API_KEY secret.
     "PIP_ENABLED": "",
-    "PIP_DAILY_CAP": "3000"
+    "PIP_DAILY_CAP": "3000",
+    // The optional paid plan through Polar (docs/payments.md). Off while POLAR_PRODUCT_ID is empty, and off unless
+    // pack.yaml has a `plan` block; it also needs the POLAR_ACCESS_TOKEN and POLAR_WEBHOOK_SECRET secrets
+    // (npx wrangler secret put ...). POLAR_SERVER: "sandbox" for Polar's test server, empty for production.
+    "POLAR_PRODUCT_ID": "",
+    "POLAR_SERVER": "",
+    // The site's own address (https://your-domain), for links in emails the daily cron sends. Empty: pack.yaml site.url.
+    "SITE_URL": ""
   },
   // Daily: delete server rows older than 12 months (src/lib/server/retention.ts).
   "triggers": { "crons": ["17 8 * * *"] },

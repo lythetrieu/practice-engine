@@ -54,6 +54,16 @@ export interface Bindings {
   AI_TUTOR_MOCK?: string;
   /** Answer-log rows the whole site may save a day (default 15000; src/pages/api/me/answers.ts). */
   ANSWERS_DAILY_CAP?: string;
+  /** The optional paid plan (src/lib/server/polar.ts, docs/payments.md). Off unless pack.yaml has a `plan` block and
+      POLAR_PRODUCT_ID (a var) plus the POLAR_ACCESS_TOKEN and POLAR_WEBHOOK_SECRET secrets are all set.
+      POLAR_SERVER: "sandbox" for Polar's test server, anything else for production. */
+  POLAR_PRODUCT_ID?: string;
+  POLAR_ACCESS_TOKEN?: string;
+  POLAR_WEBHOOK_SECRET?: string;
+  POLAR_SERVER?: string;
+  /** The site's own address (https://...), for links in emails the cron sends (no request to read it from). Falls
+      back to pack.yaml site.url. */
+  SITE_URL?: string;
 }
 export const bindings = cloudflareEnv as unknown as Bindings;
 
