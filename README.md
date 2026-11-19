@@ -10,11 +10,12 @@ whole app around it:
 - an adaptive tutor: placement check, unit checks with gap probes, a plan, and skills that come back when they are due;
 - a timed full practice test with your exam's sections, clock rules and time options, then a score estimate on your
   exam's scale, a comparison with your benchmarks and the skills to practice next;
-- parent accounts (sign-in by email code), up to 3 children per account with their own logins, progress synced across
+- parent accounts (sign-in by email code, or an optional password), up to 3 children per account with their own logins, progress synced across
   devices, and a parent report;
 - an optional AI tutor ("Pip", or whatever your mascot is called): students tap preset questions, never type
   (off unless you turn it on; see [docs/pip.md](docs/pip.md));
 - an admin area for problem reports, app errors and per-question statistics;
+- an optional paid plan per child through Polar, with free limits and "Ask a parent for more" (off unless you turn it on);
 - a landing page with SEO tags, and privacy notice and terms templates, all built from the pack;
 - offline play after the first visit, and an installable app.
 
@@ -153,6 +154,36 @@ Optional: set `site.url` in `pack.yaml` for canonical links and the sitemap; add
 own domain; set `TURNSTILE_SITE_KEY`, `TURNSTILE_HOSTNAMES` and the `TURNSTILE_SECRET` secret to turn on the bot check
 for sign-in and reports; set `ALERT_EMAIL` to get an email when someone reports a problem.
 
+## Payments (optional)
+
+Off by default: no checkout, no price anywhere, no free limits. To sell one plan per child (one payment for N months,
+never renews) through Polar, the merchant of record:
+
+1. add a `plan` block to `pack.yaml` (name, months, refund days, support email, an optional `freeUntil` day, the free
+   limits);
+2. set `POLAR_PRODUCT_ID` and `POLAR_SERVER` in `wrangler.jsonc`, and the two secrets:
+
+   ```bash
+   npx wrangler secret put POLAR_ACCESS_TOKEN
+   ```
+
+   ```bash
+   npx wrangler secret put POLAR_WEBHOOK_SECRET
+   ```
+
+3. point a Polar webhook at `https://<your site>/api/plan/webhook/`, run `npm run db:migrate:remote`, build and deploy.
+
+Parents buy on `/account/` and come back to a thank-you screen in the app; children never see a price. Set `SITE_URL`
+for links in the emails the daily cron sends. [docs/payments.md](docs/payments.md) has the steps and the rules.
+
+## Parent password
+
+Parents sign in with an emailed code. On `/account/` they can also add a password (10 characters or more) and then
+sign in with email and password; the code always works too, and is the way back in if they forget it. Adding or
+changing it needs a recent sign-in, signs out the account's other devices and sends an email. Wrong passwords get the
+same answer as an unknown email, and 10 in a row pause password sign-in for that account for 15 minutes. Nothing to
+set up beyond `npm run db:migrate:remote`.
+
 ## Project layout
 
 ```
@@ -164,7 +195,7 @@ src/practice/          the practice app (React): screens/, levels/ (activities a
 src/lib/server/        accounts, sessions, children and their logins, progress sync, parent summary
 src/pages/             landing page, /app/, /account/ (parents), /student/ (children), /admin/, /privacy/,
                        /terms/, /api/
-migrations/            the D1 schema
+migrations/            the D1 schema (0004 paid plan, 0005 parent password)
 scripts/pack.mjs       validate / dev / build with a pack
 scripts/build-sw.mjs   the offline service worker, made after each build
 ```
@@ -173,7 +204,7 @@ scripts/build-sw.mjs   the offline service worker, made after each build
 
 | Role | Signs in with | Can |
 |---|---|---|
-| Parent | email + a 6-digit code | add up to 3 children, make their logins, see each child's report, delete a child or the account |
+| Parent | email + a 6-digit code, or email + password if they added one | add up to 3 children, make their logins, see each child's report, delete a child or the account |
 | Student | username + password the parent made, or a sign-in code to scan | practice, take full tests, see only their own progress |
 | Admin | a parent account whose email is in `ADMIN_EMAILS` | open `/admin/`: overview counts, problem reports (resolve/reopen), app errors, question stats |
 

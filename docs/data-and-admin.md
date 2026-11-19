@@ -58,10 +58,29 @@ Empty unless the site turns the tutor on (`docs/pip.md`).
 | --- | --- |
 | `reports.resolved_at` | `NULL` means open. Resolving sets the time; reopening sets it back to `NULL`. No admin identity is stored. An index on `(resolved_at, created_at)` serves the Reports page. |
 
+### The optional paid plan (`0004_paid_plan.sql`)
+
+Empty unless the site turns payments on (`docs/payments.md`).
+
+| Table or column | What it stores |
+| --- | --- |
+| `purchases` | One row per Polar order: the child it is for (`child_id`), the parent (`user_id`), `status` (paid, refunded), amount and currency, the buyer's email at Polar, Polar's checkout and customer ids, `ends_at`, and when each of the three plan emails went out. Kept for accounting; deleting the account sets `user_id` and `email` to NULL. |
+| `plan_checkouts` | Each Polar checkout this site opened (parent, child, Polar's page, when it closes). Deleted 30 days after it closed. |
+| `webhook_events` | Polar webhook ids already handled, so a redelivery changes nothing. Deleted after 90 days. |
+| `children.plan_asked_at`, `plan_asked_kind` | The child's last "Ask a parent for more" and what for (lessons or tests). |
+
+### Parent passwords (`0005_parent_password.sql`)
+
+| Column | What it stores |
+| --- | --- |
+| `users.password_hash`, `password_at` | An optional password the parent added: a keyed PBKDF2 hash (never the password), and when it was set. |
+| `users.pw_fails`, `pw_locked_until` | Wrong passwords in a row; 10 pause password sign-in for that account for 15 minutes (the emailed code still works). |
+
 ### What is never stored
 
 A child's email, full name, phone or any free text; IP addresses (the code uses the IP only as a rate-limit key, and
-Turnstile receives it when the bot check is on); a parent password; a readable child password or sign-in code.
+Turnstile receives it when the bot check is on); a readable parent or child password or sign-in code (only keyed hashes);
+card or bank details (Polar takes payments on its own page).
 
 ## What the app sends, and when
 
@@ -73,6 +92,7 @@ All of it goes to this site's own Worker (`src/pages/api/`). Nothing goes to ana
 | **Answer log** | Each answer waits in a small outbox on the device and goes up in batches of up to 200, a few seconds later (and again when the browser is back online). Finished full tests go with it. Capped per learner and per site per day. | `POST /api/me/answers/` → `item_answers`, `test_sessions` |
 | **Problem report** | Only when a student taps the flag on a question or "report a problem" and picks a reason. Reason from a list, no typed text. Behind the bot check when it is on. Queued offline. | `POST /api/report/` → `reports` |
 | **App error** | When the app crashes or throws; at most 5 different errors per page load. Repeats within 10 minutes count up. | `POST /api/app-error/` → `app_errors` |
+| **Ask a parent for more** (only when payments are on) | When a child at a free limit taps the button. Only the kind (lessons or tests); the parent gets one email a day at most. | `POST /api/student/ask-parent/` → `children.plan_asked_at` |
 | **AI tutor ask** (only when the tutor is on) | When a child taps a tutor button after a question. The question text goes to OpenRouter; the reply is logged. | `POST /api/me/tutor/` → `ai_tutor_log` |
 
 On the device the app keeps a working copy of the progress, the unsent answer outbox, the language and a few settings in
@@ -82,7 +102,7 @@ On the device the app keeps a working copy of the progress, the unsent answer ou
 
 | Role | How they sign in | What they can see and do |
 | --- | --- | --- |
-| **Parent** | An email address and a 6-digit code (no password). A new parent also confirms, with a checkbox, that they are a parent or guardian, 18 or older. | Their own account at `/account/`: add up to 3 children, make or reset a child's login, show a "scan to sign in" code, see each child's practice summary, remove a child, delete the account. Changes need a fresh session (a sign-in or a new emailed code in the last 15 minutes). A parent can also practice as a child they pick. |
+| **Parent** | An email address and a 6-digit code, or an email and a password if they added one on `/account/` (the code always works too). A new parent also confirms, with a checkbox, that they are a parent or guardian, 18 or older. | Their own account at `/account/`: add up to 3 children, make or reset a child's login, show a "scan to sign in" code, see each child's practice summary, remove a child, delete the account. Changes need a fresh session (a sign-in or a new emailed code in the last 15 minutes). A parent can also practice as a child they pick. |
 | **Student** | The username and password the parent made, or a one-time link. | Only their own practice at `/app/` and their own view at `/account/`. No other child, no parent data. |
 | **Admin** | A parent account whose email is in `ADMIN_EMAILS`. | Everything a parent can do, plus `/admin/`: aggregate counts, problem reports, app errors and question statistics. No names and no email addresses are shown on the admin pages. Resolving a report needs a fresh session. |
 

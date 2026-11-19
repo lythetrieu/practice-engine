@@ -156,6 +156,39 @@ Mỗi lần sửa gói đề hoặc `wrangler.jsonc`, chạy lại 2 lệnh ở 
 - **Gia sư AI "Pip":** tắt sẵn. Cách bật và chi phí ở [docs/pip.md](docs/pip.md). Đổi tên và hình linh vật trong
   `pack.yaml` (khối `mascot`).
 
+## Thu tiền (không bắt buộc)
+
+Mặc định **tắt**: không có nút mua, không hiện giá ở đâu, không giới hạn gì. Muốn bán một gói trả phí cho từng học sinh
+(trả một lần, dùng N tháng, không tự gia hạn) qua **Polar** (polar.sh, bên bán hàng thay bạn, lo thuế và hóa đơn):
+
+1. Trong `pack.yaml` thêm khối `plan` (tên gói, số tháng, số ngày được hoàn tiền, email hỗ trợ, giới hạn miễn phí).
+   Ví dụ và giải thích từng trường ở [docs/authoring-a-pack.md](docs/authoring-a-pack.md#plan-optional).
+2. Trên Polar: tạo một sản phẩm **trả một lần**, **một giá**; tạo access token; tạo webhook trỏ về
+   `https://<tên-miền-của-bạn>/api/plan/webhook/`.
+3. Trong `wrangler.jsonc` điền `POLAR_PRODUCT_ID`, `POLAR_SERVER` (`"sandbox"` khi thử, để trống khi bán thật) và
+   `SITE_URL` (địa chỉ trang của bạn). Hai giá trị bí mật thì đặt bằng lệnh (lệnh sẽ hỏi giá trị):
+   ```bash
+   npx wrangler secret put POLAR_ACCESS_TOKEN
+   ```
+   ```bash
+   npx wrangler secret put POLAR_WEBHOOK_SECRET
+   ```
+4. Chạy lại `npm run db:migrate:remote`, rồi 2 lệnh ở Bước 5.
+
+Phụ huynh mua ở trang `/account/`, trả tiền trên trang của Polar, rồi quay về màn hình cảm ơn trong app. **Học sinh
+không bao giờ thấy giá**: khi hết lượt miễn phí, các em chỉ có nút "Ask a parent for more" (gửi email cho phụ huynh,
+tối đa 1 lần mỗi ngày). Hướng dẫn đầy đủ: [docs/payments.md](docs/payments.md) (tiếng Anh).
+
+## Mật khẩu phụ huynh
+
+Phụ huynh đăng nhập bằng mã 6 số gửi qua email. Ở trang `/account/`, phụ huynh có thể **thêm mật khẩu** (ít nhất 10 ký
+tự) để lần sau đăng nhập bằng email và mật khẩu. Mã qua email vẫn luôn dùng được, và là cách vào lại khi quên mật khẩu.
+Đổi mật khẩu thì các máy khác đang đăng nhập bị đăng xuất, và phụ huynh nhận một email báo. Sai 10 lần liền thì khóa
+đăng nhập bằng mật khẩu 15 phút. Không cần cài thêm gì ngoài lệnh `npm run db:migrate:remote`.
+
+Học sinh quên mật khẩu: phụ huynh vào `/account/`, bấm **New password** cạnh tên con. Mỗi khi tạo hoặc đổi đăng nhập
+của con, phụ huynh nhận email có tên đăng nhập (không bao giờ gửi mật khẩu).
+
 ## Quy tắc bắt buộc
 
 - **Tự viết câu hỏi.** Không chép, không sửa lại câu hỏi của đề thi chính thức, sách luyện thi hay trang web khác.

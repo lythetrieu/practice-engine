@@ -333,6 +333,38 @@ both pages show placeholders and a "This is a template" banner, and the validato
 
 The two pages are a starting point that matches what the engine collects, not legal advice. Have them reviewed.
 
+### plan (optional)
+
+A paid plan that parents can buy for one child at a time, through Polar. **It does nothing on its own:** checkout, prices
+and the free limits turn on only when the server also has the `POLAR_*` settings ([payments.md](payments.md)). Without
+this block, or without those settings, the app works exactly as it does with no plan at all.
+
+| Field | Required | Default | What it does |
+|---|---|---|---|
+| `name` | no | `Pro` | The plan's name: "Get Pro for Mia". |
+| `priceLabel` | no | none | For the terms page only, e.g. `"$49"`. The app always shows the price Polar charges. |
+| `months` | no | 12 | How long one payment lasts. It never renews. |
+| `refundDays` | no | 14 | The refund window shown to parents and in the emails. `0` hides the refund line. |
+| `supportEmail` | no | `legal.contactEmail` | Where refund questions go. One of the two is required. |
+| `freeUntil` | no | none | A day (`"2027-01-01"`): before it, nobody has free limits. Checkout still works. |
+| `limits.freeDays` | no | 0 | No lesson limit in a learner's first N days. |
+| `limits.newLessonsPerDay` | no | no limit | New map lessons a learner without the plan can start each day. |
+| `limits.fullTests` | no | no limit | Full practice tests a learner without the plan can take. |
+| `benefits` | no | none | Up to 6 short lines on the parent's plan card. |
+
+```yaml
+plan:
+  name: Plus
+  priceLabel: "$49"
+  months: 12
+  refundDays: 14
+  limits: { freeDays: 7, newLessonsPerDay: 2, fullTests: 1 }
+  benefits: [No daily lesson limit, Every full practice test]
+```
+
+Children never see a price: at a limit, a child signed in with their own login can tap "Ask a parent for more", which
+emails the parent (once a day at most). Replaying lessons, review and finishing a test already started are never limited.
+
 ### tips
 
 Short advice the map guide gives when a student taps the mascot. One list per section. Each tip is one line of plain advice. The keys must be section ids. Sections without tips get a few general tips that fit any exam.
